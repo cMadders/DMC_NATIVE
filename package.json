@@ -1,0 +1,23 @@
+{
+  "name": "dmc_native",
+  "version": "1.0.0",
+  "description": "native ad widget and management platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cMadders/DMC_NATIVE.git"
+  },
+  "keywords": [
+    "dmc",
+    "native"
+  ],
+  "author": "John Cottam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cMadders/DMC_NATIVE/issues"
+  },
+  "homepage": "https://github.com/cMadders/DMC_NATIVE#readme"
+}
