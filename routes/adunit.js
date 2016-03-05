@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-// var request = require('request');
-// var async = require('async');
 var AdUnit = require('../models/adunit');
 var UUID = require('uuid');
 var escape = require('escape-html');

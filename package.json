@@ -1,50 +1,45 @@
 {
-  "name": "dmc_native",
-  "version": "1.0.0",
-  "description": "native ad widget and management platform",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cMadders/DMC_NATIVE.git"
-  },
-  "keywords": [
-    "dmc",
-    "native"
-  ],
-  "author": "John Cottam",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/cMadders/DMC_NATIVE/issues"
-  },
-  "homepage": "https://github.com/cMadders/DMC_NATIVE#readme",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www",
-    "debug": "node-debug ./bin/www"
-  },
-  "dependencies": {
-    "async": "^1.5.0",
-    "body-parser": "~1.13.2",
-    "bootstrap": "^3.3.6",
-    "chalk": "^1.1.1",
-    "cookie-parser": "~1.3.5",
-    "cookie-session": "^1.2.0",
-    "debug": "~2.2.0",
-    "escape-html": "^1.0.3",
-    "express": "~4.13.1",
-    "handlebars": "^4.0.5",
-    "jade": "~1.11.0",
-    "keen-js": "^3.3.0",
-    "kerberos": "0.0.18",
-    "moment": "^2.11.1",
-    "mongoose": "^4.3.7",
-    "morgan": "~1.6.1",
-    "request": "^2.67.0",
-    "serve-favicon": "~2.3.0",
-    "underscore": "^1.8.3",
-    "uuid": "^2.0.1"
-  }
+    "name": "dmc_native",
+    "version": "1.0.0",
+    "description": "native ad widget and management platform",
+    "author": "John Cottam",
+    "license": "ISC",
+    "private": true,
+    "scripts": {
+        "start": "node ./bin/www",
+        "debug": "node-debug ./bin/www"
+    },
+    "dependencies": {
+        "async": "^1.5.0",
+        "body-parser": "~1.13.2",
+        "bootstrap": "^3.3.6",
+        "chalk": "^1.1.1",
+        "cookie-parser": "~1.3.5",
+        "cookie-session": "^1.2.0",
+        "debug": "~2.2.0",
+        "escape-html": "^1.0.3",
+        "express": "~4.13.1",
+        "handlebars": "^4.0.5",
+        "jade": "~1.11.0",
+        "keen-js": "^3.3.0",
+        "kerberos": "0.0.18",
+        "moment": "^2.11.1",
+        "mongoose": "^4.3.7",
+        "morgan": "~1.6.1",
+        "request": "^2.67.0",
+        "serve-favicon": "~2.3.0",
+        "underscore": "^1.8.3",
+        "uuid": "^2.0.1"
+    },
+    "devDependencies": {
+        "grunt": "^*",
+        "grunt-contrib-clean": "^*",
+        "grunt-contrib-concat": "^*",
+        "grunt-contrib-copy": "^0.8.0",
+        "grunt-contrib-cssmin": "^0.14.0",
+        "grunt-contrib-jshint": "^*",
+        "grunt-contrib-less": "^*",
+        "grunt-contrib-uglify": "^*",
+        "grunt-contrib-watch": "^*"
+    }
 }
