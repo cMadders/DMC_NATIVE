@@ -48,6 +48,12 @@
 .alert.remove-creative-alert {
   display: none;
 }
+.modal-dialog {
+  position: absolute;
+  top: 15%;
+  left: calc(20%);
+  width: 60%;
+}
 .modal-body textarea {
   width: 100%;
   box-sizing: border-box;

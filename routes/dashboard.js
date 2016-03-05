@@ -180,7 +180,12 @@ router.get('/adunit/:shortID/:creativeID', function(req, res, next) {
             Creative.find({
                 '_id': req.params.creativeID,
             }, function(err, creative) {
-                if (err) return callback(null, err);
+                if (err) {
+                    return callback(null, {
+                        adunit: adunit,
+                        error: err
+                    });
+                }
                 callback(null, {
                     adunit: adunit,
                     creative: creative[0]
