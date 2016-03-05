@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li.active
+          a(href="#") Ad Unit Not Found
+
+
+  .wrapper.wrapper-content
+    .middle-box.text-center.animated.fadeInRightBig
+      h3.font-bold Ad Unit Not Found
+      .error-desc
+        | It's likely this ad unit has been deleted.
+        br
+        a.btn.btn-primary.m-t(href='/dashboard/adunits') Return To Ad Units

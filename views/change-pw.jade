@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title= title
+    link(href='/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/css/animate.css', rel='stylesheet')
+    link(href='/css/style.css', rel='stylesheet')
+    link(href='/css/dashboard.css', rel='stylesheet')
+
+  body.gray-bg
+    img(src="/images/dmc_logo.png", alt="DMC" id="auth-image")
+    .middle-box.text-center.loginscreen.animated.fadeInDown
+      h3 NATIVE
+
+      h2 Change Password
+
+      form(style="margin-top:35px;" action="/auth/change-pw" method="post")
+        .form-group
+          input(placeholder="Password" type="password" value="" name="password").form-control
+        button(type="submit").btn.btn-primary.block.full-width Submit
+      p(style="margin-top:60px;")
+        small © Digital Media Communications, Inc.

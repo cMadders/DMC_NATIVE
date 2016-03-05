@@ -1,0 +1,172 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 Ad Unit: #{title}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li
+          a(href="/dashboard/adunit/#{adunit.short_id}") #{title}
+        li.active
+          a(href="/dashboard/adunit/edit/#{adunit.short_id}") Edit
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .row(style="margin-bottom:40px;")
+      .col-md-4.col-sm-5
+        include adunit-configuration.jade
+
+      .col-md-8.col-sm-7
+        form.form-horizontal(method='post' action='/api/adunit/update')#adunitEditForm
+          .ibox
+            .ibox-title
+              a(href="/dashboard/adunit/#{adunit.short_id}")
+                button.btn.btn-xs.pull-right.icon-btn
+                  | Cancel
+              button.btn.btn-primary.btn-xs.pull-right.icon-btn#deleteAdUnit
+                i.fa.fa-trash
+                | Delete
+              button.btn.btn-primary.btn-xs.pull-right.icon-btn(type="submit" style="margin-right:6px;")
+                i.fa.fa-save
+                | Update
+              h5 Ad Unit Definition
+            .ibox-content
+                input(type="hidden" name="adunitID" value="#{adunit._id}")
+                input(type="hidden" name="returnURL" value="/dashboard/adunit/#{adunit.short_id}")
+                input(type="hidden" name="card.logo" id="logoInput" value="#{adunit.card.logo}")
+                input(type="hidden" name="thumbnail" id="thumbnailInput" value="#{adunit.thumbnail}")
+                .form-group
+                  label.col-sm-2.control-label Publisher
+                  .col-sm-10
+                    input.form-control(type='text' name="publisher" value="#{adunit.publisher}")
+                .form-group
+                  label.col-sm-2.control-label Site
+                  .col-sm-10
+                    input.form-control(type='text' name="site" value="#{(adunit.site)?adunit.site:''}")
+                .form-group
+                  label.col-sm-2.control-label Name
+                  .col-sm-10
+                    input.form-control(type='text' name="name" value="#{(adunit.name)?adunit.name:''}")
+                .form-group
+                  label.col-sm-2.control-label Website
+                  .col-sm-10
+                    input.form-control(type='text' name="link.website" value="#{(adunit.link.website)?adunit.link.website:''}")
+                .form-group
+                  label.col-sm-2.control-label Logo
+                  .col-sm-10
+                    button#uploadLogo
+
+                .hr-line-dashed
+                .form-group
+                  label.col-sm-2.control-label Headline
+                  .col-sm-10
+                    input.form-control(type='text' name="headline" value="#{(adunit.headline)?adunit.headline:''}")
+                .form-group
+                  label.col-sm-2.control-label Tagline
+                  .col-sm-10
+                    input.form-control(type='text' name="tagline" value="#{(adunit.tagline)?adunit.tagline:''}")
+                .form-group
+                  label.col-sm-2.control-label Slug
+                  .col-sm-10
+                    input.form-control(type='text' name="slug" value="#{(adunit.slug)?adunit.slug:''}")
+                .form-group
+                  label.col-sm-2.control-label Template
+                  .col-sm-10
+                    textarea.form-control(type='text' name="template" rows="10") #{(adunit.template)?adunit.template:''}
+                    span.help-block.m-b-none Template defines how this adunit is represented on a publisher's webpage.
+                .form-group
+                  label.col-sm-2.control-label Thumbnail
+                  .col-sm-10
+                    button#uploadThumb
+
+                .hr-line-dashed
+                .form-group
+                  label.col-sm-2.control-label  DMC ID
+                  .col-sm-10
+                    input.form-control(type='text' name="extra.dmc_publication_id" value="#{(adunit.extra && adunit.extra.dmc_publication_id)?adunit.extra.dmc_publication_id:''}")
+                    span.help-block.m-b-none This field is required for social sharing of IVB. Value should represent DMC Publication ID (ex: 960)
+                .form-group
+                  label.col-sm-2.control-label  DMC Key
+                  .col-sm-10
+                    input.form-control(type='text' name="extra.dmc_publication_key" value="#{(adunit.extra && adunit.extra.dmc_publication_key)?adunit.extra.dmc_publication_key:''}")
+                    span.help-block.m-b-none This field is required for social sharing of IVB. Value should represent DMC Publication Key (ex: dem)
+                .hr-line-dashed
+
+                button.btn.btn-primary.btn-block(type="submit") Update
+
+
+          script(src="http://widget.cloudinary.com/global/all.js")
+          script.
+            $('#uploadLogo').cloudinary_upload_widget({
+                cloud_name: 'dfzx6tyah',
+                upload_preset: 'hs6fstn6',
+                cropping: 'server',
+                'folder': 'user_photos',
+                sources: ['url','local'],
+                max_files:1,
+                button_caption: 'Upload Logo',
+                show_powered_by: false,
+                multiple:false,
+                button_class: 'btn btn-primary',
+                cropping_aspect_ratio: 2.5,
+                cropping_show_dimensions: true,
+                cropping_default_selection_ratio: 1.0
+            },
+            function(error, result) {
+                //- console.log(error, result)
+                $('#adunitEditForm #logoInput').val(result[0].secure_url);
+            });
+
+            $('#uploadThumb').cloudinary_upload_widget({
+                cloud_name: 'dfzx6tyah',
+                upload_preset: 'ocrwan1t',
+                cropping: 'server',
+                'folder': 'user_photos',
+                sources: ['url','local'],
+                max_files:1,
+                button_caption: 'Upload Thumbnail',
+                show_powered_by: false,
+                multiple:false,
+                button_class: 'btn btn-primary',
+                cropping:'server',
+                cropping_show_dimensions: true,
+                cropping_default_selection_ratio: 1.0
+                //- cropping_aspect_ratio: 2.5
+            },
+            function(error, result) {
+                //- console.log(error, result)
+                $('#adunitEditForm #thumbnailInput').val(result[0].secure_url);
+            });
+
+            $('#deleteAdUnit').click(function(event) {
+              event.preventDefault();
+              console.log('delete');
+              swal({
+                  title: "Are you sure?",
+                  text: "You will not be able to recover this!",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "Yes, delete it!",
+                  closeOnConfirm: false
+              }, function() {
+                var url = "#{domain}#{config.api.adunit}/#{adunit._id}";
+                var jqxr = $.ajax({
+                      url: url,
+                      type: 'DELETE'
+                  })
+                  .done(function(data) {
+                      //- console.log("deleted");
+                      window.location.href = '#{domain}/dashboard/adunits';
+                  })
+                  .fail(function() {
+                      console.log("error");
+                  })
+                  .always(function() {
+                  });
+                });
+            });

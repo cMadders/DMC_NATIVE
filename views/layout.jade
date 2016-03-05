@@ -1,0 +1,92 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0')
+    title Digital Media Communications
+    link(href='/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/font-awesome/css/font-awesome.css', rel='stylesheet')
+    link(href='/css/animate.css', rel='stylesheet')
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css", , rel='stylesheet')
+    link(href='/css/style.css', rel='stylesheet')
+    link(href='/css/dashboard.css', rel='stylesheet')
+
+    script(src='/js/jquery-2.1.1.js')
+    script(src='/js/bootstrap.min.js')
+    script(src='/js/plugins/metisMenu/jquery.metisMenu.js')
+    script(src='/js/plugins/slimscroll/jquery.slimscroll.min.js')
+    // Custom and plugin javascript
+    script(src='/js/inspinia.js')
+    script(src='/js/plugins/pace/pace.min.js')
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/js/sortable.min.js")
+    script(src="/js/sweetalert.js")
+
+  body
+    #wrapper
+      nav.navbar-default.navbar-static-side(role='navigation')#main-nav
+        .sidebar-collapse
+          ul#side-menu.nav.metismenu
+            li.nav-header
+              .dropdown.profile-element
+                a(href='/dashboard')
+                  span.text-muted.text-xs.block
+                    | NATIVE
+              .logo-element
+                | DMC
+
+            li(data-item="home").active
+              a(href="/dashboard")
+                i.fa.fa-home
+                span.nav-label Home
+
+            li(data-item="xul")
+              a(href="#")
+                i.fa.fa-folder-open
+                span.nav-label XUL
+                span.fa.arrow
+              ul.nav.nav-second-level.collapse
+                li(data-item="employment")
+                  a(href='/dashboard/employment')
+                    i.fa.fa-suitcase
+                    span.nav-label Employment - <em>960</em>
+
+                li(data-item="retail")
+                  a(href='/dashboard/retail')
+                    i.fa.fa-shopping-cart
+                    span.nav-label Retail - <em>1013</em>
+
+            li(data-item="adunits")
+              a(href="/dashboard/adunits")
+                i.fa.fa-picture-o
+                span.nav-label Ad Units
+
+            li(data-item="creatives")
+              a(href="/dashboard/creatives")
+                i.fa.fa-picture-o
+                span.nav-label Creatives
+
+
+
+      #page-wrapper.gray-bg
+        .row.border-bottom
+          nav.navbar.navbar-static-top.white-bg(role='navigation', style='margin-bottom: 0')
+            .navbar-header
+              a.navbar-minimalize.minimalize-styl-2.btn.btn-primary(href='#')
+                i.fa.fa-bars
+            ul.nav.navbar-top-links.navbar-right
+              li
+                a(href='/auth/logout').logout
+                  i.fa.fa-sign-out
+                  |  Log out
+
+        block content
+
+        .footer
+          .pull-right
+            | Native Dashboard <b>BETA</b>
+          div &copy; Digital Media Communications, Inc.
+
+  script.
+    $('#main-nav li').removeClass('active');
+    $('#main-nav li[data-item="#{pageID}"]').addClass('active');
+    $('#main-nav li[data-item="#{subpageID}"]').addClass('active');

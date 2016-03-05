@@ -1,0 +1,127 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li.active
+          a(href="/dashboard/adunit/create") #{title}
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .row(style="margin-bottom:40px;")
+      .col-md-8.col-sm-7
+        form.form-horizontal(method='post' action='/api/adunit/create')#adunitEditForm
+          .ibox
+            .ibox-title
+              h5 Ad Unit Details
+            .ibox-content
+                input(type="hidden" name="card.logo" id="logoInput")
+                input(type="hidden" name="thumbnail" id="thumbnailInput")
+                .form-group
+                  label.col-sm-2.control-label Publisher
+                  .col-sm-10
+                    input.form-control(type='text' name="publisher")
+                .form-group
+                  label.col-sm-2.control-label Site
+                  .col-sm-10
+                    input.form-control(type='text' name="site")
+                .form-group
+                  label.col-sm-2.control-label Name
+                  .col-sm-10
+                    input.form-control(type='text' name="name")
+                .form-group
+                  label.col-sm-2.control-label Website
+                  .col-sm-10
+                    input.form-control(type='text' name="link.website")
+                .form-group
+                  label.col-sm-2.control-label Logo
+                  .col-sm-10
+                    button#uploadLogo
+
+                .hr-line-dashed
+                .form-group
+                  label.col-sm-2.control-label  DMC ID
+                  .col-sm-10
+                    input.form-control(type='text' name="extra.dmc_publication_id")
+                    span.help-block.m-b-none This field is required for social sharing of IVB. Value should represent DMC Publication ID (ex: 960)
+                .form-group
+                  label.col-sm-2.control-label  DMC Key
+                  .col-sm-10
+                    input.form-control(type='text' name="extra.dmc_publication_key")
+                    span.help-block.m-b-none This field is required for social sharing of IVB. Value should represent DMC Publication Key (ex: dem)
+
+                .hr-line-dashed
+                .form-group
+                  label.col-sm-2.control-label Headline
+                  .col-sm-10
+                    input.form-control(type='text' name="headline")
+                .form-group
+                  label.col-sm-2.control-label Tagline
+                  .col-sm-10
+                    input.form-control(type='text' name="tagline" )
+                .form-group
+                  label.col-sm-2.control-label Slug
+                  .col-sm-10
+                    input.form-control(type='text' name="slug")
+                .form-group
+                  label.col-sm-2.control-label Template
+                  .col-sm-10
+                    textarea.form-control(type='text' name="template" rows="10")
+                    span.help-block.m-b-none Template defines how this adunit is represented on a publisher's webpage.
+                .form-group
+                  label.col-sm-2.control-label Thumbnail
+                  .col-sm-10
+                    button#uploadThumb
+
+                .hr-line-dashed
+
+                button.btn.btn-primary.btn-block(type="submit") Create
+
+
+          script(src="http://widget.cloudinary.com/global/all.js")
+          script.
+            $('#uploadLogo').cloudinary_upload_widget({
+                cloud_name: 'dfzx6tyah',
+                upload_preset: 'hs6fstn6',
+                cropping: 'server',
+                'folder': 'user_photos',
+                sources: ['url','local'],
+                max_files:1,
+                button_caption: 'Upload Logo',
+                show_powered_by: false,
+                multiple:false,
+                button_class: 'btn btn-primary',
+                cropping:'server',
+                cropping_aspect_ratio: 2.5,
+                cropping_show_dimensions: true,
+                cropping_default_selection_ratio: 1.0
+            },
+            function(error, result) {
+                $('#adunitEditForm #logoInput').val(result[0].secure_url);
+            });
+
+            $('#uploadThumb').cloudinary_upload_widget({
+                cloud_name: 'dfzx6tyah',
+                upload_preset: 'ocrwan1t',
+                cropping: 'server',
+                'folder': 'user_photos',
+                sources: ['url','local'],
+                max_files:1,
+                button_caption: 'Upload Thumbnail',
+                show_powered_by: false,
+                multiple:false,
+                button_class: 'btn btn-primary',
+                cropping:'server',
+                cropping_show_dimensions: true,
+                cropping_default_selection_ratio: 1.0
+                //- cropping_aspect_ratio: 2.5
+            },
+            function(error, result) {
+                $('#adunitEditForm #thumbnailInput').val(result[0].secure_url);
+            });

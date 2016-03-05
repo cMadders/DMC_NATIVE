@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li
+          a(href="/dashboard/adunit/#{adunit.short_id}") #{title}
+        li.active
+          a(href="#") Creative Not Found
+
+
+  .wrapper.wrapper-content
+    .middle-box.text-center.animated.fadeInRightBig
+      h3.font-bold Creative Not Found
+      .error-desc
+        | It's likely this creative has been removed from <b>Ad Unit #{adunit.short_id}</b>
+        br
+        a.btn.btn-primary.m-t(href='/dashboard/adunit/#{adunit.short_id}') Return To Ad Unit

@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title} (#{creatives.length})
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li.active
+          a(href="/dashboard/creatives") #{title}
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    if creatives.length
+      table.table.table-striped.table-bordered.creative-table.table-hover
+        thead
+          th ID
+          th DMC Ad #
+          th Advertiser
+          th Headline
+          //- th Tagline
+        each creative in creatives
+          if creative
+            tr(data-creativeid="#{creative._id}")
+              //- td.bg-image.dmc(style="background-image:url('#{creative.media.logo}');")
+              td #{creative._id}
+              td #{creative.extra.dmcAdNumber}
+              td #{creative.advertiser}
+              td #{creative.headline}
+              //- td #{creative.tagline}
+
+  script.
+    $('.creative-table tr').click(function(e){
+      e.preventDefault();
+      var creativeID = $(this).data('creativeid');
+      window.open("/api/creative/" + creativeID);
+    })

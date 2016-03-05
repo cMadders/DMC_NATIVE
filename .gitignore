@@ -1,0 +1,10 @@
+_client
+_reference
+_temp
+_template
+node_modules
+node_modules
+bower_components
+npm-debug.json
+config.codekit
+private.md

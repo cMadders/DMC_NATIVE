@@ -1,0 +1,108 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 Ad Unit: #{title} - Analytics
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li
+          a(href="/dashboard/adunit/#{title}") #{title}
+        li.active
+          a(href="/dashboard/adunit/analytics/#{title}") Analytics
+
+  style(type='text/css').
+    .chart {
+      width: 100%;
+      height: 400px;
+    }
+
+  .wrapper.wrapper-content
+    h3 Activity over the last 120 days
+    #video_plays_by_listing.chart
+    #applications_by_listing.chart
+    #shares_by_listing.chart
+    #shares_by_medium.chart
+
+  script(type='text/javascript', src='//d26b395fwzu5fz.cloudfront.net/3.4.0-rc/keen.min.js')
+  script.
+      var client = new Keen({
+      projectId: "56c1264e46f9a71a338f446c",
+      readKey: "999947218e19b89394486d06ee6991ae424daba1710a6759e97556a5bc6704e3510a93dfb7989a77c7ebff5bb38460a486b030adff6f60956466ba4558b5d50b328872daa20ec24c9bd3fcf7e8bd6649fad4a0ed30829e7682967723711054ac"
+      });
+      Keen.ready(function() {
+
+        var video_plays_by_listing = new Keen.Query("count", {
+        eventCollection: "video_plays",
+        groupBy: [
+        "extra.dmcAdNumber"
+        ],
+        filters: [{
+        "property_name": "short_id",
+        "operator": "eq",
+        "property_value": "#{title}"
+        }],
+        timeframe: "this_14_days",
+        timezone: "UTC"
+        });
+        client.draw(video_plays_by_listing, document.getElementById("video_plays_by_listing"), {
+        chartType: "columnchart",
+        title: "Video Plays",
+        // filters: [{
+        //     "property_name": "short_id",
+        //     "operator": "eq",
+        //     "property_value": "#{title}"
+        // }]
+        });
+
+        var applications_by_listing = new Keen.Query("count", {
+        eventCollection: "apply_actions",
+        groupBy: [
+        "medium",
+        "creative.extra.dmcAdNumber"
+        ],
+        timeframe: "this_14_days",
+        timezone: "UTC"
+        });
+        client.draw(applications_by_listing, document.getElementById("applications_by_listing"), {
+        title: "Website Clicks (apply now)",
+        chartType: "columnchart",
+        colors: ["#FE6672"]
+        });
+
+
+        var shares_by_listing = new Keen.Query("count", {
+        eventCollection: "share_actions",
+        groupBy: [
+        "creative.extra.dmcAdNumber"
+        ],
+        filters: [{
+        "property_name": "short_id",
+        "operator": "eq",
+        "property_value": "#{title}"
+        }],
+        timeframe: "this_14_days",
+        timezone: "UTC"
+        });
+        client.draw(shares_by_listing, document.getElementById("shares_by_listing"), {
+        title: "Shares",
+        chartType: "columnchart",
+        colors: ["#2F4050"]
+        });
+
+        var shares_by_medium = new Keen.Query("count", {
+        eventCollection: "share_actions",
+        groupBy: [
+        "medium"
+        ],
+        timeframe: "this_14_days",
+        timezone: "UTC"
+        });
+        client.draw(shares_by_medium, document.getElementById("shares_by_medium"), {
+        title: "Shares By Medium",
+        });
+
+      });

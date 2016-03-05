@@ -1,0 +1,45 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title} (#{adunits.length})
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li.active
+          a(href="/dashboard/adunits") #{title}
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .ibox
+      .ibox-title
+        //- h2 #{title} (#{adunits.length})
+        a.btn.btn-primary.pull-right(href="/dashboard/create/adunit")
+          i.fa.fa-plus
+          | &nbsp;Create Ad Unit
+
+      .ibox-content
+        .mail-box(style="margin-top:10px;")
+          table.table.sortable-theme-bootstrap.table-hover.table-bordered(data-sortable)#adunit-list
+            thead
+              tr
+                th ID
+                th Publisher
+                th Site
+                th Name
+                th Creatives
+            tbody
+              each adunit in adunits
+                tr(data-url="/dashboard/adunit/#{adunit.short_id}")
+                  td #{adunit.short_id}
+                  td #{adunit.publisher}
+                  td #{adunit.site}
+                  td #{adunit.name}
+                  td #{adunit.creative_count}
+
+  script.
+    $('#adunit-list td').click(function(event) {
+      var url = $(this).parent().data('url');
+      window.location.href = url;
+    });

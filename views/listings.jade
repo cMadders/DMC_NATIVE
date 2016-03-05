@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 Contacts
+      ol.breadcrumb
+        li
+          a(href="/") Home
+        li
+          a.active Ad Unit
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .row
+      .col-lg-12
+        .text-center.m-t-lg
+          h1= title
+          h3 Listing ID: #{data.listingID}
+          hr
+          p <b>#{data.name}</b>
+          p= data.tagline
+          p= data.category
+          p= data.subcategory
+          p= data.veritcal
+          //- p= data.logo
+          p #{data.city}, #{data.state}
+          p= data.website
+          p
+            a(href="#{media.shortLink}" target="_blank") Short Link
+          hr
+          img(src="#{media.logoGif}")

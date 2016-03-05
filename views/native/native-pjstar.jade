@@ -1,0 +1,122 @@
+doctype html
+html
+  head
+    title #{title}
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    meta(name='viewport', content='width=device-width initial-scale=1.0 maximum-scale=1.0')
+    base(href='http://m.pjstar.com/', target='_blank')
+    link(rel='icon', type='image/png', href='https://s3-us-west-1.amazonaws.com/static-v1.gohone.com/images/favicon.png')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/Global/CSS/mobile/rwd/global.min.css?9')
+    link(href='http://fonts.googleapis.com/css?family=Oswald:400,300,700', rel='stylesheet', type='text/css')
+
+    //- temporary scripts to speed build process
+    //- script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js")
+    //- script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js")
+    //- script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js")
+    //- script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js")
+
+  body
+    header
+      .navbar.navbar-inverse.navbar-fixed-top
+        .row.navwrap
+          .col-xs-12
+            button.navbar-toggle-ovrde.navbar-toggle.pull-left(type='button', data-toggle='offcanvas', data-target='#myNavmenu', data-canvas='body')
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            .logo-group(style='\
+            padding: 0;\
+            ')
+              a.logo(href='/')
+                img(style='margin:-7px 0px 0 0;', src='/Global/images/mobile/rwd/head_logos/pjstar.png', alt='Journal Star', title='Journal Star')
+              span.section-name.section-name-controller
+      #head-ad.header-ad(style="padding-bottom:0;padding-top:68px;")
+
+    .container.content.home
+      #railitems.col-sm-4.left
+        .section-box(style='\
+        width: 100%;\
+        ')
+          h2.section-box-title
+            a(href='http://www.pjstar.com/more-top-stories') Top Stories
+            a.btn.btn-default.btn-sm.pull-right(href='http://www.pjstar.com/more-top-stories') Read More
+          h3.story-title
+            a(title='Fabian Gomez wins Sony Open in a playoff over Brandt Snedeker', href='/sports/20160117/fabian-gomez-wins-sony-open-in-playoff-over-brandt-snedeker') Fabian Gomez wins Sony Open in a playoff over Brandt Snedeker
+          span.story-date.red
+            | Updated at 10:30 PM
+          h3.story-title
+            a(title='Buzzing about baseball: Cardinals draw a crowd at annual Winter Warmup', href='/sports/20160117/buzzing-about-baseball-cardinals-draw-crowd-at-annual-winter-warmup') Buzzing about baseball: Cardinals draw a crowd at annual Winter Warmup
+          span.story-date.red
+            | Updated at 9:55 PM
+          h3.story-title
+            a(title='Brady, Manning to meet in AFC championship game for fourth time', href='/sports/20160117/brady-manning-to-meet-in-afc-championship-game-for-fourth-time') Brady, Manning to meet in AFC championship game for fourth time
+          span.story-date.red
+            | Updated at 9:44 PM
+          h3.story-title
+            a(title='Stars will collide in Carolina for NFC championship game', href='/sports/20160117/stars-will-collide-in-carolina-for-nfc-championship-game') Stars will collide in Carolina for NFC championship game
+          span.story-date.red
+            | Updated at 9:29 PM
+          h3.story-title
+            a(title='Toews, Blackhawks beat Canadiens 5-2 for 11th straight win', href='/sports/20160117/toews-blackhawks-beat-canadiens-5-2-for-11th-straight-win') Toews, Blackhawks beat Canadiens 5-2 for 11th straight win
+          span.story-date.red
+            | Updated at 9:13 PM
+
+
+          //- INSERT DMC NATIVE WIDGET HERE
+          script(id="dmc-5fc1" type="text/javascript" src="#{domain}/adunit/5fc1" async)
+          //- script(id="dmc-7b88" type="text/javascript" src="#{domain}/adunit/7b88" async)
+
+          h3.story-title
+            a(title='Cardinals-Packers playoff game had a little bit of everything, including several big plays', href='/sports/20160117/cardinals-packers-playoff-game-had-little-bit-of-everything-including-several-big-plays')
+              | Cardinals-Packers playoff game had a little bit of everything, including several big plays
+          span.story-date.red
+            | Updated at 9:09 PM
+
+
+          h3.story-title
+            a(title="Cold Case: 'Almost' just not enough for Rocky", href='/news/20160117/cold-case-almost-just-not-enough-for-rocky') Cold Case: 'Almost' just not enough for Rocky
+          span.story-date.red
+            | Updated at 8:50 PM
+
+          h3.story-title
+            a(title='Peoria County officials seek to expand possible uses for former Hanna City Work Camp', href='/news/20160117/peoria-county-officials-seek-to-expand-possible-uses-for-former-hanna-city-work-camp')
+              | Peoria County officials seek to expand possible uses for former Hanna City Work Camp
+          span.story-date.red
+            | Updated at 8:38 PM
+
+          h3.story-title
+            a(title="Sies' 814 series sparks General Power to city bowling tournament lead", href='/sports/20160117/sies-814-series-sparks-general-power-to-city-bowling-tournament-lead') Sies' 814 series sparks General Power to city bowling tournament lead
+          span.story-date.red
+            | Updated at 8:33 PM
+          h3.story-title
+            a(title='Death of beloved part-time officer leaves void for Washington police', href='/news/20160117/death-of-beloved-part-time-officer-leaves-void-for-washington-police') Death of beloved part-time officer leaves void for Washington police
+          span.story-date.red
+            | Updated at 8:20 PM
+
+
+           //- INSERT DMC NATIVE WIDGET HERE
+          script(id="dmc-0f54" type="text/javascript" src="#{domain}/adunit/0f54" async)
+
+
+          h3.story-title
+            a(title='Fabian Gomez wins Sony Open in a playoff over Brandt Snedeker', href='/sports/20160117/fabian-gomez-wins-sony-open-in-playoff-over-brandt-snedeker') Fabian Gomez wins Sony Open in a playoff over Brandt Snedeker
+          span.story-date.red
+            | Updated at 10:30 PM
+          h3.story-title
+            a(title='Buzzing about baseball: Cardinals draw a crowd at annual Winter Warmup', href='/sports/20160117/buzzing-about-baseball-cardinals-draw-crowd-at-annual-winter-warmup') Buzzing about baseball: Cardinals draw a crowd at annual Winter Warmup
+          span.story-date.red
+            | Updated at 9:55 PM
+          h3.story-title
+            a(title='Brady, Manning to meet in AFC championship game for fourth time', href='/sports/20160117/brady-manning-to-meet-in-afc-championship-game-for-fourth-time') Brady, Manning to meet in AFC championship game for fourth time
+          span.story-date.red
+            | Updated at 9:44 PM
+          h3.story-title
+            a(title='Stars will collide in Carolina for NFC championship game', href='/sports/20160117/stars-will-collide-in-carolina-for-nfc-championship-game') Stars will collide in Carolina for NFC championship game
+          span.story-date.red
+            | Updated at 9:29 PM
+          h3.story-title
+            a(title='Toews, Blackhawks beat Canadiens 5-2 for 11th straight win', href='/sports/20160117/toews-blackhawks-beat-canadiens-5-2-for-11th-straight-win') Toews, Blackhawks beat Canadiens 5-2 for 11th straight win
+          span.story-date.red
+            | Updated at 9:13 PM

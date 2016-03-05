@@ -1,0 +1,158 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 Creative: #{creative._id}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li
+          a(href="/dashboard/adunit/#{adunit.short_id}") #{title}
+        li.active
+          a(href="/dashboard/adunit/#{adunit.short_id}/#{creative._id}") Edit
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .row(style="margin-bottom:40px;")
+      .col-md-4.col-sm-5
+        .ibox
+          .ibox-title
+            h5 Creative Details
+          .ibox-content.no-padding
+            .bg-image.dmc-logo(style="background-image:url('#{creative.media.logo}');height:100px;max-width:100%;margin-top:10px;")
+          .ibox-content.profile-content(style="padding-top:0;")
+            hr
+            p <b>DMC Ad #: #{creative.extra.dmcAdNumber}</b>
+            //- p Status: #{creative.status}
+            p CreativeID: #{creative._id}
+            p ListingID: #{creative.extra.listingID}
+            p Vertical: #{creative.vertical}
+            hr
+            p
+              a(href="#{creative.link.slp}" target="_blank") Single Landing Page
+            p
+              a(href="#{creative.link.qr}" target="_blank") QR Code
+            hr
+            p Last Modified: #{moment(creative.last_modified).fromNow()}
+            p Modified By: #{creative.last_modified_by}
+            p Creation Date: #{moment(creative.creation_date).format('MM/DD/YYYY')}
+            p Created By: #{creative.created_by}
+            //- hr
+            //- p
+              a(data-toggle="modal" data-target="#templateModal") Preview Creative
+
+
+      .col-md-8.col-sm-7
+        form.form-horizontal(method='post' action='/api/creative/update')
+          .ibox
+            .ibox-title
+              //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#deleteCreative
+                i.fa.fa-trash
+                | Delete
+              a(href="/dashboard/adunit/#{adunit.short_id}")
+                button.btn.btn-xs.pull-right.icon-btn
+                  | Cancel
+              button.btn.btn-primary.btn-xs.pull-right.icon-btn(type="submit")
+                i.fa.fa-save
+                | Update
+              h5 Creative Definition
+            .ibox-content
+                //- input(type="hidden" name="adunitID" value="#{adunit._id}")
+                input(type="hidden" name="creativeID" value="#{creative._id}")
+                input(type="hidden" name="returnURL" value="/dashboard/adunit/#{adunit.short_id}")
+                //- .form-group
+                //-   label.col-sm-2.control-label Name
+                //-   .col-sm-10
+                //-     input.form-control(type='text' name="name" value="#{(creative.name)?creative.name:''}")
+                //-     span.help-block.m-b-none This serves as a "nickname" to help identify the creative.
+                .form-group
+                  label.col-sm-2.control-label Advertiser
+                  .col-sm-10
+                    input.form-control(type='text' name="advertiser" value="#{creative.advertiser}")
+                .form-group
+                  label.col-sm-2.control-label Headline
+                  .col-sm-10
+                    input.form-control(type='text' name="headline" value="#{(creative.headline)?creative.headline:''}")
+                .form-group
+                  label.col-sm-2.control-label Tagline
+                  .col-sm-10
+                    input.form-control(type='text' name="tagline" value="#{(creative.tagline)?creative.tagline:''}")
+                .form-group
+                  label.col-sm-2.control-label Category
+                  .col-sm-10
+                    input.form-control(type='text' name="category" value="#{(creative.category)?creative.category:''}")
+                .form-group
+                  label.col-sm-2.control-label Description
+                  .col-sm-10
+                    textarea.form-control(type='text' name="description" rows="10") #{(creative.description)?creative.description:''}
+                    //- span.help-block.m-b-none A block of help text that breaks onto a new line and may extend beyond one line.
+                .hr-line-dashed
+
+                h4 Links
+                .form-group
+                  label.col-sm-2.control-label Website
+                  .col-sm-10
+                    textarea.form-control(type='text' name="link.website" rows="2") #{(creative.link.website)?creative.link.website:''}
+                .form-group
+                  label.col-sm-2.control-label Email
+                  .col-sm-10
+                    input.form-control(type='email' name="link.email" value="#{(creative.link.email)?creative.link.email:''}")
+                .form-group
+                  label.col-sm-2.control-label Phone
+                  .col-sm-10
+                    input.form-control(type='phone' name="link.phone" value="#{(creative.link.phone)?creative.link.phone:''}")
+                .hr-line-dashed
+
+                h4 Address
+                .form-group
+                  label.col-sm-2.control-label Street
+                  .col-sm-10
+                    input.form-control(type='text' name="address.street" value="#{(creative.address.street)?creative.address.street:''}")
+                .form-group
+                  label.col-sm-2.control-label City
+                  .col-sm-10
+                    input.form-control(type='text' name="address.city" value="#{(creative.address.city)?creative.address.city:''}")
+                .form-group
+                  label.col-sm-2.control-label State
+                  .col-sm-10
+                    input.form-control(type='text' name="address.state" value="#{(creative.address.state)?creative.address.state:''}")
+                .form-group
+                  label.col-sm-2.control-label Zip
+                  .col-sm-10
+                    input.form-control(type='text' name="address.zip" value="#{(creative.address.zip)?creative.address.zip:''}")
+                .hr-line-dashed
+
+                h4 Media
+                .form-group
+                  label.col-sm-2.control-label Video
+                  .col-sm-10
+                    textarea.form-control(type='text' name="media.mp4" rows="2") #{(creative.media.mp4)?creative.media.mp4:''}
+                .form-group
+                  label.col-sm-2.control-label Logo
+                  .col-sm-10
+                    textarea.form-control(type='text' name="media.logo" rows="2") #{(creative.media.logo)?creative.media.logo:''}
+                .hr-line-dashed
+
+                button.btn.btn-primary.btn-block(type="submit") Update
+
+
+          script.
+            $('#deleteCreative').click(function() {
+              var url = "#{domain}#{config.api.creative}/#{adunit._id}/#{creative._id}";
+              var jqxr = $.ajax({
+                      url: url,
+                      type: 'DELETE'
+                  })
+                  .done(function(data) {
+                    window.location.href = '#{domain}/dashboard/adunit/#{adunit.short_id}';
+                  })
+                  .fail(function() {
+                      console.log("error");
+                  })
+                  .always(function() {
+                      console.log("complete");
+                  });
+            });

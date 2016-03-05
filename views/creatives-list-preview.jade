@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title}
+      ol.breadcrumb
+        li
+          a(href="/dmc") Home
+        li
+          a #{title}
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    //- .row
+    //-   each val in data
+    //-     .col-lg-4
+    //-       .contact-box
+    //-         .col-sm-4
+    //-           img(src="#{val[1].logoGif}")
+    //-         .col-sm-8
+    //-           h3 #{val[0].name}
+    //-           p #{val[0].tagline}
+    //-           address
+    //-             | <b>ListingID: #{val[0].listingID}</b><br>
+    //-             | #{val[0].city}, #{val[0].state} #{val[0].zip}
+
+
+    .row(style="margin-top:20px;")
+      each val in data
+        .col-lg-4
+          .ibox.creative-list
+            .ibox-title
+              span.label.label-primary.pull-right IVB
+              h5 #{val.name}
+            .ibox-content
+              img(src="#{val.media.logoGif}" style="width:250px;")
+              address
+                | <b>#{val.name}</b><br>
+                | #{val.city}, #{val.state} #{val.zip}
+              p(style="clear:both;") #{val.description}
+              .row.m-t-sm
+                .col-sm-4
+                  .font-bold ListingID
+                  | #{val.listingID}
+                .col-sm-4
+                  .font-bold Type
+                  |IVB
+                .col-sm-4

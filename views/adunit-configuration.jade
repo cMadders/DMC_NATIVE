@@ -1,0 +1,79 @@
+#templateModal.modal.inmodal(tabindex='-1', role='dialog', aria-hidden='true', style='display: none;')
+  .modal-dialog.animated.slideInDown
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal')
+          span(aria-hidden='true') ×
+          span.sr-only Close
+        h4.modal-title Ad Unit Template
+      .modal-body
+        textarea data goes here
+      .modal-footer
+        button.btn.btn-white(data-dismiss="modal") Close
+
+#embedModal.modal.inmodal(tabindex='-1', role='dialog', aria-hidden='true', style='display: none;')
+  .modal-dialog.animated.slideInDown
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal')
+          span(aria-hidden='true') ×
+          span.sr-only Close
+        h4.modal-title Publisher Embed Code
+      .modal-body
+        textarea
+          |<script id="dmc-#{adunit.short_id}" type="text/javascript" src="#{domain}/adunit/#{adunit.short_id}" async></script>
+      .modal-footer
+        button.btn.btn-white(data-dismiss="modal") Close
+
+.ibox
+  .ibox-title
+    if !mode || mode != 'edit'
+      a(href="/dashboard/adunit/edit/#{adunit.short_id}")
+        button.btn.btn-primary.btn-xs.pull-right.icon-btn#editAdUnit
+          i.fa.fa-edit
+          | Edit
+    h5 Ad Unit Configuration
+
+  .ibox-content.no-padding
+    .bg-image(style="background-image:url('#{(adunit.card && adunit.card.logo)?adunit.card.logo:''}');")
+
+  .ibox-content.profile-content(style="padding-top:0;")
+    //- h4 #{adunit.publisher}
+    p ID: #{adunit._id}
+    //- p ID: #{adunit.short_id}
+    p Publisher: #{adunit.publisher}
+    p Site: #{adunit.site}
+    p Name: #{adunit.name}
+    //- if adunit.link && adunit.link.website
+      p
+        a(href="#{adunit.link.website}" target="_blank") Website
+
+    hr
+
+    p <b>#{adunit.headline}</b>
+    if adunit.tagline
+      p #{adunit.tagline}
+    if adunit.slug
+      p #{adunit.slug}
+    .bg-image.dmc-thumb(style="background-image:url('#{(adunit.thumbnail)?adunit.thumbnail:''}');")
+    hr
+
+    if adunit.extra.dmc_index_url
+      p
+        a(href="#{adunit.extra.dmc_index_url}" target="_blank") DMC Index Page
+    //- p
+      a(href="/dashboard/adunit/edit/#{adunit.short_id}") Ad Unit Template
+    p
+      a(href="/api/adunit/compiled/#{adunit._id}" target="_blank") Compiled JSON
+    p
+      a(href="/dashboard/adunit/analytics/#{adunit.short_id}") Analytics
+    p
+      a(data-toggle="modal" data-target="#embedModal") Publisher Embed Code
+    p
+      a(href="/card/list/#{adunit._id}" target="_blank") Preview
+    hr
+
+    p Last Modified: #{moment(adunit.last_modified).fromNow()}
+    p Modified By: #{adunit.last_modified_by}
+    p Creation Date: #{moment(adunit.creation_date).format('MM/DD/YYYY')}
+    p Created By: #{adunit.created_by}

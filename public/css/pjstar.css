@@ -1,0 +1,163 @@
+#sharetoolscontainer {
+list-style: none;
+}
+.ftlt {
+float: left;
+}
+.ml9 {
+margin-left: 9px;
+}
+.ml5 {
+margin-left: 5px;
+}
+.pt3 {
+padding-top: 3px;
+}
+.pl10 {
+padding-left: 10px;
+}
+.pt4 {
+padding-top: 4px;
+}
+.pl10 {
+padding-left: 10px;
+}
+style.
+.gallery-carousel-img-responsive {
+min-width: 0 !important;
+max-height: 78%;
+margin: 0 auto;
+}
+#gallery-carousel-progress-bar {
+border: 1px solid;
+height: 25px;
+margin: 0 auto;
+padding: 4px;
+}
+#gallery-carousel-progress-bar div.bar {
+width: 0%;
+background-color: #FFF;
+height: 15px;
+}
+.modal.modal-fullscreen .modal-dialog,
+.modal.modal-fullscreen .modal-content {
+bottom: 0;
+left: 0;
+position: absolute;
+right: 0;
+top: 0;
+}
+.modal.modal-fullscreen .modal-dialog {
+margin: 0;
+width: 100%;
+}
+.modal.modal-fullscreen .modal-content {
+border: none;
+-moz-border-radius: 0;
+border-radius: 0;
+-webkit-box-shadow: inherit;
+-moz-box-shadow: inherit;
+-o-box-shadow: inherit;
+box-shadow: inherit;
+}
+.modal.modal-fullscreen.force-fullscreen .modal-body {
+padding: 0;
+}
+.modal.modal-fullscreen.force-fullscreen .modal-header,
+.modal.modal-fullscreen.force-fullscreen .modal-footer {
+left: 0;
+position: absolute;
+right: 0;
+}
+.modal.modal-fullscreen.force-fullscreen .modal-header {
+top: 0;
+}
+.modal.modal-fullscreen.force-fullscreen .modal-footer {
+bottom: 0;
+}
+#gallery-carousel-body-container {
+padding: 40px 20px 20px 20px;
+text-align: center;
+}
+.gallery-carousel-loader {
+font-weight: bold;
+font-size: 100%;
+color: #FFF;
+}
+#galleryCarouselModal {
+background-color: #000;
+z-index: 99999;
+color: #FFF !important;
+}
+#galleryCarouselModal .caption p {
+color: #FFF;
+}
+.gallery-modal-content-container {
+background-color: #000;
+color: #fff;
+}
+.image-container {
+width: 100%;
+position: relative;
+}
+.image-container img {
+min-width: 100%;
+max-width: 100%;
+}
+.title-wrap {
+padding: 0 30px;
+}
+.title-wrap .btn {
+display: inline-block;
+margin-right: 10px;
+}
+.gallery-title {
+text-align: center;
+color: #fff;
+}
+.fa {
+color: #000 cursor: pointer;
+text-shadow: 2px 2px #000000;
+}
+.fa:hover {
+color: #0096d7;
+}
+.left-control,
+.right-control {
+position: absolute;
+top: 50%;
+display: block;
+}
+.left-control {
+left: 10px;
+}
+.right-control {
+right: 10px;
+}
+.comments {
+padding: 10px 30px;
+background-color: #fff;
+margin-top: 30px;
+}
+.modal {
+color: #444;
+}
+.gallery-modal-header {
+padding: 15px 15px 25px 15px;
+min-height: 66px;
+}
+#shareToolsModal {
+z-index: 999999;
+}
+.ftrt {
+float: right
+}
+.sticky {
+position: -webkit-sticky;
+position: -moz-sticky;
+position: -o-sticky;
+position: -ms-sticky;
+position: sticky;
+top: 90px;
+z-index: 1;
+}

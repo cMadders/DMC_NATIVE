@@ -1,0 +1,140 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 Ad Unit: #{title}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li
+          a(href="/dashboard/adunits") Ad Units
+        li.active
+          a(href="/dashboard/adunit/#{adunit.short_id}") #{title}
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .row(style="margin-bottom:40px;")
+      .col-md-4.col-sm-5
+        include adunit-configuration.jade
+
+      .col-md-8.col-sm-7
+        .ibox
+          .ibox-title
+            button.btn.btn-primary.btn-xs.pull-right.btn-toggle.icon-btn#removeCreative
+                .default
+                  i.fa.fa-minus
+                  | Remove Creatives
+                .toggle
+                  | Exit Remove Mode
+            button.btn.btn-primary.btn-xs.pull-right.icon-btn#addCreative
+              i.fa.fa-plus
+              | Add Creative
+            button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
+              i.fa.fa-refresh
+              | Sync w/ XUL
+            h5 Associated Creatives
+
+          .ibox-content.no-padding(style="padding-top:10px !important;")
+            .alert.alert-warning.remove-creative-alert(role='alert')
+              |  Click on a creative to remove from adunit.
+
+            if creatives.length
+              each creative in creatives
+                if creative
+                  .col-md-6
+                    .file(data-listingid="#{creative.extra.listingID}" data-creativeid="#{creative._id}")
+                      a(href="/dashboard/adunit/#{adunit.short_id}/#{creative._id}")
+                        .bg-image.dmc(style="background-image:url('#{creative.media.logo}');")
+                        .file-name
+                          | #{creative.headline}
+                          small #{creative.tagline}
+                          .advertiser #{creative.advertiser}
+
+  script.
+    var editMode = false;
+    $('#removeCreative').click(function(event) {
+        event.preventDefault();
+        $(this).toggleClass('btn-primary').toggleClass('active');
+        $('.file').toggleClass('edit-mode');
+        $('.remove-creative-alert').fadeToggle();
+        //- toggle editMode value
+        editMode = !editMode;
+        if(!editMode){
+         location.reload();
+        }
+    });
+
+    $('.file').on('click', 'a', function(event) {
+        if (editMode) {
+          var $creativeObj = $(this).parent();
+          event.preventDefault();
+          var listingID = $(this).parent().data('listingid');
+          var creativeID = $(this).parent().data('creativeid');
+          var url = "#{domain}#{config.api.removeCreativeFromAdunit}";
+          var obj = {
+            "adunitID": "#{adunit._id}",
+            "creativeID": creativeID,
+          };
+          swal({
+              title: "Remove Creative?",
+              text: listingID,
+              showCancelButton: true,
+              closeOnConfirm: false,
+              showLoaderOnConfirm: true,
+              animation: "slide-from-top",
+          }, function() {
+              var jqxr = $.post(url, obj, function(data) {
+                      $(".result").html(data);
+                  })
+                  .done(function(data) {
+                      swal("Creative Removed", "success");
+                      $creativeObj.remove();
+                  })
+                  .fail(function() {
+                      console.log("error");
+                  })
+                  .always(function() {
+                      console.log("complete");
+                  });
+          })
+        }
+    });
+
+
+    $('#addCreative').click(function(event) {
+      event.preventDefault();
+      swal({
+          title: "Add Creative",
+          text: "XUL Listing ID",
+          type: "input",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          showLoaderOnConfirm: true,
+          animation: "slide-from-top",
+          inputPlaceholder: "XUL Listing ID"
+      }, function(inputValue) {
+          if (inputValue === false) return false;
+          if (inputValue === "") {
+              swal.showInputError("You need to input a value");
+              return false
+          }
+          var url = "#{domain}#{config.api.creative}";
+          var obj = {
+            "listingID": inputValue,
+            "adunitID": "#{adunit._id}"
+          };
+          var jqxr = $.post(url, obj, function(data) {
+                  $(".result").html(data);
+              })
+              .done(function(data) {
+                  location.reload();
+              })
+              .fail(function() {
+                  console.log("error");
+              })
+              .always(function() {
+                  console.log("complete");
+              });
+        });
+    });
+
