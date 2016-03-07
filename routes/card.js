@@ -39,34 +39,4 @@ router.get('/list/:adunitID', function(req, res, next) {
     });
 });
 
-router.get('/list-only/:adunitID', function(req, res, next) {
-    // get adunit definition
-    var url = req.app.locals.domain + '/api/adunit/compiled/' + req.params.adunitID;
-    request(url, function(error, response, body) {
-        if (error) handleError(error);
-        if (!error && response.statusCode == 200) {
-            // res.json(JSON.parse(body));
-            res.render('card/list-only', {
-                title: 'Card List: ' + req.params.adunitID,
-                adunit: JSON.parse(body),
-                domain: req.app.locals.domain,
-                config: req.app.locals.config
-            });
-        }
-    });
-});
-
-// TEST PAGES
-router.get('/test', function(req, res, next) {
-    res.render('native/native-test', {
-        title: 'Native Test'
-    });
-});
-
-router.get('/pjstar', function(req, res, next) {
-    res.render('native/native-pjstar', {
-        title: 'Native: PJ Star'
-    });
-});
-
 module.exports = router;

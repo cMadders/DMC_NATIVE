@@ -6,5 +6,6 @@ node_modules
 node_modules
 bower_components
 npm-debug.json
+npm-debug.log
 config.codekit
 private.md

@@ -210,6 +210,12 @@ router.delete('/adunit/:id', function(req, res, next) {
 // UPDATE adunit
 router.post('/adunit/update', function(req, res, next) {
     req.body.last_modified_by = user.username || 'unknown';
+
+    // strip spaces and line breaks from template
+    req.body.template = stripLineBreaks(req.body.template);
+    req.body.template = stripSpacingBetweenTags(req.body.template);
+    console.log(req.body.template);
+
     AdUnit.findOneAndUpdate({
         _id: req.body.adunitID
     }, req.body, function(err, creative) {
@@ -217,6 +223,7 @@ router.post('/adunit/update', function(req, res, next) {
         res.redirect(req.body.returnURL);
     });
 });
+
 
 // REMOVE creative from adunit
 router.post('/adunit/remove-creative', function(req, res, next) {
@@ -344,5 +351,12 @@ function writeCreative(creative, association, cb) {
     });
 }
 
+function stripLineBreaks(str){
+  return str.replace(/(\r\n|\n|\r)/gm, "");
+}
+
+function stripSpacingBetweenTags(str){
+    return str.replace(new RegExp( "\>[ ]+\<" , "g" ) , "><" );
+}
 
 module.exports = router;

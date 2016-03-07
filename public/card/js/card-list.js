@@ -274,6 +274,12 @@ $(document).ready(function() {
 
     function setSocial(social_url, social_url_short, website, creative) {
         if (website) {
+            // vertical?
+            console.log('vertical');
+            console.log(ac);
+            if(ac.vertical && ac.vertical != "employment"){
+                $('#card-footer .apply p').text('Visit Website');
+            }
             $('#card-footer .apply').show();
             $('#card-footer .apply').attr('href', website);
             $('#card-footer').removeClass('reverse');

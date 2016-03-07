@@ -34,6 +34,17 @@ var AdunitSchema = new mongoose.Schema({
         visibleImpression: [],
         clicks: [],
     },
+    demo: {
+        url: String,
+        deviceType: {
+            type: String,
+            default: "mobile - iOS"
+        },
+        whitelabel: {
+            type: Boolean,
+            default: false
+        }
+    },
     extra: {
         dmc_publication_id: String,
         dmc_publication_key: String,

@@ -4,21 +4,35 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         less: {
-            "public/css/dashboard.css": "public/css/dashboard.less",
+            dashboard: {
+                files: {
+                    "public/css/dashboard.css": "public/css/dashboard.less"
+                }
+            },
+            card: {
+                files: {
+                    "public/card/css/card-list.css": "public/card/css/card-list.less"
+                }
+            }
         },
 
 
         cssmin: {
-            core: {
+            dashboardCore: {
                 files: {
                     'public/css/dashboard.core.min.css': ['public/css/core/bootstrap.css', 'public/css/core/font-awesome.min.css', 'public/css/core/animate.css', 'public/css/core/style.css']
                 }
             },
-            custom: {
+            dashboardCustom: {
                 files: {
                     'public/css/dashboard.custom.min.css': ['public/css/dashboard.css']
                 }
-            }
+            },
+            card: {
+                files: {
+                    'public/card/css/card-list.css': ['public/card/css/card-list.css']
+                }
+            },
         },
 
         concat: {
@@ -34,17 +48,30 @@ module.exports = function(grunt) {
         },
 
         uglify: {
-            target: {
+            dashboard: {
                 files: {
                     'public/js/dashboard.core.min.js': ['public/js/dashboard.core.js']
+                }
+            },
+            card: {
+                files: {
+                    'public/card/js/card-list-min.js': ['public/card/js/card-list.js']
                 }
             }
         },
 
         watch: {
-            less: {
+            cssDashboard: {
                 files: 'public/css/dashboard.less',
-                tasks: ['cssDev']
+                tasks: ['cssDashboard']
+            },
+            cssCard: {
+                files: 'public/card/css/card-list.less',
+                tasks: ['cssCard']
+            },
+            jsCard: {
+                files: 'public/card/js/card-list.js',
+                tasks: ['uglify:card']
             },
             html: {
                 files: 'views/**/*',
@@ -62,7 +89,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('cssDev', ['less', 'cssmin:custom']);
+    grunt.registerTask('cssDashboard', ['less:dashboard', 'cssmin:dashboardCustom']);
+    grunt.registerTask('cssCard', ['less:card', 'cssmin:card']);
     grunt.registerTask('css', ['less', 'cssmin']);
     grunt.registerTask('default', ['css', 'concat', 'uglify']);
 };
