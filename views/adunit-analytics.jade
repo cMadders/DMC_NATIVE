@@ -53,11 +53,6 @@ block content
         client.draw(video_plays_by_listing, document.getElementById("video_plays_by_listing"), {
         chartType: "columnchart",
         title: "Video Plays",
-        // filters: [{
-        //     "property_name": "short_id",
-        //     "operator": "eq",
-        //     "property_value": "#{title}"
-        // }]
         });
 
         var applications_by_listing = new Keen.Query("count", {
@@ -65,6 +60,13 @@ block content
         groupBy: [
         "medium",
         "creative.extra.dmcAdNumber"
+        ],
+        filters:[
+        {
+        "property_name": "short_id",
+        "operator": "eq",
+        "property_value": "#{title}",
+        }
         ],
         timeframe: "this_14_days",
         timezone: "UTC"
@@ -99,6 +101,13 @@ block content
         eventCollection: "share_actions",
         groupBy: [
         "medium"
+        ],
+        filters:[
+        {
+        "property_name": "short_id",
+        "operator": "eq",
+        "property_value": "#{title}",
+        }
         ],
         timeframe: "this_14_days",
         timezone: "UTC"
