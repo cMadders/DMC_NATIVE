@@ -1,0 +1,68 @@
+body {
+    background-color: #F3F3F3;
+    margin: 0;
+    padding: 0;
+    font-weight: 400;
+    font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+header {
+    width: 100%;
+    overflow: hidden;
+    background: #FBFBFB;
+    height: 64px;
+}
+
+header img {
+    height: 40px;
+    padding: 10px;
+}
+
+.container {
+    overflow: hidden;
+}
+
+nav {
+    background: #eee;
+    display: block;
+    width: 320px;
+    height: calc(100vh - 64px);
+    overflow: hidden;
+    padding: 0 20px;
+    box-sizing: border-box;
+    float: left;
+    border-right: 1px solid #ccc;
+}
+
+#viewport {
+    float: left;
+    box-sizing: border-box;
+    width: calc(100% - 320px);
+}
+
+h1 {
+    font-size: 1.2em;
+}
+
+#iphone {
+    margin: 1.8rem auto;
+    position: relative;
+    width: 370px;
+    height: 757px;
+    background: url('http://publisher-demos.sharethrough.com/playbook/iphone6-white.png');
+    background-size: 370px 757px;
+    background-repeat: no-repeat;
+}
+
+#iphone .content {
+    top: 94px;
+    left: 26px;
+    position: absolute;
+    width: 320px;
+    height: 568px;
+    z-index: 5;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    outline: none;
+    border: none;
+}

@@ -9,15 +9,17 @@ router.use(function(req, res, next) {
     next();
 });
 
-router.get('/pjstar', function(req, res, next) {
-    res.render('demo/pjstar', {
+
+router.get('/card/:name', function(req, res, next) {
+    res.render('demo/' + req.params.name, {
         title: 'Native Demo'
     });
 });
 
-router.get('/denverpost', function(req, res, next) {
-    res.render('demo/denverpost', {
-        title: 'Native Demo'
+router.get('/:name', function(req, res, next) {
+    res.render('demo/shell', {
+        title: 'Native Demo',
+        publication: req.params.name
     });
 });
 
