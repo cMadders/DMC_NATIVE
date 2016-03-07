@@ -214,7 +214,6 @@ router.post('/adunit/update', function(req, res, next) {
     // strip spaces and line breaks from template
     req.body.template = stripLineBreaks(req.body.template);
     req.body.template = stripSpacingBetweenTags(req.body.template);
-    console.log(req.body.template);
 
     AdUnit.findOneAndUpdate({
         _id: req.body.adunitID

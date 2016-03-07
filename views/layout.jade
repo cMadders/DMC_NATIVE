@@ -40,31 +40,33 @@ html
                 i.fa.fa-home
                 span.nav-label Home
 
-            li(data-item="xul")
-              a(href="#")
-                i.fa.fa-folder-open
-                span.nav-label XUL
-                span.fa.arrow
-              ul.nav.nav-second-level.collapse
-                li(data-item="employment")
-                  a(href='/dashboard/employment')
-                    i.fa.fa-suitcase
-                    span.nav-label Employment - <em>960</em>
-
-                li(data-item="retail")
-                  a(href='/dashboard/retail')
-                    i.fa.fa-shopping-cart
-                    span.nav-label Retail - <em>1013</em>
-
             li(data-item="adunits")
               a(href="/dashboard/adunits")
                 i.fa.fa-picture-o
                 span.nav-label Ad Units
 
-            li(data-item="creatives")
-              a(href="/dashboard/creatives")
-                i.fa.fa-picture-o
-                span.nav-label Creatives
+            if env === "development"
+              hr
+              li(data-item="xul")
+                a(href="#")
+                  i.fa.fa-folder-open
+                  span.nav-label XUL
+                  span.fa.arrow
+                ul.nav.nav-second-level.collapse
+                  li(data-item="employment")
+                    a(href='/dashboard/employment')
+                      i.fa.fa-suitcase
+                      span.nav-label Employment - <em>960</em>
+
+                  li(data-item="retail")
+                    a(href='/dashboard/retail')
+                      i.fa.fa-shopping-cart
+                      span.nav-label Retail - <em>1013</em>
+
+              li(data-item="creatives")
+                a(href="/dashboard/creatives")
+                  i.fa.fa-picture-o
+                  span.nav-label Creatives
 
 
       #page-wrapper.gray-bg

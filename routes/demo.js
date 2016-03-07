@@ -12,13 +12,13 @@ router.use(function(req, res, next) {
 
 router.get('/card/:name', function(req, res, next) {
     res.render('demo/' + req.params.name, {
-        title: 'Native Demo'
+        title: 'Publihser Demo'
     });
 });
 
 router.get('/:name', function(req, res, next) {
     res.render('demo/shell', {
-        title: 'Native Demo',
+        title: 'Publihser Demo',
         publication: req.params.name
     });
 });
