@@ -29,7 +29,10 @@ block content
             button.btn.btn-primary.btn-xs.pull-right.icon-btn#addCreative
               i.fa.fa-plus
               | Add Creative
-            button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
+            button.btn.btn-primary.btn-xs.pull-right.icon-btn#addPublication
+              i.fa.fa-plus
+              | Add Publication
+            //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
               i.fa.fa-refresh
               | Sync w/ XUL
             h5 Associated Creatives
@@ -42,13 +45,14 @@ block content
               each creative in creatives
                 if creative
                   .col-md-6
-                    .file(data-listingid="#{creative.extra.listingID}" data-creativeid="#{creative._id}")
+                    .file(data-listingid="#{creative.extra.listingID}" data-creativeid="#{creative._id}" data-dmcadnumber="#{creative.extra.dmcAdNumber}")
                       a(href="/dashboard/adunit/#{adunit.short_id}/#{creative._id}")
                         .bg-image.dmc(style="background-image:url('#{creative.media.logo}');")
                         .file-name
                           | #{creative.headline}
                           small #{creative.tagline}
-                          .advertiser #{creative.advertiser}
+                          //- .advertiser #{creative.advertiser}
+                          .advertiser #{creative.extra.dmcAdNumber}
 
   script.
     var editMode = false;
@@ -69,6 +73,7 @@ block content
           var $creativeObj = $(this).parent();
           event.preventDefault();
           var listingID = $(this).parent().data('listingid');
+          var dmcAdNumber = $(this).parent().data('dmcadnumber');
           var creativeID = $(this).parent().data('creativeid');
           var url = "#{domain}#{config.api.removeCreativeFromAdunit}";
           var obj = {
@@ -77,27 +82,76 @@ block content
           };
           swal({
               title: "Remove Creative?",
-              text: listingID,
+              text: dmcAdNumber,
               showCancelButton: true,
               closeOnConfirm: false,
               showLoaderOnConfirm: true,
               animation: "slide-from-top",
           }, function() {
               var jqxr = $.post(url, obj, function(data) {
-                      $(".result").html(data);
                   })
                   .done(function(data) {
-                      swal("Creative Removed", "success");
+                    console.log(data);
+                      swal("Creative Removed", dmcAdNumber, "success");
                       $creativeObj.remove();
                   })
                   .fail(function() {
                       console.log("error");
                   })
                   .always(function() {
-                      console.log("complete");
+                      //- console.log("complete");
                   });
           })
         }
+    });
+
+    $('#addPublication').click(function(event) {
+        event.preventDefault();
+        swal({
+            title: "Add Publication Listings",
+            text: "DMC Publication ID",
+            type: "input",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true,
+            animation: "slide-from-top",
+            inputPlaceholder: "ex: 1194"
+        }, function(inputValue) {
+            if (inputValue === false) return false;
+            if (inputValue === "") {
+                swal.showInputError("You need to input a value");
+                return false
+            }
+            var url = "#{domain}#{config.api.publication}";
+            var obj = {
+                "publicationID": inputValue,
+                "adunitID": "#{adunit._id}"
+            };
+            var jqxr = $.post(url, obj, function(data) {
+                })
+                .done(function(data) {
+                  //- console.log(data);
+                    if (data.response == "error") {
+                        swal(data.message, inputValue, "error");
+                    } else {
+                        swal({
+                            title: data.message,
+                            //- text: data.req.publicationID,
+                            type: 'success',
+                            showCancelButton: false,
+                            closeOnConfirm: false,
+                            animation: "slide-from-top",
+                        }, function(isConfirm) {
+                            if (isConfirm) {
+                              location.reload();
+                            }
+                        });
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+        });
     });
 
 
@@ -105,13 +159,13 @@ block content
       event.preventDefault();
       swal({
           title: "Add Creative",
-          text: "XUL Listing ID",
+          text: "DMC Ad Number",
           type: "input",
           showCancelButton: true,
           closeOnConfirm: false,
           showLoaderOnConfirm: true,
           animation: "slide-from-top",
-          inputPlaceholder: "XUL Listing ID"
+          inputPlaceholder: "ex: 2081886A"
       }, function(inputValue) {
           if (inputValue === false) return false;
           if (inputValue === "") {
@@ -124,17 +178,17 @@ block content
             "adunitID": "#{adunit._id}"
           };
           var jqxr = $.post(url, obj, function(data) {
-                  $(".result").html(data);
               })
               .done(function(data) {
+                if(data.response == "error"){
+                  swal("XUL Listing Not Found", inputValue, "error");
+                }else{
                   location.reload();
+                }
               })
               .fail(function() {
                   console.log("error");
               })
-              .always(function() {
-                  console.log("complete");
-              });
         });
     });
 

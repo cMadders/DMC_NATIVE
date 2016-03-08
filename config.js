@@ -8,6 +8,7 @@ var config = {
     api: {
         adunit: '/api/adunit',
         creative: '/api/creative',
+        publication: '/api/publication',
         removeCreativeFromAdunit: '/api/adunit/remove-creative/',
     }
 };

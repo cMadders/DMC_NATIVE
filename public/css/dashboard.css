@@ -142,6 +142,8 @@ ol.breadcrumb li.active a {
   overflow: hidden;
   margin-right: 0;
   background-color: #f6f6f6;
+  min-height: 235px;
+  position: relative;
 }
 .file .file-name {
   background-color: inherit;
@@ -150,10 +152,10 @@ ol.breadcrumb li.active a {
   display: block;
 }
 .file .file-name .advertiser {
+  position: absolute;
   color: #555;
-  margin-top: 5px;
-  float: right;
-  margin-bottom: 5px;
+  bottom: 5px;
+  right: 10px;
   font-size: 11px;
 }
 .file:hover {
