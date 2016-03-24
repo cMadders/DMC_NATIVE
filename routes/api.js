@@ -233,6 +233,8 @@ router.get('/adunit/compiled/:id', function(req, res, next) {
                 adunit.creative_categories = _.uniq(adunit.creative_categories);
                 // sort categories
                 adunit.creative_categories = _.sortBy(adunit.creative_categories);
+                // number of videos per category?
+
                 res.json(adunit);
             }
         });
@@ -360,17 +362,22 @@ function fetchDMCListing(req, type, cb) {
                     qr: obj.links.qrLink
                 },
                 address: {
-                    street: obj.street,
+                    street: obj.address_1,
+                    street_2: obj.address_2,
                     city: obj.city,
                     state: obj.state,
                     zip: obj.zip
+                },
+                coupon: {
+                    text: obj.couponText,
+                    link: obj.couponLink
                 },
                 extra: {
                     listingID: obj.listingID,
                     dmcAdNumber: obj.dmcAdNumber
                 }
             };
-            // console.log('creative', creative.extra.listingID);
+            // console.log('creative', creative);
             return cb(null, creative, req);
         }
     });

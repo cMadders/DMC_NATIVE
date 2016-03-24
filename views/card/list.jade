@@ -27,7 +27,7 @@ html
     //- h1.loading Loading
     #dmc-card-container
       nav#card-list-filter
-        h1 Filter By Category
+        h1 Select Video By Category
         ul
           li(data-category="all").active All Categories
           each category in adunit.creative_categories
@@ -53,7 +53,7 @@ html
                 .tagline #{creative.tagline}
 
         div#card-detail
-          video#native-video-player(controls autoplay)
+          video#native-video-player(controls preload="none")
           .info
             img.logo
             h1.title
@@ -62,13 +62,27 @@ html
               | &nbsp;
             p.description
               | &nbsp;
-            //- .contact
-              .phone 803-781-1010
-              .address
-                | 7491 Saint Andrews Rd
-                br
-                | Irmo, SC
-            //- .map
+
+            .coupon
+              a(href="" target="_blank")
+                img(src="")
+
+
+            //- .phone
+            //- .email
+            //- .website
+
+            //- .address
+            //-   .street
+            //-   .street_2
+            //-   .city
+            //-   .state
+            //-   .zip
+            //-   hr
+
+            .map
+              img(src="http://placehold.it/300x300/30A78B/FFFFFF/&text=MAP")
+
             .disclosure
               | The video and landing page you are seeing are fully customized products built exclusively by DMC, Inc. To find out how you can get affordable customized videos and landing pages produced for your business, please contact us at <a href="mailto:info@digitalmediacommunications.com">info@digitalmediacommunications.com</a>
             .copyright

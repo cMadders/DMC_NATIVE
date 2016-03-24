@@ -52,6 +52,16 @@ block content
                   .col-sm-10
                     input.form-control(type='text' name="name" value="#{(adunit.name)?adunit.name:''}")
                 .form-group
+                  label.col-sm-2.control-label Vertical
+                  .col-sm-10
+                    select.form-control(name="vertical")
+                      - var repeation = [ 'Employment', 'Retail', 'Services']
+                      for item in repeation
+                        if item == adunit.vertical
+                          option(value="#{item}" selected) #{item}
+                        else
+                          option(value="#{item}") #{item}
+                .form-group
                   label.col-sm-2.control-label Website
                   .col-sm-10
                     input.form-control(type='text' name="link.website" value="#{(adunit.link.website)?adunit.link.website:''}")
@@ -125,7 +135,6 @@ block content
                 cropping_default_selection_ratio: 1.0
             },
             function(error, result) {
-                //- console.log(error, result)
                 $('#adunitEditForm #logoInput').val(result[0].secure_url);
             });
 
@@ -142,11 +151,8 @@ block content
                 button_class: 'btn btn-primary',
                 cropping:'server',
                 cropping_show_dimensions: true,
-                cropping_default_selection_ratio: 1.0
-                //- cropping_aspect_ratio: 2.5
             },
             function(error, result) {
-                //- console.log(error, result)
                 $('#adunitEditForm #thumbnailInput').val(result[0].secure_url);
             });
 

@@ -55,7 +55,7 @@ router.get('/creatives', function(req, res, next) {
 router.get('/adunits', function(req, res, next) {
     AdUnit.
     find().
-    select('name short_id site publisher creatives').
+    select('name short_id site publisher vertical creatives last_modified').
     sort({
         last_modified: -1
     }).

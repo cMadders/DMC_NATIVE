@@ -28,7 +28,9 @@ block content
                 th Publisher
                 th Site
                 th Name
+                th Vertical
                 th Creatives
+                th Modified
             tbody
               each adunit in adunits
                 tr(data-url="/dashboard/adunit/#{adunit.short_id}")
@@ -36,7 +38,9 @@ block content
                   td #{adunit.publisher}
                   td #{adunit.site}
                   td #{adunit.name}
+                  td #{adunit.vertical}
                   td #{adunit.creative_count}
+                  td(data-value="#{moment(adunit.last_modified)}") #{moment(adunit.last_modified).fromNow()}
 
   script.
     $('#adunit-list td').click(function(event) {

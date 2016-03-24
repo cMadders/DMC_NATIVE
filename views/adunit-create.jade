@@ -36,6 +36,13 @@ block content
                   .col-sm-10
                     input.form-control(type='text' name="name")
                 .form-group
+                  label.col-sm-2.control-label Vertical
+                  .col-sm-10
+                    select.form-control(name="vertical")
+                      - var repeation = [ 'Employment', 'Retail', 'Services']
+                      for item in repeation
+                        option(value="#{item}") #{item}
+                .form-group
                   label.col-sm-2.control-label Website
                   .col-sm-10
                     input.form-control(type='text' name="link.website")

@@ -5,6 +5,7 @@ var AdunitSchema = new mongoose.Schema({
     short_id: String, //XY12
     publisher: String,
     site: String,
+    vertical: String,
     name: String, //nickname
     headline: String,
     tagline: String,
@@ -17,9 +18,9 @@ var AdunitSchema = new mongoose.Schema({
     creatives_compiled: [],
     // type: String, //IVB or SLP (logic determined by count)
     card: {
-        allow_creative_overrides: Boolean,
         logo: String,
-        css: String,
+        // allow_creative_overrides: Boolean,
+        // css: String,
         // iframe: {
         //     top: Number,
         //     left: Number
@@ -72,11 +73,21 @@ AdunitSchema.pre('findOneAndUpdate', function() {
     if (this._update['extra.dmc_publication_id'] && this._update['extra.dmc_publication_key']) {
         var i = this._update['extra.dmc_publication_id'];
         var k = this._update['extra.dmc_publication_key'];
-        this.update({}, {
-            $set: {
-                'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/widget/embed/index/?p=' + i + '&k=' + k + ''
-            }
-        });
+        var v = this._update['vertical'];
+
+        if (v == "Retail") {
+            this.update({}, {
+                $set: {
+                    'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/retail/embed/index/?p=' + i + '&k=' + k + ''
+                }
+            });
+        } else {
+            this.update({}, {
+                $set: {
+                    'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/widget/embed/index/?p=' + i + '&k=' + k + ''
+                }
+            });
+        }
     } else {
         this.update({}, {
             $set: {

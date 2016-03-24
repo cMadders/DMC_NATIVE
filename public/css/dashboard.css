@@ -149,7 +149,11 @@ ol.breadcrumb li.active a {
   background-color: inherit;
 }
 .file .file-name small {
-  display: block;
+  max-height: 30px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
 }
 .file .file-name .advertiser {
   position: absolute;
@@ -215,6 +219,12 @@ ol.breadcrumb li.active a {
 .ibox .ibox-content.last-section {
   padding-bottom: 12px;
   overflow: hidden;
+}
+.ibox .ibox-content .cloudinary-thumbnail img {
+  width: auto;
+  height: auto;
+  float: none;
+  margin: 0;
 }
 .mail-box {
   border: none;

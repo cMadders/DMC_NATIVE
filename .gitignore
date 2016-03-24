@@ -10,3 +10,5 @@ npm-debug.log
 config.codekit
 private.md
 .modulus-base-ignore
+dmc.sublime-project
+dmc.sublime-workspace

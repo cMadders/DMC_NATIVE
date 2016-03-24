@@ -36,16 +36,15 @@ router.post('/login', function(req, res) {
         if (user.length) {
             // console.log('login success');
             // console.log(user);
-            if (user[0].password === "dmc") {
-                // console.log('change PW');
-                res.redirect('/auth/change-pw/' + user[0].username);
-            } else {
+            // if (user[0].password === "dmc") {
+            //     res.redirect('/auth/change-pw/' + user[0].username);
+            // } else {
                 // console.log(user);
                 //serialize user
                 //write cookie to user
                 req.session.dmc_native = user[0];
                 res.redirect('/dashboard/adunits');
-            }
+            // }
         } else {
             res.redirect('/auth/login/failed');
         }

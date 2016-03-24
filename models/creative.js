@@ -23,6 +23,7 @@ var CreativeSchema = new mongoose.Schema({
     },
     address: {
         street: String,
+        street_2: String,
         city: String,
         state: String,
         zip: String
@@ -50,6 +51,10 @@ var CreativeSchema = new mongoose.Schema({
     extra: {
         listingID: Number,
         dmcAdNumber: String,
+    },
+    coupon: {
+        text: String,
+        link: String
     },
     creation_date: {
         type: Date

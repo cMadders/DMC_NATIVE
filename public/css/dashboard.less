@@ -193,7 +193,12 @@ ol.breadcrumb {
     .file-name {
         background-color: inherit;
         small {
-            display: block;
+            // display: block;
+            max-height: 30px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
         }
         .advertiser {
             position: absolute;
@@ -264,6 +269,14 @@ ol.breadcrumb {
         &.last-section {
             padding-bottom: 12px;
             overflow: hidden;
+        }
+        .cloudinary-thumbnail {
+            img {
+                width: auto;
+                height: auto;
+                float: none;
+                margin: 0;
+            }
         }
     }
 }

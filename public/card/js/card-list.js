@@ -177,17 +177,25 @@ $(document).ready(function() {
         }, 300);
     }
 
-    // return to card list view
-    $('#card-header .back').click(function(event) {
-        event.preventDefault();
-        $('#card-header .filter').show();
-        $('#card-header .back').hide();
+    function resetDetailView() {
         // reset video player
         document.getElementById('native-video-player').currentTime = 0;
         document.getElementById('native-video-player').pause();
+        // reset detail view
+        $('#card-detail .coupon').hide();
+        $('#card-detail .address').hide();
+        $('#card-detail .map').hide();
+    }
 
+    // return to card list view
+    $('#card-header .back').click(function(event) {
+        event.preventDefault();
+        resetDetailView();
+        $('#card-header .filter').show();
+        $('#card-header .back').hide();
         $('#card-footer .apply').hide();
         $('#card-footer').addClass('reverse');
+
 
         setSocial(window.DMC.Native.data.extra.dmc_index_url);
 
@@ -235,11 +243,34 @@ $(document).ready(function() {
 
         // bind creative attributes
         $('#native-video-player').attr('src', ac.media.mp4);
-        $('#native-video-player').attr('poster', ac.media.logo);
+        $('#native-video-player').css('background-image', 'url(' + ac.media.logo + ')');
         $('#card-detail .logo').attr('src', ac.media.logo);
         $('#card-detail .title').text(ac.headline);
         $('#card-detail .tagline').text(ac.tagline);
         $('#card-detail .description').text(ac.description);
+
+        // show address and map?
+        if (ac.address && ac.address.street && ac.address.zip) {
+            $('#card-detail .street').text(ac.address.street);
+            $('#card-detail .street_2').text(ac.address.street_2);
+            $('#card-detail .city').text(ac.address.city);
+            $('#card-detail .state').text(ac.address.state);
+            $('#card-detail .zip').text(ac.address.zip);
+            $('#card-detail .address').show();
+            $('#card-detail .map').show();
+        }
+
+        // $('#card-detail .phone').text("Phone: " + ac.link.phone);
+        // $('#card-detail .email').text("Email: " + ac.link.email);
+        // $('#card-detail .website').text("Website: " + ac.link.website);
+        // $('#card-detail .phone').show();
+
+        // show coupon?
+        if (ac.coupon && ac.coupon.text && ac.coupon.link) {
+            $('#card-detail .coupon a').attr('href', ac.coupon.link);
+            $('#card-detail .coupon img').attr('src', ac.coupon.text);
+            $('#card-detail .coupon').show();
+        }
         setSocial(ac.link.slp, ac.link.slp_short, ac.link.website, { advertiser: ac.advertiser, tagline: ac.tagline });
 
         // show card detail
@@ -275,9 +306,9 @@ $(document).ready(function() {
     function setSocial(social_url, social_url_short, website, creative) {
         if (website) {
             // vertical?
-            console.log('vertical');
-            console.log(ac);
-            if(ac.vertical && ac.vertical != "employment"){
+            // console.log('vertical');
+            // console.log(ac);
+            if (ac.vertical && ac.vertical != "employment") {
                 $('#card-footer .apply p').text('Visit Website');
             }
             $('#card-footer .apply').show();

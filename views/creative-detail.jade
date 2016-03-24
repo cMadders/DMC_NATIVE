@@ -46,7 +46,7 @@ block content
 
 
       .col-md-8.col-sm-7
-        form.form-horizontal(method='post' action='/api/creative/update')
+        form.form-horizontal(method='post' action='/api/creative/update')#creativeEditForm
           .ibox
             .ibox-title
               //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#deleteCreative
@@ -63,6 +63,7 @@ block content
                 //- input(type="hidden" name="adunitID" value="#{adunit._id}")
                 input(type="hidden" name="creativeID" value="#{creative._id}")
                 input(type="hidden" name="returnURL" value="/dashboard/adunit/#{adunit.short_id}")
+                input(type="hidden" name="media.logo" id="logoInput" value="#{creative.media.logo}")
                 //- .form-group
                 //-   label.col-sm-2.control-label Name
                 //-   .col-sm-10
@@ -89,6 +90,10 @@ block content
                   .col-sm-10
                     textarea.form-control(type='text' name="description" rows="10") #{(creative.description)?creative.description:''}
                     //- span.help-block.m-b-none A block of help text that breaks onto a new line and may extend beyond one line.
+                .form-group
+                  label.col-sm-2.control-label Logo
+                  .col-sm-10
+                    button#uploadLogo
                 .hr-line-dashed
 
                 h4 Links
@@ -112,6 +117,10 @@ block content
                   .col-sm-10
                     input.form-control(type='text' name="address.street" value="#{(creative.address.street)?creative.address.street:''}")
                 .form-group
+                  label.col-sm-2.control-label Street 2
+                  .col-sm-10
+                    input.form-control(type='text' name="address.street_2" value="#{(creative.address.street_2)?creative.address.street_2:''}")
+                .form-group
                   label.col-sm-2.control-label City
                   .col-sm-10
                     input.form-control(type='text' name="address.city" value="#{(creative.address.city)?creative.address.city:''}")
@@ -125,6 +134,18 @@ block content
                     input.form-control(type='text' name="address.zip" value="#{(creative.address.zip)?creative.address.zip:''}")
                 .hr-line-dashed
 
+                if creative.coupon.text
+                  h4 Coupon
+                  .form-group
+                    label.col-sm-2.control-label Text
+                    .col-sm-10
+                      input.form-control(type='text' name="coupon.text" value="#{(creative.coupon.text)?creative.coupon.text:''}")
+                  .form-group
+                    label.col-sm-2.control-label Link
+                    .col-sm-10
+                      input.form-control(type='text' name="coupon.link" value="#{(creative.coupon.link)?creative.coupon.link:''}")
+                  .hr-line-dashed
+
                 h4 Media
                 .form-group
                   label.col-sm-2.control-label Video
@@ -133,13 +154,35 @@ block content
                 .form-group
                   label.col-sm-2.control-label Logo
                   .col-sm-10
-                    textarea.form-control(type='text' name="media.logo" rows="2") #{(creative.media.logo)?creative.media.logo:''}
+                    textarea.form-control(type='text' readonly id="logoURL" rows="2") #{(creative.media.logo)?creative.media.logo:''}
                 .hr-line-dashed
 
                 button.btn.btn-primary.btn-block(type="submit") Update
 
 
+          script(src="http://widget.cloudinary.com/global/all.js")
           script.
+            $('#uploadLogo').cloudinary_upload_widget({
+                cloud_name: 'dfzx6tyah',
+                upload_preset: 'hs6fstn6',
+                cropping: 'server',
+                'folder': 'user_photos',
+                sources: ['url','local'],
+                max_files:1,
+                button_caption: 'Upload Logo',
+                show_powered_by: false,
+                multiple:false,
+                button_class: 'btn btn-primary',
+                cropping_aspect_ratio: 2.5,
+                cropping_show_dimensions: true,
+                cropping_default_selection_ratio: 1.0
+            },
+            function(error, result) {
+              console.log(result,error);
+              $('#creativeEditForm #logoInput').val(result[0].secure_url);
+              $('#creativeEditForm #logoURL').text(result[0].secure_url);
+            });
+
             $('#deleteCreative').click(function() {
               var url = "#{domain}#{config.api.creative}/#{adunit._id}/#{creative._id}";
               var jqxr = $.ajax({
