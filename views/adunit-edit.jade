@@ -24,9 +24,8 @@ block content
         form.form-horizontal(method='post' action='/api/adunit/update')#adunitEditForm
           .ibox
             .ibox-title
-              a(href="/dashboard/adunit/#{adunit.short_id}")
-                button.btn.btn-xs.pull-right.icon-btn
-                  | Cancel
+              button.btn.btn-xs.pull-right.icon-btn#cancelEdit
+                | Cancel
               button.btn.btn-primary.btn-xs.pull-right.icon-btn#deleteAdUnit
                 i.fa.fa-trash
                 | Delete
@@ -55,7 +54,7 @@ block content
                   label.col-sm-2.control-label Vertical
                   .col-sm-10
                     select.form-control(name="vertical")
-                      - var repeation = [ 'Employment', 'Retail', 'Services']
+                      - var repeation = [ 'Employment', 'Real Estate', 'Retail']
                       for item in repeation
                         if item == adunit.vertical
                           option(value="#{item}" selected) #{item}
@@ -156,9 +155,13 @@ block content
                 $('#adunitEditForm #thumbnailInput').val(result[0].secure_url);
             });
 
+            $('#cancelEdit').click(function(event) {
+              event.preventDefault();
+              window.location.href = '#{domain}/dashboard/adunit/#{adunit.short_id}';
+            });
+
             $('#deleteAdUnit').click(function(event) {
               event.preventDefault();
-              console.log('delete');
               swal({
                   title: "Are you sure?",
                   text: "You will not be able to recover this!",

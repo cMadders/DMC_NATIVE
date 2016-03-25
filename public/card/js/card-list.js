@@ -38,7 +38,6 @@ $(document).ready(function() {
             opacity: "1",
             ease: Power1.easeOut
         });
-
     }
 
     // window.resize callback function
@@ -196,7 +195,6 @@ $(document).ready(function() {
         $('#card-footer .apply').hide();
         $('#card-footer').addClass('reverse');
 
-
         setSocial(window.DMC.Native.data.extra.dmc_index_url);
 
         // hide card detail
@@ -240,37 +238,7 @@ $(document).ready(function() {
 
         //note viewport top
         cardViewportTop = document.body.scrollTop;
-
-        // bind creative attributes
-        $('#native-video-player').attr('src', ac.media.mp4);
-        $('#native-video-player').css('background-image', 'url(' + ac.media.logo + ')');
-        $('#card-detail .logo').attr('src', ac.media.logo);
-        $('#card-detail .title').text(ac.headline);
-        $('#card-detail .tagline').text(ac.tagline);
-        $('#card-detail .description').text(ac.description);
-
-        // show address and map?
-        if (ac.address && ac.address.street && ac.address.zip) {
-            $('#card-detail .street').text(ac.address.street);
-            $('#card-detail .street_2').text(ac.address.street_2);
-            $('#card-detail .city').text(ac.address.city);
-            $('#card-detail .state').text(ac.address.state);
-            $('#card-detail .zip').text(ac.address.zip);
-            $('#card-detail .address').show();
-            $('#card-detail .map').show();
-        }
-
-        // $('#card-detail .phone').text("Phone: " + ac.link.phone);
-        // $('#card-detail .email').text("Email: " + ac.link.email);
-        // $('#card-detail .website').text("Website: " + ac.link.website);
-        // $('#card-detail .phone').show();
-
-        // show coupon?
-        if (ac.coupon && ac.coupon.text && ac.coupon.link) {
-            $('#card-detail .coupon a').attr('href', ac.coupon.link);
-            $('#card-detail .coupon img').attr('src', ac.coupon.text);
-            $('#card-detail .coupon').show();
-        }
+        setDetailView();
         setSocial(ac.link.slp, ac.link.slp_short, ac.link.website, { advertiser: ac.advertiser, tagline: ac.tagline });
 
         // show card detail
@@ -303,11 +271,16 @@ $(document).ready(function() {
         fireVideoPlayBeacon(ac);
     });
 
+    function setDetailView() {
+        var source = $("#entry-template").html();
+        var template = Handlebars.compile(source);
+
+        var compiledTemplate = template(ac);
+        $('#entryOutput').html(compiledTemplate);
+    }
+
     function setSocial(social_url, social_url_short, website, creative) {
         if (website) {
-            // vertical?
-            // console.log('vertical');
-            // console.log(ac);
             if (ac.vertical && ac.vertical != "employment") {
                 $('#card-footer .apply p').text('Visit Website');
             }
@@ -329,7 +302,11 @@ $(document).ready(function() {
                 social_url_short = social_url;
             }
             if (creative) {
-                message = encodeURIComponent(creative.advertiser + ' has an opening for ' + creative.tagline + '! Check out this video, ' + social_url);
+                if (ac.vertical.toLowerCase() == "retail" || ac.vertical.toLowerCase() == "real estate") {
+                    message = encodeURIComponent('Check out this video from ' + creative.advertiser + ', ' + social_url_short);
+                } else {
+                    message = encodeURIComponent(creative.advertiser + ' has an opening for ' + creative.tagline + '! Check out this video, ' + social_url_short);
+                }
             }
 
             //set facebook

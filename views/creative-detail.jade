@@ -26,10 +26,10 @@ block content
           .ibox-content.profile-content(style="padding-top:0;")
             hr
             p <b>DMC Ad Number:</b> #{creative.extra.dmcAdNumber}
-            //- p Status: #{creative.status}
-            p CreativeID: #{creative._id}
             p ListingID: #{creative.extra.listingID}
             p Vertical: #{creative.vertical}
+            //- p Status: #{creative.status}
+            //- p CreativeID: #{creative._id}
             hr
             p
               a(href="#{creative.link.slp}" target="_blank") Single Landing Page
@@ -52,9 +52,8 @@ block content
               //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#deleteCreative
                 i.fa.fa-trash
                 | Delete
-              a(href="/dashboard/adunit/#{adunit.short_id}")
-                button.btn.btn-xs.pull-right.icon-btn
-                  | Cancel
+              button.btn.btn-xs.pull-right.icon-btn#cancelEdit
+                | Cancel
               button.btn.btn-primary.btn-xs.pull-right.icon-btn(type="submit")
                 i.fa.fa-save
                 | Update
@@ -64,11 +63,16 @@ block content
                 input(type="hidden" name="creativeID" value="#{creative._id}")
                 input(type="hidden" name="returnURL" value="/dashboard/adunit/#{adunit.short_id}")
                 input(type="hidden" name="media.logo" id="logoInput" value="#{creative.media.logo}")
-                //- .form-group
-                //-   label.col-sm-2.control-label Name
-                //-   .col-sm-10
-                //-     input.form-control(type='text' name="name" value="#{(creative.name)?creative.name:''}")
-                //-     span.help-block.m-b-none This serves as a "nickname" to help identify the creative.
+                .form-group
+                  label.col-sm-2.control-label Vertical
+                  .col-sm-10
+                    select.form-control(name="vertical")
+                      - var repeation = [ 'Employment', 'Real Estate', 'Retail']
+                      for item in repeation
+                        if item == creative.vertical
+                          option(value="#{item}" selected) #{item}
+                        else
+                          option(value="#{item}") #{item}
                 .form-group
                   label.col-sm-2.control-label Advertiser
                   .col-sm-10
@@ -134,7 +138,7 @@ block content
                     input.form-control(type='text' name="address.zip" value="#{(creative.address.zip)?creative.address.zip:''}")
                 .hr-line-dashed
 
-                if creative.coupon.text
+                if creative.vertical.toLowerCase() == "retail"
                   h4 Coupon
                   .form-group
                     label.col-sm-2.control-label Text
@@ -181,6 +185,11 @@ block content
               console.log(result,error);
               $('#creativeEditForm #logoInput').val(result[0].secure_url);
               $('#creativeEditForm #logoURL').text(result[0].secure_url);
+            });
+
+            $('#cancelEdit').click(function(event) {
+              event.preventDefault();
+              window.location.href = '#{domain}/dashboard/adunit/#{adunit.short_id}';
             });
 
             $('#deleteCreative').click(function() {

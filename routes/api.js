@@ -342,7 +342,7 @@ function fetchDMCListing(req, type, cb) {
             // refine listing object
             var creative = {
                 status: "active",
-                vertical: obj.publication['vertical'].toLowerCase(),
+                vertical: obj.publication['vertical'],
                 advertiser: obj.name,
                 name: obj.name,
                 headline: obj.name,

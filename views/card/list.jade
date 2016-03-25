@@ -53,40 +53,41 @@ html
                 .tagline #{creative.tagline}
 
         div#card-detail
-          video#native-video-player(controls preload="none")
-          .info
-            img.logo
-            h1.title
-              | &nbsp;
-            h3.tagline
-              | &nbsp;
-            p.description
-              | &nbsp;
+          script(id="entry-template" type="text/x-handlebars-template").
+            <video id="native-video-player" controls preload="none" src="{{media.mp4}}" style="background-image:url({{media.logo}});"></video>
+            <div class="info">
+              <h1 class="title">{{headline}}</h1>
+              <h3 class="tagline">{{tagline}}</h1>
+              {{#if address.city}}
+              <address class="address">
+                <div class="street">{{address.street}}</div>
+                <div class="street_2">{{address.street_2}}</div>
+                <div class="city">{{address.city}}, {{address.state}} {{address.zip}}</div>
+              </address>
+              {{/if}}
+              <p class="description">{{description}}</h1>
+              {{#if coupon.text}}
+              <div class="coupon">
+                <a href="{{coupon.link}}" target="_blank">
+                  <img src="{{coupon.text}}">
+                </a>
+              </div>
+              {{/if}}
+              {{!-- only output map if address exists --}}
+              {{#if address.city}}
+                <div class="map">
+                  <a href="" target="_blank">
+                    <img src="http://res.cloudinary.com/dfzx6tyah/image/upload/v1458882309/thumbnails/heitrxgrzzpmr8mxthnt.jpg">
+                  </a>
+                </div>
+              {{/if}}
+              <div class="disclosure">The video and landing page you are seeing are fully customized products built exclusively by DMC, Inc. To find out how you can get affordable customized videos and landing pages produced for your business, please contact us at <a href="mailto:info@digitalmediacommunications.com">info@digitalmediacommunications.com</a></div>
+              <div class="copyright">© Powered By Digital Media Communications, Inc. All rights Reserved.</div>
+              <div class="debug">LID: {{extra.listingID}} | ADNUM: {{extra.dmcAdNumber}}</div>
+            </div>
 
-            .coupon
-              a(href="" target="_blank")
-                img(src="")
-
-
-            //- .phone
-            //- .email
-            //- .website
-
-            //- .address
-            //-   .street
-            //-   .street_2
-            //-   .city
-            //-   .state
-            //-   .zip
-            //-   hr
-
-            .map
-              img(src="http://placehold.it/300x300/30A78B/FFFFFF/&text=MAP")
-
-            .disclosure
-              | The video and landing page you are seeing are fully customized products built exclusively by DMC, Inc. To find out how you can get affordable customized videos and landing pages produced for your business, please contact us at <a href="mailto:info@digitalmediacommunications.com">info@digitalmediacommunications.com</a>
-            .copyright
-              | © Powered By Digital Media Communications, Inc. All rights Reserved.
+          #entryOutput
+            //- entry template output here
 
         footer#card-footer.reverse
           a.btn.apply(target="_blank" data-medium="Apply")
@@ -111,4 +112,5 @@ html
     script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js")
     script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js")
     script(type="text/javascript" src="//d26b395fwzu5fz.cloudfront.net/3.4.0-rc/keen.min.js")
+    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js")
     script(type='text/javascript' src='/card/js/card-list-min.js')

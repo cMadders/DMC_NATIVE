@@ -81,6 +81,13 @@ AdunitSchema.pre('findOneAndUpdate', function() {
                     'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/retail/embed/index/?p=' + i + '&k=' + k + ''
                 }
             });
+        }
+        if (v == "Real Estate") {
+            this.update({}, {
+                $set: {
+                    'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/re/embed/index/?p=' + i + '&k=' + k + ''
+                }
+            });
         } else {
             this.update({}, {
                 $set: {
