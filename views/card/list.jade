@@ -24,7 +24,6 @@ html
       })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
 
   body
-    //- h1.loading Loading
     #dmc-card-container
       nav#card-list-filter
         h1 Select Video By Category
@@ -76,8 +75,8 @@ html
               {{!-- only output map if address exists --}}
               {{#if address.city}}
                 <div class="map">
-                  <a href="" target="_blank">
-                    <img src="http://res.cloudinary.com/dfzx6tyah/image/upload/v1458882309/thumbnails/heitrxgrzzpmr8mxthnt.jpg">
+                  <a>
+                    <img src="http://maps.googleapis.com/maps/api/staticmap?center={{address.city}}+{{address.state}}+{{address.zip}}&size=300x250&zoom=13&key=AIzaSyCTKTvBX5H-W7pB3icJHLuL6qiDiNA6mYc">
                   </a>
                 </div>
               {{/if}}

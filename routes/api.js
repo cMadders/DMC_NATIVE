@@ -369,7 +369,7 @@ function fetchDMCListing(req, type, cb) {
                     zip: obj.zip
                 },
                 coupon: {
-                    text: obj.couponText,
+                    text: obj.media.couponText,
                     link: obj.couponLink
                 },
                 extra: {

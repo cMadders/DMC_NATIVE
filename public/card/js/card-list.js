@@ -281,7 +281,7 @@ $(document).ready(function() {
 
     function setSocial(social_url, social_url_short, website, creative) {
         if (website) {
-            if (ac.vertical && ac.vertical != "employment") {
+            if (ac.vertical && ac.vertical.toLowerCase() != "employment") {
                 $('#card-footer .apply p').text('Visit Website');
             }
             $('#card-footer .apply').show();
