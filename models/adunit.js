@@ -75,23 +75,23 @@ AdunitSchema.pre('findOneAndUpdate', function() {
         var k = this._update['extra.dmc_publication_key'];
         var v = this._update['vertical'];
 
-        if (v == "Retail") {
+        this.update({}, {
+            $set: {
+                'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/widget/embed/index/?p=' + i + '&k=' + k + ''
+            }
+        });
+
+        if (v.toLowerCase() == "retail") {
             this.update({}, {
                 $set: {
                     'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/retail/embed/index/?p=' + i + '&k=' + k + ''
                 }
             });
         }
-        if (v == "Real Estate") {
+        if (v.toLowerCase() == "real estate") {
             this.update({}, {
                 $set: {
                     'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/re/embed/index/?p=' + i + '&k=' + k + ''
-                }
-            });
-        } else {
-            this.update({}, {
-                $set: {
-                    'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/widget/embed/index/?p=' + i + '&k=' + k + ''
                 }
             });
         }
