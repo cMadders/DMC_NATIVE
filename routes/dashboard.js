@@ -5,6 +5,7 @@ var request = require('request');
 var _ = require('underscore');
 var AdUnit = require('../models/adunit');
 var Creative = require('../models/creative.js');
+var Demos = require('../models/demo.js');
 
 function handleError(err) {
     console.error(err);
@@ -47,6 +48,19 @@ router.get('/creatives', function(req, res, next) {
             config: req.app.locals.config
         });
         // res.json(creatives);
+    });
+});
+
+// DEMOS
+router.get('/demos', function(req, res, next) {
+    Demos.find({}, function(err, demos) {
+        res.render('demos', {
+            title: 'Demos',
+            pageID: 'demos',
+            demos: demos,
+            domain: req.app.locals.domain,
+            config: req.app.locals.config
+        });
     });
 });
 

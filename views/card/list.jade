@@ -30,7 +30,8 @@ html
         ul
           li(data-category="all").active All Categories
           each category in adunit.creative_categories
-            li(data-category="#{category}")= category
+            li(data-category="#{category.category}" data-count="#{category.count}")
+              | #{category.category}<span>(#{category.count} videos)</span>
 
       #card
         header#card-header

@@ -234,7 +234,20 @@ router.get('/adunit/compiled/:id', function(req, res, next) {
                 // sort categories
                 adunit.creative_categories = _.sortBy(adunit.creative_categories);
                 // number of videos per category?
-
+                var categoryCount = [];
+                _.each(adunit.creative_categories, function(category) {
+                    var count = 0;
+                    _.each(adunit.creatives_compiled, function(creative) {
+                        if (creative.category == category) {
+                            count++;
+                        }
+                    });
+                    categoryCount.push({
+                        category: category,
+                        count: count
+                    });
+                });
+                adunit.creative_categories = categoryCount;
                 res.json(adunit);
             }
         });

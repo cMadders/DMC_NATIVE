@@ -6,7 +6,15 @@ $(document).ready(function() {
 
     function initCard() {
         // console.log(window.DMC.Native.data);
-        setCategoryFilter('all');
+
+        //if listing count is greater than 21, show filter menu
+        if (window.DMC.Native.data.creative_count > 21) {
+            showFilterMenu();
+
+        } else {
+            setCategoryFilter('all');
+        }
+
         $('#card-list-filter li').removeClass('active');
         $('#card-list-filter li[data-category="all"]').addClass('active');
         setSocial(window.DMC.Native.data.extra.dmc_index_url);
@@ -32,6 +40,8 @@ $(document).ready(function() {
         //listen for window.resize
         window.addEventListener('resize', getDimensions);
         window.parent.postMessage("dmc-card-initialized", "*");
+
+
 
         // $('.loading').fadeOut();
         TweenLite.to($('#dmc-card-container'), 0.5, {

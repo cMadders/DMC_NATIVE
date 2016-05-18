@@ -9,7 +9,6 @@ router.use(function(req, res, next) {
     next();
 });
 
-
 router.get('/card/:name', function(req, res, next) {
     res.render('demo/' + req.params.name, {
         title: 'Publihser Demo'

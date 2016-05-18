@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title} (#{demos.length})
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li.active
+          a(href="/dashboard/demos") #{title}
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .ibox
+      .ibox-title
+        //- h2 #{title} (#{demos.length})
+        a.btn.btn-primary.pull-right(href="/dashboard/create/demo")
+          i.fa.fa-plus
+          | &nbsp;Create Demo
+
+      .ibox-content
+        .mail-box(style="margin-top:10px;")
+          table.table.sortable-theme-bootstrap.table-hover.table-bordered(data-sortable)#adunit-list
+            thead
+              tr
+                th ID
+                th Publisher
+                //- th Site
+                th Name
+                //- th Vertical
+                //- th Creatives
+                th Modified
+            tbody
+              //- each adunit in adunits
+                tr(data-url="/dashboard/adunit/#{adunit.short_id}")
+                  td #{adunit.short_id}
+                  td #{adunit.publisher}
+                  td #{adunit.site}
+                  td #{adunit.name}
+                  td #{adunit.vertical}
+                  td #{adunit.creative_count}
+                  td(data-value="#{moment(adunit.last_modified)}") #{moment(adunit.last_modified).fromNow()}
+
+  script.
+    $('#adunit-list td').click(function(event) {
+      var url = $(this).parent().data('url');
+      window.location.href = url;
+    });
