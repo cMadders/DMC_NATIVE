@@ -1,4 +1,31 @@
 var mongoose = require('mongoose');
+var request = require('request');
+var async = require('async');
+
+
+// Google URL Shortener web service
+var getShortURL = function(url, cb) {
+    var googleURL = 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyCJJ8LB4xGQtzuguw6vIAhXlylY3MiKung';
+
+    request.post({
+        url: googleURL,
+        method: "POST",
+        json: { "longUrl": url }
+    }, function(err, response, body) {
+        if (err) {
+            console.error('error', err);
+            return cb(null, {
+                url: url
+            });
+        } else {
+            // console.log('response', body);
+            return cb(null, {
+                url: body.id
+            });
+        }
+    });
+};
+
 
 var AdunitSchema = new mongoose.Schema({
     status: String,
@@ -50,6 +77,7 @@ var AdunitSchema = new mongoose.Schema({
         dmc_publication_id: String,
         dmc_publication_key: String,
         dmc_index_url: String,
+        dmc_index_url_short: String
     },
     creation_date: {
         type: Date,
@@ -63,38 +91,47 @@ var AdunitSchema = new mongoose.Schema({
     last_modified_by: String
 });
 
-AdunitSchema.pre('findOneAndUpdate', function() {
-    // console.log(this._update);
+AdunitSchema.pre('findOneAndUpdate', function(next) {
     this.update({}, {
         $set: {
             last_modified: new Date(),
         }
     });
+
     if (this._update['extra.dmc_publication_id'] && this._update['extra.dmc_publication_key']) {
         var i = this._update['extra.dmc_publication_id'];
         var k = this._update['extra.dmc_publication_key'];
         var v = this._update['vertical'];
 
-        this.update({}, {
-            $set: {
-                'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/widget/embed/index/?p=' + i + '&k=' + k + ''
-            }
-        });
+        var url = 'http://widgets.digitalmediacommunications.com/widget/embed/index/?p=' + i + '&k=' + k + '';
 
         if (v.toLowerCase() == "retail") {
-            this.update({}, {
-                $set: {
-                    'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/retail/embed/index/?p=' + i + '&k=' + k + ''
-                }
-            });
+            url = 'http://widgets.digitalmediacommunications.com/retail/embed/index/?p=' + i + '&k=' + k + '';
         }
+
         if (v.toLowerCase() == "real estate") {
-            this.update({}, {
+            url = 'http://widgets.digitalmediacommunications.com/re/embed/index/?p=' + i + '&k=' + k + '';
+        }
+
+        var self = this;
+        var updateURL = function(shortUrl) {
+            self.update({}, {
                 $set: {
-                    'extra.dmc_index_url': 'http://widgets.digitalmediacommunications.com/re/embed/index/?p=' + i + '&k=' + k + ''
+                    'extra.dmc_index_url': url,
+                    'extra.dmc_index_url_short': shortUrl
                 }
             });
-        }
+            next();
+        };
+
+        //shorten url
+        async.waterfall(
+            [async.apply(getShortURL, url)],
+            function(err, result) {
+                // console.log('async result');
+                updateURL(result.url);
+            });
+
     } else {
         this.update({}, {
             $set: {

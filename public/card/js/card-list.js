@@ -3,6 +3,7 @@ $(document).ready(function() {
     var keen;
     var cardViewportTop = 0;
     var page_url;
+    var dmcIndexURL;
 
     function initCard() {
         // console.log(window.DMC.Native.data);
@@ -10,14 +11,16 @@ $(document).ready(function() {
         //if listing count is greater than 21, show filter menu
         if (window.DMC.Native.data.creative_count > 21) {
             showFilterMenu();
-
+            $('#dmc-card-container').addClass('filter');
         } else {
             setCategoryFilter('all');
         }
 
+        dmcIndexURL = window.DMC.Native.data.extra.dmc_index_url_short || window.DMC.Native.data.extra.dmc_index_url;
+
         $('#card-list-filter li').removeClass('active');
         $('#card-list-filter li[data-category="all"]').addClass('active');
-        setSocial(window.DMC.Native.data.extra.dmc_index_url);
+        setSocial(dmcIndexURL);
         getDimensions();
 
         //LISTEN for message from PARENT
@@ -89,6 +92,7 @@ $(document).ready(function() {
     }
 
     function fireVideoPlayBeacon(beacon) {
+        if (!keen) return;
         // Send it to the "video_plays" collection
         keen.addEvent("video_plays", beacon, function(err, res) {
             if (err) {
@@ -96,6 +100,18 @@ $(document).ready(function() {
             }
         });
     }
+
+    function fireXUL_Beacon(type, beacon) {
+        // listingID, event_type, widget_type, publicationID
+        // ["249151","video_play","M1","native","1340"]
+        var url = "widgets.digitalmediacommunications.com/analytics/clicks";
+        var obj = [beacon.listingID, type, "native", window.DMC.Native.data.extra.dmc_publication_id];
+        console.log('fireXUL_Beacon', obj);
+        // $.post(url, obj, function(data, textStatus, xhr) {
+        /*optional stuff to do after success */
+        // });
+    }
+
 
     function filterMenuOpenStart() {
         $('#dmc-card-container').addClass('filter-menu-open');
@@ -205,7 +221,7 @@ $(document).ready(function() {
         $('#card-footer .apply').hide();
         $('#card-footer').addClass('reverse');
 
-        setSocial(window.DMC.Native.data.extra.dmc_index_url);
+        setSocial(dmcIndexURL);
 
         // hide card detail
         var w = window.innerWidth;
@@ -225,10 +241,12 @@ $(document).ready(function() {
         if (medium === "Apply") {
             action = "apply_actions";
         }
-        return keen.trackExternalLink(event, action, {
-            'creative': ac,
-            'medium': medium
-        });
+        if (keen) {
+            return keen.trackExternalLink(event, action, {
+                'creative': ac,
+                'medium': medium
+            });
+        }
     });
 
     $('#card-list .item').click(function(event) {
@@ -265,7 +283,7 @@ $(document).ready(function() {
         $('#card-header .filter').hide();
         $('#card-header .back').show();
 
-        var videoPlayEvent = {
+        var beacon = {
             id: ac._id,
             listingID: ac.extra.listingID,
             dmcAdNumber: ac.extra.dmcAdNumber,
@@ -278,7 +296,8 @@ $(document).ready(function() {
                 timestamp: new Date().toISOString()
             }
         };
-        fireVideoPlayBeacon(ac);
+        fireVideoPlayBeacon(beacon);
+        fireXUL_Beacon("video_play", beacon);
     });
 
     function setDetailView() {

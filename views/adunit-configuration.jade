@@ -62,6 +62,9 @@
     if adunit.extra.dmc_index_url
       p
         a(href="#{adunit.extra.dmc_index_url}" target="_blank") DMC Index Page
+      if adunit.extra.dmc_index_url_short
+        p
+          a(href="#{adunit.extra.dmc_index_url_short}" target="_blank") DMC Index Page <em>(short)</em>
     //- p
       a(href="/dashboard/adunit/edit/#{adunit.short_id}") Ad Unit Template
     p
