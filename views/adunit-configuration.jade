@@ -62,10 +62,10 @@
     if adunit.extra.dmc_index_url
       p
         a(href="#{adunit.extra.dmc_index_url}" target="_blank") DMC Index Page
-      if adunit.extra.dmc_index_url_short
+      //- if adunit.extra.dmc_index_url_short
         p
           a(href="#{adunit.extra.dmc_index_url_short}" target="_blank") DMC Index Page <em>(short)</em>
-    //- p
+    p
       a(href="/dashboard/adunit/edit/#{adunit.short_id}") Ad Unit Template
     p
       a(href="/api/adunit/compiled/#{adunit._id}" target="_blank") Compiled JSON

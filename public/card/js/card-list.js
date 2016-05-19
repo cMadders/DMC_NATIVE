@@ -2,7 +2,7 @@ $(document).ready(function() {
     var ac; //active creative
     var keen;
     var cardViewportTop = 0;
-    var page_url;
+    var page_url = 'http://www.digitalmediacommunications.com';
     var dmcIndexURL;
 
     function initCard() {
@@ -43,7 +43,6 @@ $(document).ready(function() {
         //listen for window.resize
         window.addEventListener('resize', getDimensions);
         window.parent.postMessage("dmc-card-initialized", "*");
-
 
 
         // $('.loading').fadeOut();
@@ -101,15 +100,25 @@ $(document).ready(function() {
         });
     }
 
-    function fireXUL_Beacon(type, beacon) {
-        // listingID, event_type, widget_type, publicationID
-        // ["249151","video_play","M1","native","1340"]
-        var url = "widgets.digitalmediacommunications.com/analytics/clicks";
-        var obj = [beacon.listingID, type, "native", window.DMC.Native.data.extra.dmc_publication_id];
-        console.log('fireXUL_Beacon', obj);
-        // $.post(url, obj, function(data, textStatus, xhr) {
-        /*optional stuff to do after success */
-        // });
+    function fireXUL_Beacon(type, listingID) {
+        var url = "http://widgets.digitalmediacommunications.com/analytics/clicks";
+
+        if (type == "apply") {
+            type = "apply_here";
+        }
+        var arr = [listingID.toString(), type, "M1", "native", window.DMC.Native.data.extra.dmc_publication_id, page_url];
+
+        console.log('fireXUL_Beacon', arr);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                data: JSON.stringify(arr)
+            },
+            success: function(result) {
+                window.console.log('XUL Analytics Logged Successfully');
+            }
+        });
     }
 
 
@@ -241,6 +250,9 @@ $(document).ready(function() {
         if (medium === "Apply") {
             action = "apply_actions";
         }
+
+        fireXUL_Beacon(medium.toLowerCase(), ac.extra.listingID);
+
         if (keen) {
             return keen.trackExternalLink(event, action, {
                 'creative': ac,
@@ -297,7 +309,7 @@ $(document).ready(function() {
             }
         };
         fireVideoPlayBeacon(beacon);
-        fireXUL_Beacon("video_play", beacon);
+        fireXUL_Beacon("video_play", beacon.listingID);
     });
 
     function setDetailView() {

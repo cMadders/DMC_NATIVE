@@ -28,10 +28,10 @@ html
       nav#card-list-filter
         h1 Select Video By Category
         ul
-          li(data-category="all").active All Categories
+          li(data-category="all").active All Categories<span>(#{adunit.creative_count} Videos)</span>
           each category in adunit.creative_categories
             li(data-category="#{category.category}" data-count="#{category.count}")
-              | #{category.category}<span>(#{category.count} videos)</span>
+              | #{category.category}<span>(#{category.count})</span>
 
       #card
         header#card-header
