@@ -40,14 +40,14 @@ block content
         var video_plays_by_listing = new Keen.Query("count", {
         eventCollection: "video_plays",
         groupBy: [
-        "extra.dmcAdNumber"
+        "dmcAdNumber"
         ],
         filters: [{
         "property_name": "short_id",
         "operator": "eq",
         "property_value": "#{title}"
         }],
-        timeframe: "this_14_days",
+        timeframe: "this_120_days",
         timezone: "UTC"
         });
         client.draw(video_plays_by_listing, document.getElementById("video_plays_by_listing"), {
@@ -68,7 +68,7 @@ block content
         "property_value": "#{title}",
         }
         ],
-        timeframe: "this_14_days",
+        timeframe: "this_120_days",
         timezone: "UTC"
         });
         client.draw(applications_by_listing, document.getElementById("applications_by_listing"), {
@@ -88,7 +88,7 @@ block content
         "operator": "eq",
         "property_value": "#{title}"
         }],
-        timeframe: "this_14_days",
+        timeframe: "this_120_days",
         timezone: "UTC"
         });
         client.draw(shares_by_listing, document.getElementById("shares_by_listing"), {
@@ -109,7 +109,7 @@ block content
         "property_value": "#{title}",
         }
         ],
-        timeframe: "this_14_days",
+        timeframe: "this_120_days",
         timezone: "UTC"
         });
         client.draw(shares_by_medium, document.getElementById("shares_by_medium"), {
