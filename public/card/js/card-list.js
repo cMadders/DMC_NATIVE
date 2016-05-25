@@ -4,9 +4,13 @@ $(document).ready(function() {
     var cardViewportTop = 0;
     var page_url = 'http://www.digitalmediacommunications.com';
     var dmcIndexURL;
+    var token = 'not set';
 
     function initCard() {
         // console.log(window.DMC.Native.data);
+
+        // get token from Widgets.DMC for POST authentication
+        setXUL_Token();
 
         //if listing count is greater than 21, show filter menu
         if (window.DMC.Native.data.creative_count > 21) {
@@ -100,6 +104,16 @@ $(document).ready(function() {
         });
     }
 
+    function setXUL_Token() {
+        $.get("//widgets.digitalmediacommunications.com/analytics/get_token", function(data) {
+            var p = JSON.parse(data);
+            // console.log(p);
+            console.log('token', p.hash);
+            token = p.hash;
+        });
+    }
+
+    // fires beacon to XUL for additional tracking purposes
     function fireXUL_Beacon(type, listingID) {
         var url = "http://widgets.digitalmediacommunications.com/analytics/clicks";
 
@@ -108,12 +122,16 @@ $(document).ready(function() {
         }
         var arr = [listingID.toString(), type, "M1", "native", window.DMC.Native.data.extra.dmc_publication_id, page_url];
 
-        console.log('fireXUL_Beacon', arr);
+        // console.log('fireXUL_Beacon', arr);
+        // console.log('token', token);
+        if (!token) return;
+
         $.ajax({
             type: "POST",
             url: url,
             data: {
-                data: JSON.stringify(arr)
+                "ci_csrf_token": token,
+                "data": JSON.stringify(arr)
             },
             success: function(result) {
                 window.console.log('XUL Analytics Logged Successfully');
