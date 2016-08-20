@@ -5,13 +5,13 @@ window.dmc.Controller = (function() {
     'use strict';
 
     var initialize = function() {
-        // console.log('Controller.initialize');
+        console.log('Controller.initialize');
         embedCSS();
 
         // add adunit silhouette to page for animation effect
         $('body').append('<div id="dmc-card"></div>');
         // add card overlay
-        $('body').append('<div id="dmc-overlay"></div>');
+        // $('body').append('<div id="dmc-overlay"></div>');
 
         bind();
         window.dmc.initialized = true;
@@ -50,7 +50,7 @@ window.dmc.Controller = (function() {
             }
 
             if (e.data == 'dmc-eject-card') {
-                // console.log('eject card');
+                console.log('eject card');
                 minimizeUnit();
             }
         }, false);
@@ -77,13 +77,14 @@ window.dmc.Controller = (function() {
 
         //dmc-native
         sheet.insertRule(".dmc-native { cursor:pointer;overflow:hidden;}", 0);
-        sheet.insertRule("#dmc-native { cursor:pointer;overflow:hidden;}", 0);
+        // sheet.insertRule("#dmc-native { cursor:pointer;overflow:hidden;}", 0);
         // dmc-overlay
-        sheet.insertRule("#dmc-overlay { position: fixed;width: 100%;height: 100%;visibility: hidden;top: 0;left: 0;z-index: 1000; opacity: 0; background: rgba(0, 0, 0, 0.8); transition: opacity 0.3s;}", 0);
-        sheet.insertRule("#dmc-overlay.show  {visibility:visible;opacity:1;}", 0);
+        // sheet.insertRule("#dmc-overlay { position: fixed;width: 100%;height: 100%;visibility: hidden;top: 0;left: 0;z-index: 1000; opacity: 0; background: rgba(0, 0, 0, 0.8); transition: opacity 0.3s;}", 0);
+        // sheet.insertRule("#dmc-overlay.show  {visibility:visible;opacity:1;}", 0);
         //dmc-card
-        sheet.insertRule("#dmc-card { background:white; width:100%; height: 30px; opacity: 0;position: absolute;box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8);z-index:2000;transition: opacity 0.5s;visibility:hidden; }", 0);
+        sheet.insertRule("#dmc-card { background:white; width:100%; height: 30px; opacity: 0;position: absolute;box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8);z-index:2000;transition: opacity 0.4s;visibility:hidden; z-index:16777271;}", 0);
         sheet.insertRule("#dmc-card.show { visibility:visible; opacity:1; }", 0);
+        sheet.insertRule("#dmc-card-iframe {width:100vw;height:100vh;outline:none;border:none;}", 0);
 
         // youtube embed... looks great with box-shadow
         // sheet.insertRule("#dmc-card iframe {position: absolute; top:200px; box-shadow: 1px 11px 31px -5px rgba(0, 0, 0, 0.8); }", 0);
@@ -94,7 +95,7 @@ window.dmc.Controller = (function() {
         // causes underlying page to jump to top;
         // prevents scrolling on all screens
         // MOBILE-------------------
-        sheet.insertRule(".disable-scroll { overflow: hidden; position: fixed; height: 100%;width:100%; }", 0);
+        sheet.insertRule(".disable-scroll { overflow: hidden; position: fixed; height: 100%;width:100%; margin:0;}", 0);
 
         function css_add_inline(css_code) {
             var div = document.createElement("div");
@@ -104,7 +105,8 @@ window.dmc.Controller = (function() {
     };
 
     var minimizeUnit = function() {
-        $('#dmc-overlay, #dmc-card').removeClass('show').empty();
+        $('#dmc-card').removeClass('show').empty();
+        // $('#dmc-overlay, #dmc-card').removeClass('show').empty();
         $('#dmc-card').removeClass('expanded');
         $('html, body').removeClass('disable-scroll');
         //scroll to original position
@@ -116,6 +118,7 @@ window.dmc.Controller = (function() {
     };
 
     var activateAdUnit = function() {
+        // console.log('activateAdUnit');
         // issue call to original script delivered from ad server
         // notify mothership that AdUnit is ready for activation
         window.dmc.activate(adunitCallback);
@@ -124,6 +127,7 @@ window.dmc.Controller = (function() {
     // callback from original script
     var adunitCallback = function(index, data, placeholder) {
         data = JSON.parse(data);
+        // console.log('adunitCallback: ', index + ' - ' + placeholder);
         // console.log('adunitCallback', data);
         window.dmc.AdUnitController.createAdUnit(index, data, placeholder);
     };
@@ -193,7 +197,6 @@ window.dmc.AdUnitController = (function() {
                 },
                 $el = null;
 
-
             var initialize = function() {
                 console.log('AdUnit initialize', data.uuid);
                 render();
@@ -202,7 +205,16 @@ window.dmc.AdUnitController = (function() {
 
             var render = function() {
                 var scriptID = $(placeholder).attr('id');
-                $('script#' + scriptID).after(unescapeHtml(data.template)).remove();
+                console.log('scriptID: ', scriptID);
+                $('script#' + scriptID).after(unescapeHtml(data.template));
+                var t = $('script#' + scriptID).next();
+                var id = $(t).attr('data-adunit');
+                var count = $('[data-adunit="' + id + '"]').length;
+                    $(t).attr('data-index', count);
+                // if (count > 1) {
+                // }
+                console.log(count);
+                // console.log(t);
             };
 
             var bind = function() {
@@ -216,7 +228,7 @@ window.dmc.AdUnitController = (function() {
 
                 window.addEventListener("unitMinimized", function() {
                     // alert("unitMinimized");
-                    // console.log('minimizeUnit');
+                    console.log('minimizeUnit');
                 });
             };
 
@@ -233,7 +245,7 @@ window.dmc.AdUnitController = (function() {
                 window.dmc.viewportTop = document.body.scrollTop;
 
                 // animate in dmc overlay
-                $('#dmc-overlay').addClass('show');
+                // $('#dmc-overlay').addClass('show');
 
                 // postion shadow atop adunit
                 $('#dmc-card').css('top', pos.top + 'px').css('left', pos.left).css('width', pos.width).css('height', pos.height);
@@ -249,7 +261,7 @@ window.dmc.AdUnitController = (function() {
                 var tween = TweenLite.to($('#dmc-card'), 0.4, {
                     top: window.dmc.viewportTop,
                     left: 0,
-                    delay: 0.3,
+                    // delay: 0.3,
                     height: '100%',
                     width: '100%',
                     ease: Power1.easeInOut,
@@ -272,8 +284,11 @@ window.dmc.AdUnitController = (function() {
                 // LOCAL
                 // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://sfo-jcottam.local:5757/card/list/' + adunit_id + '" frameborder="0" style="width: 100%; height: 100%;"></iframe>');
 
+                // LOCAL
+                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless></iframe>');
+
                 // PRODUCTION
-                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" style="width: 100%; height: 100%;"></iframe>');
+                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless></iframe>');
 
                 // fixed header
                 // $('#dmc-card').html('<div class="dmc-card-header"></div><div class="dmc-card-body"><iframe src="http://native.digitalmediacommunications.com/card/list-only/' + adunit_id + '" sandbox="allow-top-navigation allow-pointer-lock allow-popups allow-forms allow-same-origin allow-scripts" frameborder="0" style="width: 100%; height: 100%;"></iframe></div><style>#dmc-card .dmc-card-header { background: red; width: 100%; height: 50px; position: fixed; z-index: 100; } #dmc-card .dmc-card-body { position: absolute; top: 50px; width: 100%; height: calc(627px - 50px); overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; } #dmc-card .dmc-card-body iframe { width: 100%; height: 100%; outline: none; border: none; padding: 0; margin: 0; }</style>');
@@ -330,6 +345,12 @@ window.dmc.AdUnitController = (function() {
 
 // INITIALIZE NATIVE
 if (!window.dmc.initialized) {
+    // code delivered inside iFrame?
+    if (self == top) {
+        // console.log('NO IFRAME');
+    } else if (window.parent == top) {
+        console.error('DMC INSIDE IFRAME');
+    }
     window.dmc.Controller.initialize();
 }
 window.dmc.Controller.activateAdUnit();

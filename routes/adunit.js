@@ -10,9 +10,10 @@ function handleError(err) {
     console.error(err);
 }
 
-router.get('/:adunitID', function(req, res, next) {
+router.get('/:adunitID/:index?', function(req, res, next) {
+    var index = req.params.index || '0';
     //set random 6 character hash to distinguish ad-unit
-    var uuid = "dmc-" + UUID.v4().substr(0, 2);
+    var uuid = "dmc-" + index + '-' + UUID.v4().substr(0, 2);
     // console.log('new adunit', req.params.adunitID, uuid);
 
     //get user's UUID
@@ -46,7 +47,7 @@ router.get('/:adunitID', function(req, res, next) {
             adunit_short_id: req.params.adunitID,
             uuid: uuid,
             // type: null, // type of adunit experience (IVB or SLP)
-            template: escape("<div id='" + uuid + "' class='dmc-native'>" + compiledTemplate + "</div>"),
+            template: escape("<div id='" + uuid + "' class='dmc-native' data-adunit='" + adunit[0]._id + "' data-adunit-shortid='" + req.params.adunitID + "'>" + compiledTemplate + "</div>"),
         };
         // console.log(data);
 
@@ -56,7 +57,7 @@ router.get('/:adunitID', function(req, res, next) {
             'Cache-Control': 'no-cache'
         });
 
-        var embed = "(function(data) { var placeholder = document.currentScript; if (!window.dmc) { window.dmc = { dependenciesLoaded: false, BeaconService: null, DependencyService: null, adunits: [], activate: function(cb) { for (var i = 0; i < window.dmc.adunits.length; i++) { var unit = window.dmc.adunits[i]; if (!unit.activated) { return unit.activate(i, cb) || null; } } } }; } window.dmc.adunits.push({ data: data, activated: false, activate: function(index, cb) { console.log('-- activate'); this.activated = true; cb(index, this.data, placeholder); } }); var loadDependencies = function() { var dependencies = ['//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js','" + req.app.locals.domain + "/adunit/js/dmc-native-min.js']; var head = document.head || document.getElementsByTagName('head')[0]; for (var i = 0; i < dependencies.length; i++) { var s = document.createElement('script'); s.async = false; s.type = 'text/javascript'; s.src = dependencies[i]; head.appendChild(s); } }; if (!window.dmc.dependenciesLoaded) { loadDependencies(); } })('" + JSON.stringify(data) + "');";
+        var embed = "(function(data) { var placeholder = document.currentScript; if (!window.dmc) { window.dmc = { dependenciesLoaded: false, BeaconService: null, DependencyService: null, adunits: [], activate: function(cb) { for (var i = 0; i < window.dmc.adunits.length; i++) { var unit = window.dmc.adunits[i]; if (!unit.activated) { return unit.activate(i, cb) || null; } } } }; } window.dmc.adunits.push({ data: data, activated: false, activate: function(index, cb) { console.log('-- activate', index); this.activated = true; cb(index, this.data, placeholder); } }); var loadDependencies = function() { var dependencies = ['//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js','" + req.app.locals.domain + "/adunit/js/dmc-native.js']; var head = document.head || document.getElementsByTagName('head')[0]; for (var i = 0; i < dependencies.length; i++) { var s = document.createElement('script'); s.async = false; s.type = 'text/javascript'; s.src = dependencies[i]; head.appendChild(s); } }; if (!window.dmc.dependenciesLoaded) { loadDependencies(); } })('" + JSON.stringify(data) + "');";
 
         res.end(embed);
     });

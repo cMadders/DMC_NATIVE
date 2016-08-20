@@ -8,12 +8,13 @@ html
     link(href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css', rel='stylesheet')
     link(rel='stylesheet', href='/card/css/card-list.css')
     style.
-      #dmc-card-container{
-        opacity:.5;
+      .icon-container{
+        display: flex;
+        justify-content: center;
       }
 
     //- Hotjar Tracking Code for http://native.digitalmediacommunications.com
-    script.
+    //- script.
       (function(h,o,t,j,a,r){
       h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
       h._hjSettings={hjid:166356,hjsv:5};
@@ -35,13 +36,13 @@ html
 
       #card
         header#card-header
-          .filter.category
+          .filter.category.icon-container
             i.fa.fa-list
-          .back
+          .back.icon-container
             i.fa.fa-arrow-left
           .logo
             img(src='#{adunit.card.logo}',alt=)
-          .close-card
+          .close-card.icon-container
             i.fa.fa-times
 
         div#card-list
@@ -54,7 +55,7 @@ html
 
         div#card-detail
           script(id="entry-template" type="text/x-handlebars-template").
-            <video id="native-video-player" controls preload="none" src="{{media.mp4}}" style="background-image:url({{media.logo}});"></video>
+            <video id="native-video-player" controls autoplay preload="none" src="{{media.mp4}}" style="background-image:url({{media.logo}});"></video>
             <div class="info">
               <h1 class="title">{{headline}}</h1>
               <h3 class="tagline">{{tagline}}</h1>

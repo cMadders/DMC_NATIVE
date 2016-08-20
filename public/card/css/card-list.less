@@ -1,13 +1,13 @@
 body {
-    background-color: #333;
+    // background-color: #333;
     margin: 0;
     padding: 0;
 }
 
 .disable-scroll {
     position: fixed;
-    height: 100%;
-    width: 100%;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -134,16 +134,21 @@ body {
                     padding-top: 10px;
                 }
             }
+            i.fa-list {
+                font-size: 34px;
+                margin-top: 3px;
+            }
             .close-card {
                 border-left: 1px solid #AAA;
             }
             .logo {
-                width: calc(~'100% - 130px');
+                // width: calc(~'100% - 130px');
                 overflow: hidden;
                 img {
-                    height: 55px;
+                    max-width: 95%;
                     margin: 0 auto;
                     display: block;
+                    max-height: 54px;
                 }
             }
         }
@@ -159,6 +164,9 @@ body {
         height: calc(~'100vh - 109px'); //header + footer
         // height: 514px; //header + footer
         box-sizing: border-box;
+        div#card-list * {
+            box-sizing: border-box;
+        }
         .item {
             cursor: pointer;
             padding: 8px;
@@ -173,7 +181,7 @@ body {
                 background-size: cover;
                 background-position: 50%;
                 background-repeat: no-repeat;
-                background-color: #eee;
+                // background-color: #eee;
                 float: left;
                 margin-right: 8px;
                 margin-top: 3px;

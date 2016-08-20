@@ -50,10 +50,12 @@ $(document).ready(function() {
 
 
         // $('.loading').fadeOut();
-        TweenLite.to($('#dmc-card-container'), 0.5, {
-            opacity: "1",
-            ease: Power1.easeOut
-        });
+        // Fade In Card
+        // TweenLite.to($('#dmc-card-container'), 0.5, {
+        //     opacity: "1",
+        //     ease: Power1.easeOut
+        // });
+        // alert('card ready');
     }
 
     // window.resize callback function
@@ -158,7 +160,7 @@ $(document).ready(function() {
         $('#card-header').css('position', 'absolute');
         $('#card-list-filter').scrollTop(0);
         var w = window.innerWidth - 70;
-        TweenLite.to($('#card'), 0.5, {
+        TweenLite.to($('#card'), 0.3, {
             left: w + "px",
             onStart: filterMenuOpenStart,
             onComplete: filterMenuOpened,
@@ -169,9 +171,9 @@ $(document).ready(function() {
     function hideFilterMenu(delay) {
         delay = delay || 0;
         $('#dmc-card-container').removeClass('filter');
-        TweenLite.to($('#card'), 0.5, {
+        TweenLite.to($('#card'), 0.3, {
             left: "0",
-            delay: delay,
+            // delay: delay,
             onComplete: filterMenuClosed,
             ease: Power1.easeOut
         });
@@ -311,7 +313,7 @@ $(document).ready(function() {
         });
 
         $('#card-header .filter').hide();
-        $('#card-header .back').show();
+        $('#card-header .back').css('display', 'flex');
 
         var beacon = {
             id: ac._id,
