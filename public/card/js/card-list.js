@@ -51,15 +51,16 @@ $(document).ready(function() {
 
         // $('.loading').fadeOut();
         // Fade In Card
-        // TweenLite.to($('#dmc-card-container'), 0.5, {
-        //     opacity: "1",
-        //     ease: Power1.easeOut
-        // });
+        TweenLite.to($('#dmc-card-container'), 0.5, {
+            opacity: "1",
+            ease: Power1.easeOut
+        });
         // alert('card ready');
     }
 
     // window.resize callback function
     function getDimensions() {
+        window.parent.postMessage("dmc-get-card-dimensions", "*");
         // console.log('getDimensions', window.innerWidth + 'x' + window.innerHeight);
         var h = window.innerHeight - 109;
         $('#card-list').css('height', h);
