@@ -100,7 +100,17 @@ router.get('/adunits', function(req, res, next) {
 });
 
 router.get('/adunit/analytics/:shortID', function(req, res, next) {
-    res.render('adunit-analytics', {
+
+    // KEEN.IO
+    // res.render('adunit-analytics', {
+    //     title: req.params.shortID,
+    //     pageID: 'adunits',
+    //     domain: req.app.locals.domain,
+    //     config: req.app.locals.config
+    // });
+
+    // Mixpanel
+    res.render('adunit-analytics-mixpanel', {
         title: req.params.shortID,
         pageID: 'adunits',
         domain: req.app.locals.domain,

@@ -1,0 +1,17 @@
+extends ../layout
+
+block content
+  .row.wrapper.border-bottom.white-bg.page-heading
+    .col-lg-9
+      h2 #{title}
+      ol.breadcrumb
+        li
+          a(href="/dashboard") Home
+        li.active
+          a(href="/preview/#{uuid}") Preview
+
+
+  .wrapper.wrapper-content.animated.fadeInRight
+    .row(style="margin-bottom:40px;")
+      .col-md-8.col-sm-7
+        iframe(width="640" height="360" allowfullscreen frameborder="0" src="http://responsestg.clixiesite.com/embed?video_uuid=#{uuid}&page=1&transitions")

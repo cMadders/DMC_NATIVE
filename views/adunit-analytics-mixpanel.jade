@@ -1,0 +1,72 @@
+extends layout
+
+block content
+	link(rel='stylesheet', type='text/css', href='https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css')
+	script(src='https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js')
+	style.
+		.mixpanel-platform-section .select_button, .mixpanel-platform-section .select_button.active{
+			height: auto !important;
+			overflow: hidden !important;
+		}
+
+	.row.wrapper.border-bottom.white-bg.page-heading
+		.col-lg-9
+			h2 Ad Unit: #{title} - Analytics
+			ol.breadcrumb
+				li
+					a(href="/dashboard") Home
+				li
+					a(href="/dashboard/adunits") Ad Units
+				li
+					a(href="/dashboard/adunit/#{title}") #{title}
+				li.active
+					a(href="/dashboard/adunit/analytics/#{title}") Analytics
+
+
+	.wrapper.wrapper-content.mixpanel-platform-body
+		#chart
+
+		.mixpanel-platform-section
+			#eventSelect(style='float: left;')
+			#by.mixpanel-platform-label(style='margin-left: 10px; display: none;') by
+			#propSelect(style='float: left;')
+			#dateSelect(style='float: right;')
+			div(style='clear: both;')
+			#graph
+		#table
+		script.
+			MP.api.setCredentials('c97cbd5d6f444d7ecc12828b7ccd898b');
+			var eventSelect = $('#eventSelect').MPEventSelect();
+			var propSelect  = $('#propSelect').MPPropertySelect();
+			var dateSelect  = $('#dateSelect').MPDatepicker();
+			var eventGraph  = $('#graph').MPChart({chartType: 'line'});
+			var eventTable  = $('#table').MPTable({
+			showPercentages: true,
+			firstColHeader: 'Event'
+			});
+			var runQuery = function() {
+			var eventName = eventSelect.MPEventSelect('value'),
+			propName  = propSelect.MPPropertySelect('value'),
+			dateRange = dateSelect.MPDatepicker('value');
+			if (eventName) {
+			MP.api.segment(eventName, propName, dateRange).done(function(results) {
+			eventGraph.MPChart('setData', results);
+			eventTable.MPTable('setData', results);
+			});
+			}
+			};
+			eventSelect.on('change', function(e, eventName) {
+			propSelect.MPPropertySelect('setEvent', eventName);
+			$("#by").show();
+			runQuery();
+			});
+			propSelect.on('change', runQuery);
+			dateSelect.on('change', runQuery);
+
+			//- example
+			MP.api.segment('Video Play', 'dmcAdNumber').done(function(queryResults) {
+				console.log(queryResults.values());
+				//- $('#chart').MPChart({chartType: 'line', data: queryResults.values()});
+
+
+			});

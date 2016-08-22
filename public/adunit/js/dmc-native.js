@@ -289,11 +289,14 @@ window.dmc.AdUnitController = (function() {
                 $('#dmc-card').addClass('expanded');
 
                 //add iframe to card
-                // LOCAL
-                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://sfo-jcottam.local:5757/card/list/' + adunit_id + '" frameborder="0" style="width:100%;height:100%;"></iframe>');
+                // CODEKIT LOCAL
+                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://sfo-jcottam.local:5757/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+
+                //LOCAL
+                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
 
                 // PRODUCTION
-                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" style="width:100%;height:100%;"></iframe>');
+                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
 
                 // Aspen animated html5 ad
                 // $('#dmc-card').html('<iframe frameborder="0" scrolling="no" id="creativeIframe632549838" src="https://s1.2mdn.net/4257417/1445981964340/asc_2015_PerfectStorm_300x250/index.html" width="300" height="250" style="display: block; margin-left: auto; margin-right: auto;"></iframe>');

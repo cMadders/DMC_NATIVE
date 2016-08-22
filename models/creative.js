@@ -51,6 +51,7 @@ var CreativeSchema = new mongoose.Schema({
     extra: {
         listingID: Number,
         dmcAdNumber: String,
+        clixie_vid_uuid: String
     },
     coupon: {
         text: String,

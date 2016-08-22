@@ -1,9 +1,9 @@
 $(document).ready(function() {
     var ac; //active creative
     var keen;
+    var track_to_mixpanel;
     var cardViewportTop = 0;
     var page_url = 'http://www.digitalmediacommunications.com';
-    var dmcIndexURL;
     var token = 'not set';
 
     function initCard() {
@@ -20,11 +20,10 @@ $(document).ready(function() {
             setCategoryFilter('all');
         }
 
-        dmcIndexURL = window.DMC.Native.data.extra.dmc_index_url_short || window.DMC.Native.data.extra.dmc_index_url;
-
         $('#card-list-filter li').removeClass('active');
         $('#card-list-filter li[data-category="all"]').addClass('active');
-        setSocial(dmcIndexURL);
+        // set social to index
+        setSocial(window.DMC.Native.data.extra.dmc_index_url, window.DMC.Native.data.extra.dmc_index_url_short);
         getDimensions();
 
         //LISTEN for message from PARENT
@@ -36,7 +35,8 @@ $(document).ready(function() {
                 switch (event.data.key) {
                     case "page_url":
                         page_url = event.data.value;
-                        initKeenIO(page_url);
+                        // initKeenIO(page_url);
+                        initMixPanel(page_url);
                         break;
                 }
             }
@@ -97,14 +97,38 @@ $(document).ready(function() {
         keen.setGlobalProperties(myGlobalProperties);
     }
 
-    function fireVideoPlayBeacon(beacon) {
-        if (!keen) return;
-        // Send it to the "video_plays" collection
-        keen.addEvent("video_plays", beacon, function(err, res) {
-            if (err) {
-                console.error('error logging beacon', err);
-            }
+    function initMixPanel(page_url) {
+        console.log('initMixPanel', page_url);
+        track_to_mixpanel = true;
+
+        mixpanel.track("IVB Engaged", {
+            url: page_url,
+            id: window.DMC.Native.data._id,
+            short_id: window.DMC.Native.data.short_id,
+            publisher: window.DMC.Native.data.publisher,
+            site: window.DMC.Native.data.site,
+            name: window.DMC.Native.data.name
         });
+    }
+
+    function fireVideoPlayBeacon(beacon) {
+        if (keen) {
+            // Send it to the "video_plays" collection
+            keen.addEvent("video_plays", beacon, function(err, res) {
+                if (err) {
+                    console.error('error logging beacon', err);
+                }
+            });
+        }
+        if (track_to_mixpanel) {
+            beacon.url = page_url;
+            beacon.id = window.DMC.Native.data._id;
+            beacon.short_id = window.DMC.Native.data.short_id;
+            beacon.publisher = window.DMC.Native.data.publisher;
+            beacon.site = window.DMC.Native.data.site;
+            beacon.name = window.DMC.Native.data.name;
+            mixpanel.track("Video Play", beacon);
+        }
     }
 
     function setXUL_Token() {
@@ -234,12 +258,20 @@ $(document).ready(function() {
 
     function resetDetailView() {
         // reset video player
-        document.getElementById('native-video-player').currentTime = 0;
-        document.getElementById('native-video-player').pause();
+        if (document.getElementById('native-video-player')) {
+            document.getElementById('native-video-player').currentTime = 0;
+            document.getElementById('native-video-player').pause();
+        }
+
+        if (document.getElementById('clixie-video-player')) {
+            $('#clixie-video-player').attr('src', '');
+        }
+
         // reset detail view
         $('#card-detail .coupon').hide();
         $('#card-detail .address').hide();
         $('#card-detail .map').hide();
+        ac = null;
     }
 
     // return to card list view
@@ -251,7 +283,8 @@ $(document).ready(function() {
         $('#card-footer .apply').hide();
         $('#card-footer').addClass('reverse');
 
-        setSocial(dmcIndexURL);
+        // set social to index
+        setSocial(window.DMC.Native.data.extra.dmc_index_url, window.DMC.Native.data.extra.dmc_index_url_short);
 
         // hide card detail
         var w = window.innerWidth;
@@ -272,14 +305,34 @@ $(document).ready(function() {
             action = "apply_actions";
         }
 
-        fireXUL_Beacon(medium.toLowerCase(), ac.extra.listingID);
+        if (ac) {
+            fireXUL_Beacon(medium.toLowerCase(), ac.extra.listingID);
+        }
 
-        if (keen) {
-            return keen.trackExternalLink(event, action, {
+        if (keen && ac) {
+            keen.trackExternalLink(event, action, {
                 'creative': ac,
                 'medium': medium
             });
         }
+
+        var beacon = constructCreativeBeacon();
+        if (track_to_mixpanel) {
+            if (action == "share_actions") {
+                action = "Share";
+            } else {
+                action = "Apply";
+            }
+            beacon.url = page_url;
+            beacon.id = window.DMC.Native.data._id;
+            beacon.short_id = window.DMC.Native.data.short_id;
+            beacon.publisher = window.DMC.Native.data.publisher;
+            beacon.site = window.DMC.Native.data.site;
+            beacon.name = window.DMC.Native.data.name;
+            beacon.medium = medium;
+            mixpanel.track(action, beacon);
+        }
+        return;
     });
 
     $('#card-list .item').click(function(event) {
@@ -316,32 +369,55 @@ $(document).ready(function() {
         $('#card-header .filter').hide();
         $('#card-header .back').css('display', 'flex');
 
-        var beacon = {
-            id: ac._id,
-            listingID: ac.extra.listingID,
-            dmcAdNumber: ac.extra.dmcAdNumber,
-            headline: ac.headline,
-            tagline: ac.tagline,
-            category: ac.category,
-            vertical: ac.vertical,
-            referrer: document.referrer,
-            keen: {
-                timestamp: new Date().toISOString()
-            }
-        };
+        var beacon = constructCreativeBeacon();
         fireVideoPlayBeacon(beacon);
         fireXUL_Beacon("video_play", beacon.listingID);
     });
 
+    function constructCreativeBeacon() {
+        var beacon = {};
+        if (ac) {
+            var videoType = (ac.extra.clixie_vid_uuid) ? 'Clixie' : 'DMC';
+            beacon = {
+                id: ac._id,
+                listingID: ac.extra.listingID,
+                dmcAdNumber: ac.extra.dmcAdNumber,
+                headline: ac.headline,
+                tagline: ac.tagline,
+                category: ac.category,
+                vertical: ac.vertical,
+                referrer: document.referrer,
+                type: 'listing',
+                videoType: videoType,
+                keen: {
+                    timestamp: new Date().toISOString()
+                }
+            };
+        } else {
+            beacon = {
+                type: 'ivb',
+                referrer: document.referrer,
+                keen: {
+                    timestamp: new Date().toISOString()
+                }
+            };
+        }
+        return beacon;
+    }
+
     function setDetailView() {
         var source = $("#entry-template").html();
         var template = Handlebars.compile(source);
-
         var compiledTemplate = template(ac);
         $('#entryOutput').html(compiledTemplate);
     }
 
     function setSocial(social_url, social_url_short, website, creative) {
+        // console.log('social_url: ', social_url);
+        // console.log('social_url_short: ', social_url_short);
+        // console.log('website: ', website);
+        // console.log(creative);
+
         if (website) {
             if (ac.vertical && ac.vertical.toLowerCase() != "employment") {
                 $('#card-footer .apply p').text('Visit Website');
@@ -363,6 +439,7 @@ $(document).ready(function() {
             if (!social_url_short) {
                 social_url_short = social_url;
             }
+
             if (creative) {
                 if (ac.vertical.toLowerCase() == "retail" || ac.vertical.toLowerCase() == "real estate") {
                     message = encodeURIComponent('Check out this video from ' + creative.advertiser + ', ' + social_url_short);
@@ -375,6 +452,11 @@ $(document).ready(function() {
             var fb = 'https://www.facebook.com/dialog/feed?app_id=484257678295938&display=popup&redirect_uri=';
             fb = fb + encodeURIComponent(social_url) + '&link=' + encodeURIComponent(social_url) + '&caption=' + encodeURIComponent(window.DMC.Native.data.publisher + ': ' + window.DMC.Native.data.headline);
             $('#card-footer .fb').attr('href', fb);
+
+            // force short_url for Twitter and SMS
+            if (!creative && social_url_short) {
+                message = encodeURIComponent(window.DMC.Native.data.publisher + ': ' + window.DMC.Native.data.headline + ', ' + social_url_short);
+            }
 
             //set twitter
             var twitter = 'https://twitter.com/intent/tweet?text=';
@@ -390,7 +472,6 @@ $(document).ready(function() {
             $('#card-footer').addClass('reverse');
         }
     }
-
 
     initCard();
 });

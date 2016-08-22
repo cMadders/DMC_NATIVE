@@ -13,6 +13,8 @@ html
         justify-content: center;
       }
 
+    script(src="/card/js/mixpanel-card.js")
+
     //- Hotjar Tracking Code for http://native.digitalmediacommunications.com
     //- script.
       (function(h,o,t,j,a,r){
@@ -23,6 +25,7 @@ html
       r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
       a.appendChild(r);
       })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+
 
   body
     #dmc-card-container
@@ -55,7 +58,11 @@ html
 
         div#card-detail
           script(id="entry-template" type="text/x-handlebars-template").
-            <video id="native-video-player" controls preload="none" src="{{media.mp4}}" style="background-image:url({{media.logo}});"></video>
+            {{#if extra.clixie_vid_uuid}}
+              <iframe id="clixie-video-player" width="100%" height="100%" allowfullscreen frameborder="0" src="http://responsestg.clixiesite.com/embed?video_uuid={{extra.clixie_vid_uuid}}&page=1&transitions"></iframe>
+            {{else}}
+              <video id="native-video-player" controls preload="none" src="{{media.mp4}}" style="background-image:url({{media.logo}});"></video>
+            {{/if}}
             <div class="info">
               <h1 class="title">{{headline}}</h1>
               <h3 class="tagline">{{tagline}}</h1>
@@ -112,6 +119,6 @@ html
     script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js")
     script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js")
     script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js")
-    script(type="text/javascript" src="//d26b395fwzu5fz.cloudfront.net/3.4.0-rc/keen.min.js")
+    //- script(type="text/javascript" src="//d26b395fwzu5fz.cloudfront.net/3.4.0-rc/keen.min.js")
     script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js")
     script(type='text/javascript' src='/card/js/card-list-min.js')

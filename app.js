@@ -12,6 +12,7 @@ var api = require('./routes/api');
 var adunit = require('./routes/adunit');
 var card = require('./routes/card');
 var demo = require('./routes/demo');
+var preview = require('./routes/preview');
 
 //database
 var db = require('./db.connection.js');
@@ -69,6 +70,7 @@ app.use('/api', api);
 app.use('/adunit', adunit);
 app.use('/card', card);
 app.use('/demo', demo);
+app.use('/preview', preview);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

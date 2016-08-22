@@ -34,7 +34,64 @@ function handleError(err) {
     console.error(err);
 }
 
+router.get('/ga/event/:eventName?', function(req, res, next) {
+    // https://www.npmjs.com/package/universal-analytics
+    var reqUrl = req.protocol + '://' + req.hostname + req.originalUrl;
+    var eventName = req.params.eventName || 'general';
+    var ua = require('universal-analytics');
+    var visitor = ua('UA-77904027-3');
+    visitor.pageview("/", eventName, reqUrl, function(err) {
+        if (err) {
+            console.log('ga error: ', ga);
+        } else {
+            console.log('ga success');
+            res.send(reqUrl);
+        }
+    });
+});
 
+
+router.get('/mixpanel/export/:format?', function(req, res, next) {
+    var MixpanelExport = require('mixpanel-data-export');
+    var panel = new MixpanelExport({
+        api_key: "357b7022f986b564e2d75d947961e3f6",
+        api_secret: "c97cbd5d6f444d7ecc12828b7ccd898b"
+    });
+
+    var format = req.params.format || 'json';
+    format = format.toLowerCase();
+
+    panel.events({
+        from_date: "2016-08-15",
+        to_date: "2016-08-22",
+        event: ["IVB Engaged", "Video Play", "Share", "Apply"],
+        type: "general",
+        unit: "day",
+        interval: "1",
+        format: format
+    }).then(function(data) {
+        if (format == 'json') {
+           return res.json(data);
+        } else {
+            // if format is csv
+            res.setHeader('Content-type', 'text/csv');
+
+            // create file and save it to server directory
+            var fs = require('fs');
+            fs.writeFile('data-export.csv', data, function(err) {
+                if (err) throw err;
+                // console.log('file saved');
+                res.download('data-export.csv', 'report-name.csv', function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('download success');
+                    }
+                });
+            });
+        }
+    });
+});
 
 // get publication listings and write associated creatives to database
 router.post('/publication', function(req, res, next) {
@@ -387,7 +444,8 @@ function fetchDMCListing(req, type, cb) {
                 },
                 extra: {
                     listingID: obj.listingID,
-                    dmcAdNumber: obj.dmcAdNumber
+                    dmcAdNumber: obj.dmcAdNumber,
+                    clixie_vid_uuid: obj.clixie_vid_uuid
                 }
             };
             // console.log('creative', creative);
