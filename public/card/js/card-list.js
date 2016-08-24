@@ -408,6 +408,12 @@ $(document).ready(function() {
     function setDetailView() {
         var source = $("#entry-template").html();
         var template = Handlebars.compile(source);
+
+        // clixie?
+        if (ac.extra.clixie_vid_uuid && ac.extra.clixie_vid_uuid != "0") {
+            ac.isClixie = true;
+        }
+
         var compiledTemplate = template(ac);
         $('#entryOutput').html(compiledTemplate);
     }
