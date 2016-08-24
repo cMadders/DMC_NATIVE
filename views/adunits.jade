@@ -25,6 +25,7 @@ block content
             thead
               tr
                 th ID
+                th PubID
                 th Publisher
                 th Site
                 th Name
@@ -35,6 +36,7 @@ block content
               each adunit in adunits
                 tr(data-url="/dashboard/adunit/#{adunit.short_id}")
                   td #{adunit.short_id}
+                  td #{adunit.extra.dmc_publication_id}
                   td #{adunit.publisher}
                   td #{adunit.site}
                   td #{adunit.name}

@@ -39,6 +39,9 @@ block content
             p
               a(href="#{creative.link.qr}" target="_blank") QR Code
             hr
+            p
+              a(href="/api/creative/#{creative._id}" target="_blank") JSON
+            hr
             p Last Modified: #{moment(creative.last_modified).fromNow()}
             p Modified By: #{creative.last_modified_by}
             p Creation Date: #{moment(creative.creation_date).format('MM/DD/YYYY')}
@@ -177,15 +180,15 @@ block content
           script.
             $('#uploadLogo').cloudinary_upload_widget({
                 cloud_name: 'dfzx6tyah',
-                upload_preset: 'lgyrmhsc',
-                cropping: 'server',
-                'folder': 'user_photos',
+                upload_preset: 'user-specifies-crop',
+                folder: 'user_photos',
                 sources: ['url','local'],
                 max_files:1,
                 button_caption: 'Upload Logo',
                 show_powered_by: false,
                 multiple:false,
                 button_class: 'btn btn-primary',
+                cropping: 'server',
                 cropping_aspect_ratio: 2.5,
                 cropping_show_dimensions: true,
                 cropping_default_selection_ratio: 1.0

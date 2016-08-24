@@ -95,9 +95,8 @@ block content
           script.
             $('#uploadLogo').cloudinary_upload_widget({
                 cloud_name: 'dfzx6tyah',
-                upload_preset: 'hs6fstn6',
-                cropping: 'server',
-                'folder': 'user_photos',
+                upload_preset: 'card-header-logo',
+                folder: 'user_photos',
                 sources: ['url','local'],
                 max_files:1,
                 button_caption: 'Upload Logo',
@@ -105,9 +104,9 @@ block content
                 multiple:false,
                 button_class: 'btn btn-primary',
                 cropping:'server',
-                cropping_aspect_ratio: 2.5,
                 cropping_show_dimensions: true,
-                cropping_default_selection_ratio: 1.0
+                //- cropping_aspect_ratio: 2.5,
+                //- cropping_default_selection_ratio: 1.0
             },
             function(error, result) {
                 $('#adunitEditForm #logoInput').val(result[0].secure_url);
@@ -115,19 +114,16 @@ block content
 
             $('#uploadThumb').cloudinary_upload_widget({
                 cloud_name: 'dfzx6tyah',
-                upload_preset: 'ocrwan1t',
+                upload_preset: 'user-specifies-crop',
                 cropping: 'server',
-                'folder': 'user_photos',
+                folder: 'user_photos',
                 sources: ['url','local'],
                 max_files:1,
                 button_caption: 'Upload Thumbnail',
                 show_powered_by: false,
                 multiple:false,
                 button_class: 'btn btn-primary',
-                cropping:'server',
                 cropping_show_dimensions: true,
-                cropping_default_selection_ratio: 1.0
-                //- cropping_aspect_ratio: 2.5
             },
             function(error, result) {
                 $('#adunitEditForm #thumbnailInput').val(result[0].secure_url);

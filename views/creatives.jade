@@ -16,22 +16,29 @@ block content
       table.table.table-striped.table-bordered.creative-table.table-hover(style='background:white;')
         thead
           th ID
+          th ListingID
           th DMC Ad #
           th Advertiser
-          th Headline
+          //- th Headline
+          th Creation Date
+          th Last Modified
           //- th Tagline
+        tbody
         each creative in creatives
           if creative
             tr(data-creativeid="#{creative._id}")
               //- td.bg-image.dmc(style="background-image:url('#{creative.media.logo}');")
               td #{creative._id}
+              td #{creative.extra.listingID}
               td #{creative.extra.dmcAdNumber}
               td #{creative.advertiser}
-              td #{creative.headline}
+              //- td #{creative.headline}
+              td #{creative.creation_date}
+              td #{creative.last_modified}
               //- td #{creative.tagline}
 
   script.
-    $('.creative-table tr').click(function(e){
+    $('.creative-table tbody tr').click(function(e){
       e.preventDefault();
       var creativeID = $(this).data('creativeid');
       window.open("/api/creative/" + creativeID);

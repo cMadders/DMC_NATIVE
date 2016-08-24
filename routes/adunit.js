@@ -59,19 +59,19 @@ router.get('/:adunitID/:index?', function(req, res, next) {
         var embed = "(function(data) { var placeholder = document.currentScript; if (!window.dmc) { window.dmc = { dependenciesLoaded: false, BeaconService: null, DependencyService: null, adunits: [], activate: function(cb) { for (var i = 0; i < window.dmc.adunits.length; i++) { var unit = window.dmc.adunits[i]; if (!unit.activated) { return unit.activate(i, cb) || null; } } } }; } window.dmc.adunits.push({ data: data, activated: false, activate: function(index, cb) { this.activated = true; cb(index, this.data, placeholder); } }); var loadDependencies = function() { var dependencies = ['//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js','//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js','" + req.app.locals.domain + "/adunit/js/dmc-native.js']; var head = document.head || document.getElementsByTagName('head')[0]; for (var i = 0; i < dependencies.length; i++) { var s = document.createElement('script'); s.async = false; s.type = 'text/javascript'; s.src = dependencies[i]; head.appendChild(s); } }; if (!window.dmc.dependenciesLoaded) { loadDependencies(); } })('" + JSON.stringify(data) + "');";
 
         var reqUrl = req.protocol + '://' + req.hostname + req.originalUrl;
-        countImpression(data.adunit_short_id, req.url, req.headers.referer, adunit[0].publisher);
+        countImpression(data.adunit_short_id, req.url, req.headers.referer, adunit[0].publisher + ": " + adunit[0].site);
 
         res.end(embed);
     });
 });
 
-function countImpression(adunitID, reqPath, referer, publisher) {
+function countImpression(adunitID, reqPath, referer, site) {
     // https://www.npmjs.com/package/universal-analytics
     // https://analytics.google.com/analytics/web/#realtime/rt-content/a77904027w122510217p128169733/%3Fmetric.type%3D1/
     var ua = require('universal-analytics');
     var visitor = ua('UA-77904027-3');
     // track pageview
-    visitor.pageview(reqPath, publisher, publisher).send();
+    visitor.pageview(reqPath, site, site).send();
     // track event
     visitor.event(adunitID, referer).send();
 }

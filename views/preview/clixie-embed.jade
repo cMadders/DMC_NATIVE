@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    title #{title}
+    link(rel='stylesheet', type='text/css', href='//d12vp4iug3um11.cloudfront.net/clixieplayer/0.5.1/clixieplayer.min.css')
+    style.
+      body {
+      margin: 0;
+      padding: 0;
+      }
+  body
+    #player
+    script(type='text/javascript', src='//d12vp4iug3um11.cloudfront.net/clixieplayer/0.5.1/clixieplayer.min.js')
+    script(type='text/javascript').
+      (function() {
+      var settings = {
+      url: "#{mp4}",
+      layout: 5,
+      videoId: "#{uuid}",
+      responsive: true
+      },
+      videoWrapperId = "player",
+      player = new Clixie.Player(videoWrapperId, settings);
+      })();
+
+//- <iframe id="clixie-video-player" width="100%" height="100%" allowfullscreen frameborder="0" src="http://localhost:3000/preview/clixie/embed/{{extra.clixie_vid_uuid}}/http%3A%2F%2Fdmc2k.digitalmediacommunications.com%2Fbeaumont%2Femployment%2F6131403_a.mp4"></iframe>

@@ -71,7 +71,7 @@ router.get('/mixpanel/export/:format?', function(req, res, next) {
         format: format
     }).then(function(data) {
         if (format == 'json') {
-           return res.json(data);
+            return res.json(data);
         } else {
             // if format is csv
             res.setHeader('Content-type', 'text/csv');
@@ -124,7 +124,7 @@ function fetchDMCPublication(req, cb) {
             var b = JSON.parse(body);
             // console.log(b);
             if (!b.listings || b.listings.length === 0) {
-                console.log('XUL publication not found');
+                console.log('XUL Publication Is Not Native Enabled');
                 return cb(null, {
                     response: 'error',
                     message: 'XUL Publication Is Not Native Enabled'
@@ -134,6 +134,7 @@ function fetchDMCPublication(req, cb) {
             // loop through each associated listing
             async.eachSeries(b.listings, function(listing, cb) {
                 req.listingID = listing.listingID;
+
                 // fetch and write to database
                 async.waterfall(
                     [async.apply(fetchDMCListing, req, "listingID"), writeCreative],
@@ -395,7 +396,7 @@ function fetchDMCListing(req, type, cb) {
             });
         } else {
             if (body.length == 2) {
-                console.log('XUL listing not found');
+                console.log('XUL listing not found: ' + req.listingID + ' | type: ' + type);
                 return cb(null, {
                     response: 'error',
                     message: 'no listing data found'
@@ -464,32 +465,86 @@ function writeCreative(creative, req, cb) {
             creative: creative
         });
     }
-    // console.log('writeCreative', creative.extra.listingID);
-    var c = new Creative(creative);
-    c.created_by = user.username || 'unknown';
-    c.save(function(err, creative) {
-        if (err) return handleError(err);
-        // console.log('creative saved');
-        var AdUnit = require('../models/adunit');
-        // console.log('adunitID', req.adunitID);
-        //find adunit
-        AdUnit.findById(req.adunitID, function(err, adunit) {
-            if (err) return handleError(err);
-            // associate adunit with creative
-            adunit.creatives.push({
-                _id: creative._id
-            });
-            // update/save adunit
-            adunit.save(function(err) {
-                if (err) return handleError(err);
-                return cb(null, {
-                    response: 'success',
-                    message: 'added',
-                    req: req,
-                    creative: creative
+
+    var listingID = creative.extra.listingID;
+    // if creative exists - update, else - save
+    Creative.findOne({ 'extra.listingID': listingID }, function(err, existingCreative) {
+        if (err) {
+            console.log('error with creative lookup');
+        } else {
+            if (existingCreative) {
+                // UPDATE
+                //associate with adunit
+                AdUnit.findOne({ '_id': req.adunitID }, function(err, adunit) {
+                    if (err) return handleError(err);
+                    if (adunit && adunit.creatives) {
+                        // determine if creative exists
+                        var exists = _.findWhere(adunit.creatives, { 'listingID': existingCreative.extra.listingID });
+                        if (exists) {
+                            console.log('adunit match found');
+                            return cb(null, {
+                                response: 'success',
+                                message: 'creative and association already exist',
+                                req: req,
+                                creative: existingCreative
+                            });
+                        } else {
+                            // console.log('no match found: ', req.adunitID);
+                            AdUnit.findById(req.adunitID, function(err, adunit) {
+                                // associate adunit with creative
+                                adunit.creatives.push({
+                                    _id: existingCreative._id,
+                                    listingID: existingCreative.extra.listingID
+                                });
+                                // update/save adunit
+                                adunit.save(function(err) {
+                                    if (err) return handleError(err);
+                                    console.log('creative associated with ad unit: ', req.adunitID);
+                                    return cb(null, {
+                                        response: 'success',
+                                        message: 'creative exists - association with ad unit now complete',
+                                        req: req,
+                                        creative: existingCreative
+                                    });
+                                });
+                            });
+                        }
+                    } else {
+                        return cb('error');
+                    }
                 });
-            });
-        });
+            } else {
+                // CREATE NEW (ADD)
+                console.log('create new creative: ', listingID);
+                var c = new Creative(creative);
+                c.created_by = user.username || 'unknown';
+                c.save(function(err, creative) {
+                    if (err) return handleError(err);
+                    console.log('creative added');
+                    //associate with adunit
+                    AdUnit.findById(req.adunitID, function(err, adunit) {
+                        if (err) return handleError(err);
+                        // associate adunit with creative
+                        adunit.creatives.push({
+                            _id: creative._id,
+                            listingID: creative.extra.listingID
+                        });
+                        // update/save adunit
+                        adunit.save(function(err) {
+                            if (err) return handleError(err);
+                            console.log('creative associated with ad unit: ', req.adunitID);
+                            return cb(null, {
+                                response: 'success',
+                                message: 'added',
+                                req: req,
+                                creative: creative
+                            });
+                        });
+                    });
+                });
+
+            }
+        }
     });
 }
 

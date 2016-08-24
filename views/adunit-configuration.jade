@@ -34,13 +34,13 @@
           | Edit
     h5 Ad Unit Configuration
 
-  .ibox-content.no-padding
-    .bg-image(style="background-image:url('#{(adunit.card && adunit.card.logo)?adunit.card.logo:''}');")
+  .ibox-content
+    .bg-image.adunit-logo(style="background-image:url('#{(adunit.card && adunit.card.logo)?adunit.card.logo:''}');")
 
   .ibox-content.profile-content(style="padding-top:0;")
     //- h4 #{adunit.publisher}
-    //- p ID: #{adunit._id}
-    //- p ID: #{adunit.short_id}
+    p _id: #{adunit._id}
+    p short_id: #{adunit.short_id}
     p Publisher: #{adunit.publisher}
     p Site: #{adunit.site}
     p Name: #{adunit.name}

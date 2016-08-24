@@ -58,7 +58,8 @@ var CreativeSchema = new mongoose.Schema({
         link: String
     },
     creation_date: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     created_by: String,
     last_modified: {

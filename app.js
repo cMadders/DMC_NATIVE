@@ -13,6 +13,7 @@ var adunit = require('./routes/adunit');
 var card = require('./routes/card');
 var demo = require('./routes/demo');
 var preview = require('./routes/preview');
+var cron = require('./routes/cron');
 
 //database
 var db = require('./db.connection.js');
@@ -71,6 +72,7 @@ app.use('/adunit', adunit);
 app.use('/card', card);
 app.use('/demo', demo);
 app.use('/preview', preview);
+app.use('/cron', cron);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

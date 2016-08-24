@@ -39,6 +39,10 @@
   background-size: contain;
   background-position: 0%;
 }
+.bg-image.adunit-logo {
+  background-position: 0;
+  height: 55px;
+}
 #editCreative.active {
   color: blue;
   font-weight: bold;

@@ -10,4 +10,12 @@ router.get('/clixie/:uuid?', function(req, res, next) {
     });
 });
 
+router.get('/clixie/embed/:uuid/:mp4', function(req, res, next) {
+    res.render('preview/clixie-embed', {
+        title: 'Clixie',
+        uuid: req.params.uuid,
+        mp4: req.params.mp4
+    });
+});
+
 module.exports = router;
