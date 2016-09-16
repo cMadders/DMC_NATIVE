@@ -8,8 +8,15 @@ html
       margin: 0;
       padding: 0;
       }
+      .clixie img{
+        display:none;
+      }
+      img.clixie-toast-image{
+      display:none !important;
+      }
   body
     #player
+    script(type='text/javascript', src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
     script(type='text/javascript', src='//d12vp4iug3um11.cloudfront.net/clixieplayer/0.5.1/clixieplayer.min.js')
     script(type='text/javascript').
       (function() {
@@ -17,10 +24,23 @@ html
       url: "#{mp4}",
       layout: 5,
       videoId: "#{uuid}",
-      responsive: true
+      poster: "https://d12vp4iug3um11.cloudfront.net/posters/c86721ed30ec9d8a5cbf198f8020fd3d.jpg",
+      responsive: false
       },
       videoWrapperId = "player",
-      player = new Clixie.Player(videoWrapperId, settings);
+      myPlayer = new Clixie.Player(videoWrapperId, settings);
+      myPlayer.on("ready", function () {
+        myPlayer.dock.close();
+        myPlayer.player.play();
+      });
       })();
 
+//- IFRAME EMBED
 //- <iframe id="clixie-video-player" width="100%" height="100%" allowfullscreen frameborder="0" src="http://localhost:3000/preview/clixie/embed/{{extra.clixie_vid_uuid}}/http%3A%2F%2Fdmc2k.digitalmediacommunications.com%2Fbeaumont%2Femployment%2F6131403_a.mp4"></iframe>
+
+//- PREVIEW
+//- http://localhost:3000/preview/clixie/embed/c81e5343-18c4-4ccd-821b-9792e5f1eccd/http%3A%2F%2Fdmc2k.digitalmediacommunications.com%2Fbeaumont%2Femployment%2F6131403_a.mp4
+
+//- OVERLAY / TOAST
+
+//- <div class="clixie-canvas"><a id="clixie-toast-1472066106842" class="clixie-toast clixie-toast-animated" href="#clixie_940"><img class="clixie-toast-image" src="https://d12vp4iug3um11.cloudfront.net/interaction_definitions/images/000/000/940/medium/6131403_a.gif?1471880496"><div class="clixie-toast-title">Advancement Opportunities!</div></a></div>

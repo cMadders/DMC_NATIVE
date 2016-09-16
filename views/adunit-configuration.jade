@@ -39,7 +39,7 @@
 
   .ibox-content.profile-content(style="padding-top:0;")
     //- h4 #{adunit.publisher}
-    p _id: #{adunit._id}
+    p id: #{adunit._id}
     p short_id: #{adunit.short_id}
     p Publisher: #{adunit.publisher}
     p Site: #{adunit.site}
@@ -59,22 +59,30 @@
     .bg-image.dmc-thumb(style="background-image:url('#{(adunit.thumbnail)?adunit.thumbnail:''}');")
     hr
 
+    p Persist Creatives: #{adunit.creatives_to_persist}
+
+    p
+      a(href="/dashboard/adunit/edit/#{adunit.short_id}") Ad Unit Template
+
+    p
+      //- KEEN-IO analytics
+      //- a(href="/dashboard/adunit/analytics/#{adunit.short_id}") Analytics
+      a(href="/dashboard/analytics/mixpanel") Analytics
+
+    p
+      a(data-toggle="modal" data-target="#embedModal") Publisher Embed Code
+
+    p
+      a(href="/card/list/#{adunit._id}" target="_blank") Card Preview
+
+    p
+      a(href="/api/adunit/compiled/#{adunit._id}" target="_blank") Compiled JSON
     if adunit.extra.dmc_index_url
       p
         a(href="#{adunit.extra.dmc_index_url}" target="_blank") DMC Index Page
       //- if adunit.extra.dmc_index_url_short
         p
           a(href="#{adunit.extra.dmc_index_url_short}" target="_blank") DMC Index Page <em>(short)</em>
-    p
-      a(href="/dashboard/adunit/edit/#{adunit.short_id}") Ad Unit Template
-    p
-      a(href="/api/adunit/compiled/#{adunit._id}" target="_blank") Compiled JSON
-    p
-      a(href="/dashboard/adunit/analytics/#{adunit.short_id}") Analytics
-    p
-      a(data-toggle="modal" data-target="#embedModal") Publisher Embed Code
-    p
-      a(href="/card/list/#{adunit._id}" target="_blank") Card Preview
     if adunit.demo.url
       p
         a(href="#{adunit.demo.url}" target="_blank") Publisher Demo

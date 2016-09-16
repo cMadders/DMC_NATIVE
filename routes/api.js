@@ -34,6 +34,10 @@ function handleError(err) {
     console.error(err);
 }
 
+router.get('sync/xul/listings/:adunitID', function(req, res, next) {
+    res.send('hello');
+});
+
 router.get('/ga/event/:eventName?', function(req, res, next) {
     // https://www.npmjs.com/package/universal-analytics
     var reqUrl = req.protocol + '://' + req.hostname + req.originalUrl;
@@ -63,7 +67,7 @@ router.get('/mixpanel/export/:format?', function(req, res, next) {
 
     panel.events({
         from_date: "2016-08-15",
-        to_date: "2016-08-22",
+        to_date: "2016-09-16",
         event: ["IVB Engaged", "Video Play", "Share", "Apply"],
         type: "general",
         unit: "day",
@@ -161,14 +165,62 @@ router.get('/creative/:id', function(req, res, next) {
     });
 });
 
+
+
 // UPDATE creative
 router.post('/creative/update', function(req, res, next) {
     req.body.last_modified_by = user.username || 'unknown';
-    Creative.findOneAndUpdate({
-        _id: req.body.creativeID
-    }, req.body, function(err, creative) {
-        if (err) return handleError(err);
-        res.redirect(req.body.returnURL);
+    var persistCreative = (req.body.persistCreative === undefined) ? false : true;
+    async.waterfall([
+        // update ad unit
+        function(callback) {
+            AdUnit.findById(req.body.adunitID, function(err, adunit) {
+                if (err) return callback(err);
+                console.log('adunit found: ' + adunit.id);
+                console.log('creatives_to_persist: ' + adunit.creatives_to_persist);
+                var index = _.indexOf(adunit.creatives_to_persist, req.body.creativeID);
+                console.log('index: ' + index);
+                if(index === -1){
+                    console.log('not found');
+                    if(persistCreative){
+                        // add to array
+                        console.log('add');
+                        adunit.creatives_to_persist.push(req.body.creativeID);
+                        console.log('save');
+                        //save update
+                        adunit.save();
+                    }
+                }else{
+                    if(!persistCreative){
+                        console.log('remove');
+                        //remove from array
+                        adunit.creatives_to_persist.splice(index,1);
+                        console.log('save');
+                        //save update
+                        adunit.save();
+                    }
+                }
+                callback(null, adunit);
+            });
+        },
+        function(data, callback) {
+            console.log('2nd operation');
+            callback(null);
+            // fs.writeFile(outputFile, data, function(err) {
+            //     callback(err, data);
+            // });
+        }
+    ], function(err, result) {
+        if (err) return res.status(500).send(err);
+        // res.status(200).send('processed successfully using async lib');
+        console.log('waterfall complete');
+        console.log('persistCreative: ' + persistCreative);
+        Creative.findOneAndUpdate({
+            _id: req.body.creativeID
+        }, req.body, function(err, creative) {
+            if (err) return handleError(err);
+            res.redirect(req.body.returnURL);
+        });
     });
 });
 
@@ -224,9 +276,9 @@ router.get('/creatives-removed/:adunitID', function(req, res, next) {
 
 //CREATE adunit
 router.post('/adunit/create', function(req, res, next) {
-    // assign short_id
     req.body.created_by = user.username || 'unknown';
     req.body.last_modified_by = user.username || 'unknown';
+    // assign short_id (ensure uniqueness?)
     req.body.short_id = UUID.v4().substr(0, 4);
     var a = new AdUnit(req.body);
     a.save(function(err, adunit) {

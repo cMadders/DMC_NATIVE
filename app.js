@@ -23,6 +23,7 @@ function connectionReady() {
     console.log('mongoose connectionReady()');
 }
 
+
 // auth
 var cookieSession = require('cookie-session');
 
@@ -40,6 +41,8 @@ app.use(cookieSession({
 
 // set momentjs to locals obj
 app.locals.moment = require('moment');
+
+console.log('\n----------------- ' + app.locals.moment().format());
 
 // define app locals
 app.locals.env = app.get('env');

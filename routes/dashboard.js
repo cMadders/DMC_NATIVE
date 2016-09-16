@@ -100,19 +100,21 @@ router.get('/adunits', function(req, res, next) {
 });
 
 router.get('/adunit/analytics/:shortID', function(req, res, next) {
-
     // KEEN.IO
-    // res.render('adunit-analytics', {
-    //     title: req.params.shortID,
-    //     pageID: 'adunits',
-    //     domain: req.app.locals.domain,
-    //     config: req.app.locals.config
-    // });
+    res.render('adunit-analytics', {
+        title: req.params.shortID,
+        pageID: 'adunits',
+        domain: req.app.locals.domain,
+        config: req.app.locals.config
+    });
+});
 
+
+router.get('/analytics/:type?', function(req, res, next) {
     // Mixpanel
     res.render('adunit-analytics-mixpanel', {
         title: req.params.shortID,
-        pageID: 'adunits',
+        pageID: 'analtyics',
         domain: req.app.locals.domain,
         config: req.app.locals.config
     });
@@ -190,6 +192,7 @@ router.get('/adunit/edit/:shortID', function(req, res, next) {
     });
 });
 
+// EDIT CREATIVE
 router.get('/adunit/:shortID/:creativeID', function(req, res, next) {
     async.waterfall([
         function(callback) {
@@ -226,11 +229,18 @@ router.get('/adunit/:shortID/:creativeID', function(req, res, next) {
             });
         }
 
+        var creativesToPersist = result.adunit.creatives_to_persist;
+        console.log('creativesToPersist: ' + creativesToPersist);
+        console.log('creativeID: ' + result.creative.id);
+        var index = creativesToPersist.indexOf(result.creative.id);
+        console.log('index: ' + index);
+
         res.render('creative-detail', {
             title: req.params.shortID,
             pageID: 'adunits',
             adunit: result.adunit,
             creative: result.creative,
+            persistCreative: (index === -1) ? false : true,
             domain: req.app.locals.domain,
             config: req.app.locals.config
         });

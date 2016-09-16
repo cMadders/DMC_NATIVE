@@ -1,6 +1,8 @@
 extends layout
 
 block content
+  - var persistCreative = function(creativesToPersist, creativeID){if(creativesToPersist.indexOf(creativeID) != -1){return true;}}
+
   .row.wrapper.border-bottom.white-bg.page-heading
     .col-lg-9
       h2 Ad Unit: #{title}
@@ -29,13 +31,13 @@ block content
             button.btn.btn-primary.btn-xs.pull-right.icon-btn#addCreative
               i.fa.fa-plus
               | Add Creative
-            button.btn.btn-primary.btn-xs.pull-right.icon-btn#addPublication
+            //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#addPublication
               i.fa.fa-plus
               | Add Publication
-            //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
+            button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
               i.fa.fa-refresh
-              | Sync w/ XUL
-            h5 Associated Creatives
+              | Sync
+            h5 Associated Creatives (#{creatives.length})
 
           .ibox-content.no-padding(style="padding-top:10px !important;")
             .alert.alert-warning.remove-creative-alert(role='alert')
@@ -53,6 +55,11 @@ block content
                           small #{creative.tagline}
                           //- .advertiser #{creative.advertiser}
                           .advertiser #{creative.extra.dmcAdNumber}
+                          .setting
+                            if persistCreative(adunit.creatives_to_persist,creative.id)
+                              i.fa.fa-lock
+                            if creative.extra.protect_overwrite
+                              i.fa.fa-ban
 
   script.
     var editMode = false;
@@ -105,17 +112,17 @@ block content
         }
     });
 
-    $('#addPublication').click(function(event) {
+    $('#sync').click(function(event) {
         event.preventDefault();
         swal({
-            title: "Add Publication Listings",
+            title: "Sync with Publication",
             text: "DMC Publication ID",
             type: "input",
             showCancelButton: true,
             closeOnConfirm: false,
             showLoaderOnConfirm: true,
             animation: "slide-from-top",
-            inputPlaceholder: "ex: 1194"
+            inputPlaceholder: "ex: 960"
         }, function(inputValue) {
             if (inputValue === false) return false;
             if (inputValue === "") {

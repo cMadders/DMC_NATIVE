@@ -42,6 +42,7 @@ var AdunitSchema = new mongoose.Schema({
     creatives: [],
     creative_count: Number,
     creative_categories: [],
+    creatives_to_persist: [],
     creatives_compiled: [],
     // type: String, //IVB or SLP (logic determined by count)
     card: {

@@ -65,10 +65,22 @@ block content
                 | Update
               h5 Creative Definition
             .ibox-content
-                //- input(type="hidden" name="adunitID" value="#{adunit._id}")
+                input(type="hidden" name="adunitID" value="#{adunit._id}")
                 input(type="hidden" name="creativeID" value="#{creative._id}")
                 input(type="hidden" name="returnURL" value="/dashboard/adunit/#{adunit.short_id}")
                 input(type="hidden" name="media.logo" id="logoInput" value="#{creative.media.logo}")
+
+                .form-group
+                  label.col-sm-2.control-label Persist
+                  .col-sm-10
+                    .checkbox
+                      label
+                        if persistCreative
+                          input(type='checkbox' name="persistCreative" checked)
+                        else
+                          input(type='checkbox' name="persistCreative")
+                        | <em>prevents sync from removing creative from ad unit</em>
+
                 .form-group
                   label.col-sm-2.control-label Vertical
                   .col-sm-10
