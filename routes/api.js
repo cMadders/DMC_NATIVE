@@ -45,11 +45,13 @@ function getNativeListings(adunitID, cb) {
 
 router.post('/sync/xul/listings', function(req, res, next) {
     var adunitID = req.body.adunitID;
+    // console.log('adunitID: ' + adunitID);
     var _creativesToPersist = [];
     async.waterfall([
         function(cb) {
             AdUnit.findById(adunitID, { 'creatives_to_persist': 1, 'creatives': 1, 'extra.dmc_publication_id': 1 }, function(err, adunit) {
                 if (err) return cb(err);
+                if (!adunit) return cb({ message: 'no ad unit returned' });
                 _creativesToPersist = adunit.creatives_to_persist;
                 cb(null, adunit.extra.dmc_publication_id);
             });
@@ -61,6 +63,7 @@ router.post('/sync/xul/listings', function(req, res, next) {
         // PROCESS
         function(response, cb) {
             var xulCreatives = response.xulCreatives;
+            xulCreatives = _.difference(xulCreatives, ['', null, undefined]);
             // add persistent creatives if they're not already in the mix
             _.each(xulCreatives, function(creative) {
                 var index = _creativesToPersist.indexOf(creative);
@@ -77,9 +80,11 @@ router.post('/sync/xul/listings', function(req, res, next) {
         }
     ], function(err, result) {
         if (err) {
-            res.json({
+            // console.log(err);
+            return res.json({
                 "response": 'error',
-                "message": 'listingID required in post request'
+                "message": err.message,
+                "count": 0
             });
         }
         res.json({ message: 'Sync Successful', count: 'Creatives Synced: ' + result.length });
@@ -89,14 +94,13 @@ router.post('/sync/xul/listings', function(req, res, next) {
 
 router.get('/sync/xul/listings/:adunitID', function(req, res, next) {
     var adunitID = req.params.adunitID;
-    console.log('\nSYNC: ', adunitID);
-
     var _creativesToPersist = [];
 
     async.waterfall([
         function(cb) {
             AdUnit.findById(adunitID, { 'creatives_to_persist': 1, 'creatives': 1, 'extra.dmc_publication_id': 1 }, function(err, adunit) {
                 if (err) return cb(err);
+                if (!adunit) return cb({ message: 'no ad unit returned' });
                 _creativesToPersist = adunit.creatives_to_persist;
                 cb(null, adunit.extra.dmc_publication_id);
             });
@@ -104,13 +108,13 @@ router.get('/sync/xul/listings/:adunitID', function(req, res, next) {
 
         // GET XUL LISTINGS
         function(publicationID, cb) {
-            // console.log('publicationID: ' + publicationID);
             fetchDMCPublication({ adunitID: adunitID, publicationID: publicationID }, cb);
         },
 
         // PROCESS
         function(response, cb) {
             var xulCreatives = response.xulCreatives;
+            xulCreatives = _.difference(xulCreatives, ['', null, undefined]);
             // console.log('xulCreatives: ' + xulCreatives);
             // console.log('_creativesToPersist: ' + _creativesToPersist);
 
@@ -121,9 +125,6 @@ router.get('/sync/xul/listings/:adunitID', function(req, res, next) {
                     _creativesToPersist.push(creative);
                 }
             });
-
-            // console.log('creatives: ' + _creativesToPersist);
-
             AdUnit.findById(adunitID, function(err, adunit) {
                 if (err) return cb(err);
                 adunit.creatives = _creativesToPersist;
@@ -133,10 +134,7 @@ router.get('/sync/xul/listings/:adunitID', function(req, res, next) {
         }
     ], function(err, result) {
         if (err) return res.status(500).send(err);
-        // console.log('waterfall complete');
         res.json(result);
-        // res.status(200).send('processed successfully using async lib');
-        // res.send('sync complete');
     });
 });
 
@@ -169,7 +167,7 @@ router.get('/mixpanel/export/:format?', function(req, res, next) {
 
     panel.events({
         from_date: "2016-08-15",
-        to_date: "2016-09-16",
+        to_date: "2016-09-17",
         event: ["IVB Engaged", "Video Play", "Share", "Apply"],
         type: "general",
         unit: "day",
@@ -230,10 +228,10 @@ function fetchDMCPublication(req, cb) {
             var b = JSON.parse(body);
             // console.log(b);
             if (!b.listings || b.listings.length === 0) {
-                console.log('XUL Publication Is Not Native Enabled');
+                // console.log('XUL Publication Is Not Native Enabled');
                 return cb({
                     response: 'error',
-                    message: 'XUL Publication Is Not Native Enabled'
+                    message: 'XUL Publication Is Not Native Enabled or Listing Count = 0'
                 });
             }
 
@@ -254,6 +252,9 @@ function fetchDMCPublication(req, cb) {
                         cb(null);
                     });
             }, function(err) {
+                if(err){
+                    return cb(err);
+                }
                 cb(null, {
                     response: 'success',
                     message: 'Publication Listings Synced',
@@ -395,23 +396,22 @@ router.post('/adunit/create', function(req, res, next) {
 router.get('/adunit/:id', function(req, res, next) {
     AdUnit.findById(req.params.id, function(err, adunit) {
         if (err) return handleError(err);
-
-        // reset creatives to []
-        // adunit.creatives = [];
-        // adunit.save(function(err) {
-        //     if (err) {
-        //         return console.log(err);
-        //     }
-        //     res.json(adunit);
-        // });
-
         res.json(adunit);
     });
 });
 
 // get compiled adunit (adunit and creative details)
 router.get('/adunit/compiled/:id', function(req, res, next) {
-    AdUnit.findById(req.params.id, function(err, adunit) {
+    var cache = require('memory-cache');
+    var adunitID = req.params.id;
+
+    // return cached version if exists
+    if (cache.get(adunitID)) {
+        // console.log('return cached version: ', adunitID);
+        return res.status(200).json(cache.get(adunitID));
+    }
+
+    AdUnit.findById(adunitID, function(err, adunit) {
         if (err) return handleError(err);
         var creatives = [];
         async.eachSeries(adunit.creatives, function(c, callback) {
@@ -459,6 +459,12 @@ router.get('/adunit/compiled/:id', function(req, res, next) {
                     });
                 });
                 adunit.creative_categories = categoryCount;
+
+                // store response in cache
+                cache.put(adunitID, adunit, 50000, function(key, value) {
+                    // Time in ms (5 minutes)
+                });
+
                 res.json(adunit);
             }
         });
@@ -519,7 +525,7 @@ router.post('/adunit/remove-creative', function(req, res, next) {
 });
 
 
-// list adunits
+// LIST AD UNITS
 router.get('/adunits/', function(req, res, next) {
     AdUnit.
     find().
@@ -536,6 +542,7 @@ router.get('/adunits/', function(req, res, next) {
     });
 });
 
+// FETCH DMC LISTING
 // get listing from api.digitalmediacommunications.com
 function fetchDMCListing(req, type, cb) {
     // console.log('fetchDMCListing', req.listingID);
@@ -558,6 +565,10 @@ function fetchDMCListing(req, type, cb) {
                     response: 'error',
                     message: 'no listing data found'
                 }, req);
+                // return cb({
+                //     response: 'error',
+                //     message: 'no listing data found'
+                // });
             }
             var obj = JSON.parse(body)[0];
             if (obj === undefined) {
@@ -565,6 +576,10 @@ function fetchDMCListing(req, type, cb) {
                     response: 'error',
                     message: 'no listing data found'
                 }, req);
+                // return cb({
+                //     response: 'error',
+                //     message: 'no listing data found'
+                // });
             }
 
             // refine listing object
@@ -575,6 +590,7 @@ function fetchDMCListing(req, type, cb) {
     });
 }
 
+// WRITE CREATIVE
 // save creative to adunit
 function writeCreative(creative, req, cb) {
     if (creative.response === "error") {
@@ -660,7 +676,7 @@ function writeCreative(creative, req, cb) {
                         // update/save adunit
                         adunit.save(function(err) {
                             if (err) return cb(err);
-                            console.log('creative associated with ad unit: ', req.adunitID);
+                            // console.log('creative associated with ad unit: ', req.adunitID);
                             return cb(null, {
                                 response: 'success',
                                 message: 'added',
@@ -682,7 +698,6 @@ function updateCreative(existingCreative, newCreative) {
         // console.log('updated creative');
     });
 }
-
 
 function createCreativeObject(obj) {
     var creative = {

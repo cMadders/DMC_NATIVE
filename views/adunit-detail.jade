@@ -134,7 +134,7 @@ block content
                 .done(function(data) {
                   console.log(data);
                     if (data.response == "error") {
-                        swal(data.message, inputValue, "error");
+                        swal(data.message, null, "error");
                     } else {
                         swal({
                             title: data.message,

@@ -27,6 +27,7 @@
     "jquery": "^2.2.2",
     "keen-js": "^3.3.0",
     "kerberos": "0.0.18",
+    "memory-cache": "^0.1.6",
     "mixpanel-data-export": "^2.0.2",
     "moment": "^2.11.1",
     "mongoose": "^4.3.7",

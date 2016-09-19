@@ -11,31 +11,38 @@ block content
           a(href="/dashboard/creatives") #{title}
 
 
-  .wrapper.wrapper-content.animated.fadeInRight
-    if creatives.length
-      table.table.table-striped.table-bordered.creative-table.table-hover(style='background:white;')
-        thead
-          th ID
-          th ListingID
-          th DMC Ad #
-          th Advertiser
-          //- th Headline
-          th Creation Date
-          th Last Modified
-          //- th Tagline
-        tbody
-        each creative in creatives
-          if creative
-            tr(data-creativeid="#{creative._id}")
-              //- td.bg-image.dmc(style="background-image:url('#{creative.media.logo}');")
-              td #{creative._id}
-              td #{creative.extra.listingID}
-              td #{creative.extra.dmcAdNumber}
-              td #{creative.advertiser}
-              //- td #{creative.headline}
-              td #{creative.creation_date}
-              td #{creative.last_modified}
-              //- td #{creative.tagline}
+   .wrapper.wrapper-content.animated.fadeInRight
+    .ibox
+      .ibox-title
+        a.btn.btn-primary.pull-right(href="/dashboard/creatives/remove-orphans")
+          | Remove Orphans
+
+      .ibox-content
+        .mail-box(style="margin-top:10px;")
+          if creatives.length
+            table.table.sortable-theme-bootstrap.table-hover.table-bordered(data-sortable).creative-table
+              thead
+                //- th ID
+                th ListingID
+                th DMC Ad #
+                th Advertiser
+                //- th Headline
+                th Tagline
+                //- th Creation Date
+                th Modified
+                //- th Tagline
+              tbody
+                each creative in creatives
+                  if creative
+                    tr(data-creativeid="#{creative._id}")
+                      //- td #{creative._id}
+                      td #{creative.extra.listingID}
+                      td #{creative.extra.dmcAdNumber}
+                      //- td #{creative.headline}
+                      td #{creative.advertiser}
+                      td #{creative.tagline}
+                      //- td #{creative.creation_date}
+                      td #{moment(creative.last_modified).format('MM/DD/YY')}
 
   script.
     $('.creative-table tbody tr').click(function(e){

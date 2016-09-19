@@ -5,7 +5,7 @@ var request = require('request');
 var _ = require('underscore');
 var AdUnit = require('../models/adunit');
 var Creative = require('../models/creative.js');
-var Demos = require('../models/demo.js');
+
 
 function handleError(err) {
     console.error(err);
@@ -18,7 +18,6 @@ router.all("/*", function(req, res, next) {
     } else {
         // console.log('NOT LOGGED-IN AS DMC');
         res.redirect('/auth/login');
-        // next();
     }
 });
 
@@ -51,16 +50,40 @@ router.get('/creatives', function(req, res, next) {
     });
 });
 
-// DEMOS
-router.get('/demos', function(req, res, next) {
-    Demos.find({}, function(err, demos) {
-        res.render('demos', {
-            title: 'Demos',
-            pageID: 'demos',
-            demos: demos,
-            domain: req.app.locals.domain,
-            config: req.app.locals.config
+//REMOVE ORPHAN CREATIVES
+router.get('/creatives/remove-orphans', function(req, res, next) {
+    var _creatives;
+    var _activeCreatives;
+    async.waterfall([
+        function(callback) {
+            // get creatives
+            Creative.find({}, { 'id': 1 }, function(err, creatives) {
+                if (err) return callback(err);
+                _creatives = _.pluck(creatives, 'id');
+                callback(null);
+            });
+        },
+        function(callback) {
+            // get adunits' creatives
+            AdUnit.find({}, { 'creatives': 1 }, function(err, adunits) {
+                _activeCreatives = _.pluck(adunits, 'creatives');
+                //flatten
+                _activeCreatives = _.flatten(_activeCreatives);
+                //unique
+                _activeCreatives = _.uniq(_activeCreatives);
+                callback(null);
+            });
+        },
+    ], function(err, result) {
+        if (err) return res.status(500).send(err);
+        // remove creatives orphaned creatives
+        var toDelete = _.difference(_creatives, _activeCreatives);
+        // console.log(toDelete);
+        // console.log('toDelete: ' + toDelete.length);
+        _.each(toDelete, function(creativeID) {
+            Creative.findById(creativeID).remove().exec();
         });
+        res.redirect('/dashboard/creatives');
     });
 });
 
@@ -155,9 +178,6 @@ router.get('/adunit/:shortID', function(req, res, next) {
             if (err) {
                 handleError(err);
             } else {
-                // console.log('All files have been processed successfully');
-                // console.log(creatives);
-                // res.json(adunit[0]);
                 res.render('adunit-detail', {
                     title: req.params.shortID,
                     pageID: 'adunits',
@@ -226,11 +246,7 @@ router.get('/adunit/:shortID/:creativeID', function(req, res, next) {
         }
 
         var creativesToPersist = result.adunit.creatives_to_persist;
-        // console.log('creativesToPersist: ' + creativesToPersist);
-        // console.log('creativeID: ' + result.creative.id);
         var index = creativesToPersist.indexOf(result.creative.id);
-        // console.log('index: ' + index);
-
         res.render('creative-detail', {
             title: req.params.shortID,
             pageID: 'adunits',
@@ -251,108 +267,6 @@ router.get('/create/adunit/', function(req, res, next) {
         config: req.app.locals.config
     });
 });
-
-
-
-// get demo retail listings
-router.get('/retail', function(req, res, next) {
-    async.waterfall([
-            // get publication listings
-            function(callback) {
-                listingCollection = [];
-                request('http://api.digitalmediacommunications.com:8080/getNativeAdsByPub/1013', function(error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                        var listings = JSON.parse(body);
-                        callback(null, listings.listings);
-                        // callback(null, [{
-                        //     listingID: 180743
-                        // }, {
-                        //     listingID: 178112
-                        // }]);
-                    }
-                });
-
-            },
-
-            // get listing detail (map)
-            function(listings, callback) {
-                console.log('listing count: ' + listings.length);
-                async.eachSeries(listings, fetchListingDetail, function(err) {
-                    console.log("Listing Detail EachSeries Finished!");
-                    callback(null, listingCollection);
-                });
-            }
-        ],
-        function(err, results) {
-            console.log('process complete');
-            // res.json(listingCollection);
-
-            res.render('creatives-list-preview', {
-                title: 'XUL Retail (1013)',
-                data: listingCollection,
-                pageID: 'xul',
-                subpageID: 'retail'
-            });
-        });
-});
-
-
-// get demo employment listings
-router.get('/employment', function(req, res, next) {
-    async.waterfall([
-            // get publication listings
-            function(callback) {
-                listingCollection = [];
-                request('http://api.digitalmediacommunications.com:8080/getNativeAdsByPub/960', function(error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                        var listings = JSON.parse(body);
-                        callback(null, listings.listings);
-                    }
-                });
-
-            },
-
-            // get listing detail (map)
-            function(listings, callback) {
-                console.log('listing count: ' + listings.length);
-                async.eachSeries(listings, fetchListingDetail, function(err) {
-                    console.log("Listing Detail EachSeries Finished!");
-                    callback(null, listingCollection);
-                });
-            }
-        ],
-        function(err, results) {
-            console.log('process complete');
-            // res.json(results);
-
-            res.render('creatives-list-preview', {
-                title: 'XUL Employment (960)',
-                data: listingCollection,
-                pageID: 'xul',
-                subpageID: 'employment'
-            });
-        });
-});
-
-
-var listingCollection = [];
-
-// fetch listing detail
-var fetchListingDetail = function(listing, cb) {
-    // console.log('listing: ' + listing.listingID);
-    request('http://api.digitalmediacommunications.com:8080/getListingInfo/' + listing.listingID, function(err, response, body) {
-        if (err) {
-            cb(err);
-        } else {
-            var listing = JSON.parse(body);
-            // console.log(listing);
-            if (listing[0] && listing[0].name) {
-                listingCollection.push(listing[0]);
-            }
-            cb();
-        }
-    });
-};
 
 
 module.exports = router;
