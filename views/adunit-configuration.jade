@@ -1,16 +1,3 @@
-//- #templateModal.modal.inmodal(tabindex='-1', role='dialog', aria-hidden='true', style='display: none;')
-  .modal-dialog.animated.slideInDown
-    .modal-content
-      .modal-header
-        button.close(type='button', data-dismiss='modal')
-          span(aria-hidden='true') ×
-          span.sr-only Close
-        h4.modal-title Ad Unit Template
-      .modal-body
-        textarea data goes here
-      .modal-footer
-        button.btn.btn-white(data-dismiss="modal") Close
-
 #embedModal.modal.inmodal(tabindex='-1', role='dialog', aria-hidden='true', style='display: none;')
   .modal-dialog.animated.fadeInUp
     .modal-content
@@ -39,12 +26,14 @@
 
   .ibox-content.profile-content(style="padding-top:0;")
     //- h4 #{adunit.publisher}
-    p id: #{adunit._id}
-    p short_id: #{adunit.short_id}
+    p <b>Ad Unit: #{adunit.short_id}</b>
     p Publisher: #{adunit.publisher}
     p Site: #{adunit.site}
     p Name: #{adunit.name}
     p Vertical: #{adunit.vertical}
+    if adunit.extra.dmc_publication_id
+      p DMC Publication ID: #{adunit.extra.dmc_publication_id}
+    p ID: #{adunit._id}
     //- if adunit.link && adunit.link.website
       p
         a(href="#{adunit.link.website}" target="_blank") Website
@@ -58,8 +47,6 @@
       p #{adunit.slug}
     .bg-image.dmc-thumb(style="background-image:url('#{(adunit.thumbnail)?adunit.thumbnail:''}');")
     hr
-
-    p Persist Creatives: #{adunit.creatives_to_persist}
 
     p
       a(href="/dashboard/adunit/edit/#{adunit.short_id}") Ad Unit Template

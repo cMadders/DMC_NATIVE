@@ -67,6 +67,7 @@ block content
             .ibox-content
                 input(type="hidden" name="adunitID" value="#{adunit._id}")
                 input(type="hidden" name="creativeID" value="#{creative._id}")
+                input(type="hidden" name="extra.listingID" value="#{creative.extra.listingID}")
                 input(type="hidden" name="returnURL" value="/dashboard/adunit/#{adunit.short_id}")
                 input(type="hidden" name="media.logo" id="logoInput" value="#{creative.media.logo}")
 
@@ -79,7 +80,18 @@ block content
                           input(type='checkbox' name="persistCreative" checked)
                         else
                           input(type='checkbox' name="persistCreative")
-                        | <em>prevents sync from removing creative from ad unit</em>
+                        | <em>prevents sync from removing creative from ad unit, #{adunit.short_id}</em>
+
+                .form-group
+                  label.col-sm-2.control-label Prevent Overwrite
+                  .col-sm-10
+                    .checkbox
+                      label
+                        if creative.extra.protect_overwrite
+                          input(type='checkbox' name="extra.protect_overwrite" checked)
+                        else
+                          input(type='checkbox' name="extra.protect_overwrite")
+                        | <em>prevents sync from overwriting creative details</em>
 
                 .form-group
                   label.col-sm-2.control-label Vertical

@@ -10,6 +10,7 @@ var Creative = require('../models/creative.js');
 
 function handleError(err) {
     console.error(err);
+    res.status(500).send(err);
 }
 
 var user;
@@ -34,8 +35,109 @@ function handleError(err) {
     console.error(err);
 }
 
-router.get('sync/xul/listings/:adunitID', function(req, res, next) {
-    res.send('hello');
+function getNativeListings(adunitID, cb) {
+    AdUnit.findById(adunitID, { 'creatives_to_persist': 1, 'creatives': 1 }, function(err, adunit) {
+        if (err) return cb(err);
+        cb(null, adunit);
+    });
+}
+
+
+router.post('/sync/xul/listings', function(req, res, next) {
+    var adunitID = req.body.adunitID;
+    var _creativesToPersist = [];
+    async.waterfall([
+        function(cb) {
+            AdUnit.findById(adunitID, { 'creatives_to_persist': 1, 'creatives': 1, 'extra.dmc_publication_id': 1 }, function(err, adunit) {
+                if (err) return cb(err);
+                _creativesToPersist = adunit.creatives_to_persist;
+                cb(null, adunit.extra.dmc_publication_id);
+            });
+        },
+        // GET XUL LISTINGS
+        function(publicationID, cb) {
+            fetchDMCPublication({ adunitID: adunitID, publicationID: publicationID }, cb);
+        },
+        // PROCESS
+        function(response, cb) {
+            var xulCreatives = response.xulCreatives;
+            // add persistent creatives if they're not already in the mix
+            _.each(xulCreatives, function(creative) {
+                var index = _creativesToPersist.indexOf(creative);
+                if (index === -1) {
+                    _creativesToPersist.push(creative);
+                }
+            });
+            AdUnit.findById(adunitID, function(err, adunit) {
+                if (err) return cb(err);
+                adunit.creatives = _creativesToPersist;
+                adunit.save();
+                cb(null, adunit.creatives);
+            });
+        }
+    ], function(err, result) {
+        if (err) {
+            res.json({
+                "response": 'error',
+                "message": 'listingID required in post request'
+            });
+        }
+        res.json({ message: 'Sync Successful', count: 'Creatives Synced: ' + result.length });
+    });
+});
+
+
+router.get('/sync/xul/listings/:adunitID', function(req, res, next) {
+    var adunitID = req.params.adunitID;
+    console.log('\nSYNC: ', adunitID);
+
+    var _creativesToPersist = [];
+
+    async.waterfall([
+        function(cb) {
+            AdUnit.findById(adunitID, { 'creatives_to_persist': 1, 'creatives': 1, 'extra.dmc_publication_id': 1 }, function(err, adunit) {
+                if (err) return cb(err);
+                _creativesToPersist = adunit.creatives_to_persist;
+                cb(null, adunit.extra.dmc_publication_id);
+            });
+        },
+
+        // GET XUL LISTINGS
+        function(publicationID, cb) {
+            // console.log('publicationID: ' + publicationID);
+            fetchDMCPublication({ adunitID: adunitID, publicationID: publicationID }, cb);
+        },
+
+        // PROCESS
+        function(response, cb) {
+            var xulCreatives = response.xulCreatives;
+            // console.log('xulCreatives: ' + xulCreatives);
+            // console.log('_creativesToPersist: ' + _creativesToPersist);
+
+            // add persistent creatives if they're not already in the mix
+            _.each(xulCreatives, function(creative) {
+                var index = _creativesToPersist.indexOf(creative);
+                if (index === -1) {
+                    _creativesToPersist.push(creative);
+                }
+            });
+
+            // console.log('creatives: ' + _creativesToPersist);
+
+            AdUnit.findById(adunitID, function(err, adunit) {
+                if (err) return cb(err);
+                adunit.creatives = _creativesToPersist;
+                adunit.save();
+                cb(null, adunit.creatives);
+            });
+        }
+    ], function(err, result) {
+        if (err) return res.status(500).send(err);
+        // console.log('waterfall complete');
+        res.json(result);
+        // res.status(200).send('processed successfully using async lib');
+        // res.send('sync complete');
+    });
 });
 
 router.get('/ga/event/:eventName?', function(req, res, next) {
@@ -119,7 +221,7 @@ function fetchDMCPublication(req, cb) {
     var url = 'http://api.digitalmediacommunications.com:8080/getNativeAdsByPub/' + req.publicationID;
     request(url, function(err, response, body) {
         if (err) {
-            return cb(null, {
+            return cb({
                 response: 'error',
                 message: err
             });
@@ -129,27 +231,35 @@ function fetchDMCPublication(req, cb) {
             // console.log(b);
             if (!b.listings || b.listings.length === 0) {
                 console.log('XUL Publication Is Not Native Enabled');
-                return cb(null, {
+                return cb({
                     response: 'error',
                     message: 'XUL Publication Is Not Native Enabled'
-                }, req);
+                });
             }
 
+            var cArry = [];
             // loop through each associated listing
             async.eachSeries(b.listings, function(listing, cb) {
                 req.listingID = listing.listingID;
 
                 // fetch and write to database
+                // console.log('fetch and write');
                 async.waterfall(
                     [async.apply(fetchDMCListing, req, "listingID"), writeCreative],
                     function(err, result) {
+                        if (err) return cb(err);
+                        // console.log('result');
+                        // console.log(result.creative.id);
+                        cArry.push(result.creative.id);
                         cb(null);
                     });
             }, function(err) {
                 cb(null, {
                     response: 'success',
-                    message: 'Publication Listings Added',
-                    req: req
+                    message: 'Publication Listings Synced',
+                    req: req,
+                    xulListings: b.listings,
+                    xulCreatives: cArry
                 });
             });
         }
@@ -171,32 +281,26 @@ router.get('/creative/:id', function(req, res, next) {
 router.post('/creative/update', function(req, res, next) {
     req.body.last_modified_by = user.username || 'unknown';
     var persistCreative = (req.body.persistCreative === undefined) ? false : true;
+    req.body['extra.protect_overwrite'] = (req.body['extra.protect_overwrite'] === undefined) ? false : true;
     async.waterfall([
         // update ad unit
         function(callback) {
             AdUnit.findById(req.body.adunitID, function(err, adunit) {
                 if (err) return callback(err);
-                console.log('adunit found: ' + adunit.id);
-                console.log('creatives_to_persist: ' + adunit.creatives_to_persist);
+                // console.log('adunit found: ' + adunit.id);
+                // console.log('creatives_to_persist: ' + adunit.creatives_to_persist);
                 var index = _.indexOf(adunit.creatives_to_persist, req.body.creativeID);
-                console.log('index: ' + index);
-                if(index === -1){
-                    console.log('not found');
-                    if(persistCreative){
+                if (index === -1) {
+                    // console.log('not found');
+                    if (persistCreative) {
                         // add to array
-                        console.log('add');
                         adunit.creatives_to_persist.push(req.body.creativeID);
-                        console.log('save');
-                        //save update
                         adunit.save();
                     }
-                }else{
-                    if(!persistCreative){
-                        console.log('remove');
+                } else {
+                    if (!persistCreative) {
                         //remove from array
-                        adunit.creatives_to_persist.splice(index,1);
-                        console.log('save');
-                        //save update
+                        adunit.creatives_to_persist.splice(index, 1);
                         adunit.save();
                     }
                 }
@@ -204,23 +308,20 @@ router.post('/creative/update', function(req, res, next) {
             });
         },
         function(data, callback) {
-            console.log('2nd operation');
-            callback(null);
-            // fs.writeFile(outputFile, data, function(err) {
-            //     callback(err, data);
-            // });
+            // update creative
+            Creative.findOneAndUpdate({
+                _id: req.body.creativeID
+            }, req.body, function(err, creative) {
+                if (err) return callback(err);
+                callback(null);
+            });
         }
     ], function(err, result) {
         if (err) return res.status(500).send(err);
         // res.status(200).send('processed successfully using async lib');
         console.log('waterfall complete');
         console.log('persistCreative: ' + persistCreative);
-        Creative.findOneAndUpdate({
-            _id: req.body.creativeID
-        }, req.body, function(err, creative) {
-            if (err) return handleError(err);
-            res.redirect(req.body.returnURL);
-        });
+        res.redirect(req.body.returnURL);
     });
 });
 
@@ -317,16 +418,16 @@ router.get('/adunit/compiled/:id', function(req, res, next) {
             // only return associated creatives
             if (c) {
                 Creative.find({
-                    _id: c._id
+                    _id: c
                 }, function(err, creative) {
-                    if (err) return handleError(err);
+                    if (err) callback(err);
                     if (creative.length) {
                         creatives.push(creative[0]);
-                        return callback();
+                        callback(null);
                     }
                 });
             } else {
-                callback();
+                return callback('no creative found');
             }
         }, function(err) {
             if (err) {
@@ -378,10 +479,15 @@ router.delete('/adunit/:id', function(req, res, next) {
 // UPDATE adunit
 router.post('/adunit/update', function(req, res, next) {
     req.body.last_modified_by = user.username || 'unknown';
-
     // strip spaces and line breaks from template
     req.body.template = stripLineBreaks(req.body.template);
     req.body.template = stripSpacingBetweenTags(req.body.template);
+
+    if (!req.body['extra.dmc_publication_id'] || !req.body['extra.dmc_publication_key']) {
+        // remove publication association if both key and id are not set
+        req.body['extra.dmc_publication_id'] = null;
+        req.body['extra.dmc_publication_key'] = null;
+    }
 
     AdUnit.findOneAndUpdate({
         _id: req.body.adunitID
@@ -392,14 +498,14 @@ router.post('/adunit/update', function(req, res, next) {
 });
 
 
-// REMOVE creative from adunit
+// REMOVE creative association from adunit
 router.post('/adunit/remove-creative', function(req, res, next) {
     AdUnit.findById(req.body.adunitID, function(err, adunit) {
         if (err) {
             return console.log(err);
         }
-        adunit.creatives = _.map(adunit.creatives, function(creative) {
-            if (creative && creative._id != req.body.creativeID) {
+        adunit.creatives = _.filter(adunit.creatives, function(creative) {
+            if (creative != req.body.creativeID.toString()) {
                 return creative;
             }
         });
@@ -410,9 +516,8 @@ router.post('/adunit/remove-creative', function(req, res, next) {
             res.json(adunit);
         });
     });
-
-    //Add remove reference to CreativeRemoved document
 });
+
 
 // list adunits
 router.get('/adunits/', function(req, res, next) {
@@ -463,51 +568,14 @@ function fetchDMCListing(req, type, cb) {
             }
 
             // refine listing object
-            var creative = {
-                status: "active",
-                vertical: obj.publication['vertical'],
-                advertiser: obj.name,
-                name: obj.name,
-                headline: obj.name,
-                tagline: obj.tagline,
-                description: obj.description,
-                category: obj.category,
-                media: {
-                    logo: obj.media.logoGif,
-                    mp4: obj.media.mp4
-                },
-                link: {
-                    website: obj.website,
-                    email: obj.email,
-                    phone: obj.phone,
-                    slp: obj.links.slpLink,
-                    slp_short: obj.links.shortLink,
-                    qr: obj.links.qrLink
-                },
-                address: {
-                    street: obj.address_1,
-                    street_2: obj.address_2,
-                    city: obj.city,
-                    state: obj.state,
-                    zip: obj.zip
-                },
-                coupon: {
-                    text: obj.media.couponText,
-                    link: obj.couponLink
-                },
-                extra: {
-                    listingID: obj.listingID,
-                    dmcAdNumber: obj.dmcAdNumber,
-                    clixie_vid_uuid: obj.clixie_vid_uuid
-                }
-            };
+            var creative = createCreativeObject(obj);
             // console.log('creative', creative);
             return cb(null, creative, req);
         }
     });
 }
 
-// save creative to adunit (within database)
+// save creative to adunit
 function writeCreative(creative, req, cb) {
     if (creative.response === "error") {
         return cb(null, {
@@ -522,18 +590,25 @@ function writeCreative(creative, req, cb) {
     // if creative exists - update, else - save
     Creative.findOne({ 'extra.listingID': listingID }, function(err, existingCreative) {
         if (err) {
-            console.log('error with creative lookup');
+            // console.log('error with creative lookup');
+            return cb(err);
         } else {
             if (existingCreative) {
                 // UPDATE
+
+                //update creative information if not protected
+                if (!existingCreative.extra.protect_overwrite) {
+                    updateCreative(existingCreative, creative);
+                }
+
                 //associate with adunit
                 AdUnit.findOne({ '_id': req.adunitID }, function(err, adunit) {
-                    if (err) return handleError(err);
+                    if (err) return cb(err);
                     if (adunit && adunit.creatives) {
                         // determine if creative exists
                         var exists = _.findWhere(adunit.creatives, { 'listingID': existingCreative.extra.listingID });
                         if (exists) {
-                            console.log('adunit match found');
+                            // console.log('adunit match found');
                             return cb(null, {
                                 response: 'success',
                                 message: 'creative and association already exist',
@@ -541,8 +616,9 @@ function writeCreative(creative, req, cb) {
                                 creative: existingCreative
                             });
                         } else {
-                            // console.log('no match found: ', req.adunitID);
+                            // no match found
                             AdUnit.findById(req.adunitID, function(err, adunit) {
+                                if (err) return cb(err);
                                 // associate adunit with creative
                                 adunit.creatives.push({
                                     _id: existingCreative._id,
@@ -550,8 +626,8 @@ function writeCreative(creative, req, cb) {
                                 });
                                 // update/save adunit
                                 adunit.save(function(err) {
-                                    if (err) return handleError(err);
-                                    console.log('creative associated with ad unit: ', req.adunitID);
+                                    if (err) return cb(err);
+                                    // console.log('creative associated with ad unit: ', req.adunitID);
                                     return cb(null, {
                                         response: 'success',
                                         message: 'creative exists - association with ad unit now complete',
@@ -562,20 +638,20 @@ function writeCreative(creative, req, cb) {
                             });
                         }
                     } else {
-                        return cb('error');
+                        return cb('no ad unit found');
                     }
                 });
             } else {
                 // CREATE NEW (ADD)
-                console.log('create new creative: ', listingID);
+                // console.log('create new creative: ', listingID);
                 var c = new Creative(creative);
                 c.created_by = user.username || 'unknown';
                 c.save(function(err, creative) {
-                    if (err) return handleError(err);
-                    console.log('creative added');
+                    if (err) return cb(err);
+                    // console.log('creative added');
                     //associate with adunit
                     AdUnit.findById(req.adunitID, function(err, adunit) {
-                        if (err) return handleError(err);
+                        if (err) return cb(err);
                         // associate adunit with creative
                         adunit.creatives.push({
                             _id: creative._id,
@@ -583,7 +659,7 @@ function writeCreative(creative, req, cb) {
                         });
                         // update/save adunit
                         adunit.save(function(err) {
-                            if (err) return handleError(err);
+                            if (err) return cb(err);
                             console.log('creative associated with ad unit: ', req.adunitID);
                             return cb(null, {
                                 response: 'success',
@@ -594,10 +670,60 @@ function writeCreative(creative, req, cb) {
                         });
                     });
                 });
-
             }
         }
     });
+}
+
+// update creative properties (from XUL)
+function updateCreative(existingCreative, newCreative) {
+    Creative.findByIdAndUpdate(existingCreative.id, { $set: newCreative }, { new: true }, function(err, Event) {
+        if (err) console.log(err);
+        // console.log('updated creative');
+    });
+}
+
+
+function createCreativeObject(obj) {
+    var creative = {
+        status: "active",
+        vertical: obj.publication['vertical'],
+        advertiser: obj.name,
+        name: obj.name,
+        headline: obj.name,
+        tagline: obj.tagline,
+        description: obj.description,
+        category: obj.category,
+        media: {
+            logo: obj.media.logoGif,
+            mp4: obj.media.mp4
+        },
+        link: {
+            website: obj.website,
+            email: obj.email,
+            phone: obj.phone,
+            slp: obj.links.slpLink,
+            slp_short: obj.links.shortLink,
+            qr: obj.links.qrLink
+        },
+        address: {
+            street: obj.address_1,
+            street_2: obj.address_2,
+            city: obj.city,
+            state: obj.state,
+            zip: obj.zip
+        },
+        coupon: {
+            text: obj.media.couponText,
+            link: obj.couponLink
+        },
+        extra: {
+            listingID: obj.listingID,
+            dmcAdNumber: obj.dmcAdNumber,
+            clixie_vid_uuid: obj.clixie_vid_uuid
+        }
+    };
+    return creative;
 }
 
 function stripLineBreaks(str) {

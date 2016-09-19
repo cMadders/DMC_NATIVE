@@ -31,12 +31,10 @@ block content
             button.btn.btn-primary.btn-xs.pull-right.icon-btn#addCreative
               i.fa.fa-plus
               | Add Creative
-            //- button.btn.btn-primary.btn-xs.pull-right.icon-btn#addPublication
-              i.fa.fa-plus
-              | Add Publication
-            button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
-              i.fa.fa-refresh
-              | Sync
+            if adunit.extra.dmc_publication_id
+              button.btn.btn-primary.btn-xs.pull-right.icon-btn#sync
+                i.fa.fa-refresh
+                | Sync
             h5 Associated Creatives (#{creatives.length})
 
           .ibox-content.no-padding(style="padding-top:10px !important;")
@@ -89,7 +87,7 @@ block content
           };
           swal({
               title: "Remove Creative?",
-              text: dmcAdNumber,
+              text: "DMC Ad Nubmer: " + dmcAdNumber,
               showCancelButton: true,
               closeOnConfirm: false,
               showLoaderOnConfirm: true,
@@ -105,9 +103,6 @@ block content
                   .fail(function() {
                       console.log("error");
                   })
-                  .always(function() {
-                      //- console.log("complete");
-                  });
           })
         }
     });
@@ -116,34 +111,34 @@ block content
         event.preventDefault();
         swal({
             title: "Sync with Publication",
-            text: "DMC Publication ID",
-            type: "input",
+            text: "DMC Publication ID: #{adunit.extra.dmc_publication_id}",
             showCancelButton: true,
             closeOnConfirm: false,
             showLoaderOnConfirm: true,
             animation: "slide-from-top",
-            inputPlaceholder: "ex: 960"
+            //- type: "input",
+            //- inputPlaceholder: "ex: 960"
         }, function(inputValue) {
-            if (inputValue === false) return false;
-            if (inputValue === "") {
-                swal.showInputError("You need to input a value");
-                return false
-            }
-            var url = "#{domain}#{config.api.publication}";
+            //- if (inputValue === false) return false;
+            //- if (inputValue === "") {
+            //-     swal.showInputError("You need to input a value");
+            //-     return false
+            //- }
+            var url = "#{domain}#{config.api.sync}";
             var obj = {
-                "publicationID": inputValue,
+                //- "publicationID": inputValue,
                 "adunitID": "#{adunit._id}"
             };
             var jqxr = $.post(url, obj, function(data) {
                 })
                 .done(function(data) {
-                  //- console.log(data);
+                  console.log(data);
                     if (data.response == "error") {
                         swal(data.message, inputValue, "error");
                     } else {
                         swal({
                             title: data.message,
-                            //- text: data.req.publicationID,
+                            text: data.count,
                             type: 'success',
                             showCancelButton: false,
                             closeOnConfirm: false,

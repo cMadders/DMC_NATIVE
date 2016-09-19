@@ -139,22 +139,18 @@ router.get('/adunit/:shortID', function(req, res, next) {
         var creatives = [];
         async.eachSeries(adunit[0].creatives, function(c, callback) {
             // only return associated creatives
-            if (c && c._id) {
-                Creative.find({
-                    _id: c._id
-                }, function(err, creative) {
-                    if (err) return handleError(err);
-                    if (creative.length) {
-                        creatives.push(creative[0]);
-                        return callback();
-                    } else {
-                        console.log('creative not found');
-                        return callback();
-                    }
-                });
-            } else {
-                callback();
-            }
+            Creative.find({
+                _id: c
+            }, function(err, creative) {
+                if (err) return callback(err);
+                if (creative.length) {
+                    creatives.push(creative[0]);
+                    return callback(null);
+                } else {
+                    console.log('creative not found');
+                    return callback(null);
+                }
+            });
         }, function(err) {
             if (err) {
                 handleError(err);
@@ -230,10 +226,10 @@ router.get('/adunit/:shortID/:creativeID', function(req, res, next) {
         }
 
         var creativesToPersist = result.adunit.creatives_to_persist;
-        console.log('creativesToPersist: ' + creativesToPersist);
-        console.log('creativeID: ' + result.creative.id);
+        // console.log('creativesToPersist: ' + creativesToPersist);
+        // console.log('creativeID: ' + result.creative.id);
         var index = creativesToPersist.indexOf(result.creative.id);
-        console.log('index: ' + index);
+        // console.log('index: ' + index);
 
         res.render('creative-detail', {
             title: req.params.shortID,

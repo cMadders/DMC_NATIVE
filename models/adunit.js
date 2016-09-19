@@ -92,6 +92,7 @@ var AdunitSchema = new mongoose.Schema({
     last_modified_by: String
 });
 
+
 AdunitSchema.pre('findOneAndUpdate', function(next) {
     this.update({}, {
         $set: {
@@ -136,9 +137,11 @@ AdunitSchema.pre('findOneAndUpdate', function(next) {
     } else {
         this.update({}, {
             $set: {
-                'extra.dmc_index_url': null
+                'extra.dmc_index_url': null,
+                'extra.dmc_index_url_short': null
             }
         });
+        next();
     }
 });
 
