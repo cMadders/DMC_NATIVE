@@ -78,7 +78,11 @@ var AdunitSchema = new mongoose.Schema({
         dmc_publication_id: String,
         dmc_publication_key: String,
         dmc_index_url: String,
-        dmc_index_url_short: String
+        dmc_index_url_short: String,
+        dmc_xul_auto_sync: {
+            type: Boolean,
+            default: false
+        }
     },
     creation_date: {
         type: Date,

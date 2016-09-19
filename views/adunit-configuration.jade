@@ -32,8 +32,12 @@
     p Name: #{adunit.name}
     p Vertical: #{adunit.vertical}
     if adunit.extra.dmc_publication_id
-      p DMC Publication ID: #{adunit.extra.dmc_publication_id}
-    p ID: #{adunit._id}
+      p
+        a(href="http://xul.digitalmediacommunications.com/index.php/admin/publications/edit/publication/#{adunit.extra.dmc_publication_id}" target="_blank") DMC Publication ID: #{adunit.extra.dmc_publication_id}
+
+    p XUL Auto Sync: #{adunit.extra.dmc_xul_auto_sync}
+
+    //- p ID: #{adunit._id}
     //- if adunit.link && adunit.link.website
       p
         a(href="#{adunit.link.website}" target="_blank") Website

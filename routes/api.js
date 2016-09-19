@@ -345,26 +345,6 @@ router.post('/creative', function(req, res, next) {
 });
 
 
-// DELETE creative
-router.delete('/creative/:adunitID/:creativeID', function(req, res, next) {
-    // DISABLED FOR NOW
-
-    //TODO: should remove reference to creative from adunit.creative object
-
-    //don't delete, just remove from "active" array
-    //association/addition should write to active and assoc collections
-
-    // Creative.findByIdAndRemove(req.params.creativeID, function(err, creative) {
-    //     if (err) return handleError(err);
-    //     res.send({
-    //         status: 'success',
-    //         message: 'creative removed',
-    //         creative: req.params.creativeID
-    //     });
-    // });
-});
-
-
 //get removed creative references
 router.get('/creatives-removed/:adunitID', function(req, res, next) {
     var CreativeRemoved = require('../models/creativeRemoved.js');
@@ -373,7 +353,6 @@ router.get('/creatives-removed/:adunitID', function(req, res, next) {
         res.json(adunit);
     });
 });
-
 
 
 //CREATE adunit
@@ -489,10 +468,13 @@ router.post('/adunit/update', function(req, res, next) {
     req.body.template = stripLineBreaks(req.body.template);
     req.body.template = stripSpacingBetweenTags(req.body.template);
 
+    req.body['extra.dmc_xul_auto_sync'] = (req.body['extra.dmc_xul_auto_sync'] === undefined) ? false : true;
+
     if (!req.body['extra.dmc_publication_id'] || !req.body['extra.dmc_publication_key']) {
         // remove publication association if both key and id are not set
         req.body['extra.dmc_publication_id'] = null;
         req.body['extra.dmc_publication_key'] = null;
+        req.body['extra.dmc_xul_auto_sync'] = false;
     }
 
     AdUnit.findOneAndUpdate({

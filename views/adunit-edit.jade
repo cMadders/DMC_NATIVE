@@ -104,6 +104,17 @@ block content
                     input.form-control(type='text' name="extra.dmc_publication_key" value="#{(adunit.extra && adunit.extra.dmc_publication_key)?adunit.extra.dmc_publication_key:''}")
                     span.help-block.m-b-none This field is required for social sharing of IVB. Value should represent DMC Publication Key (ex: dem)
 
+                .form-group
+                  label.col-sm-2.control-label Auto-Sync
+                  .col-sm-10
+                    .checkbox
+                      label
+                        if adunit.extra.dmc_xul_auto_sync
+                          input(type='checkbox' name="extra.dmc_xul_auto_sync" checked)
+                        else
+                          input(type='checkbox' name="extra.dmc_xul_auto_sync")
+                        | <em>sync with XUL publication in background</em>
+
                 .hr-line-dashed
                 .form-group
                   label.col-sm-2.control-label  Publisher Demo

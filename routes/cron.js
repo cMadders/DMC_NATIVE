@@ -11,48 +11,45 @@ var CronJob = require('cron').CronJob;
 
 router.get('/sync/listings', function(req, res, next) {
     var _adunits;
+    var _result = [];
 
     async.waterfall([
         function(cb) {
             // get adunits
-            AdUnit.find({}, { 'id': 1 }, function(err, adunits) {
+            AdUnit.find({ 'extra.dmc_xul_auto_sync': true }, { 'id': 1,'publisher':1,'name':1 }, function(err, adunits) {
                 if (err) return cb(err);
-                _adunits = _.pluck(adunits, 'id');
-                cb(null, _adunits);
+                cb(null, adunits);
             });
         },
         function(adunits, cb) {
-            // console.log(adunits[0]);
-
-            // request.post('http://localhost:3000/api/sync/xul/listings', { form: { 'adunitID': adunits[1] } }, function(err, response, body) {
-            //     if (err) return callback(err);
-            //     console.log('\n-----------');
-            //     console.log(body);
-            //     cb();
-            // });
-
             //async each
-            async.eachSeries(adunits, function(adunitID, callback) {
-                // Perform operation on file here.
-                console.log('Processing file ' + adunitID);
-                request.post('http://localhost:3000/api/sync/xul/listings', { form: { 'adunitID': adunitID } }, function(err, response, body) {
+            async.eachSeries(adunits, function(adunit, callback) {
+                var obj = {};
+                obj.adunit = adunit.id;
+                obj.publisher = adunit.publisher;
+                obj.name = adunit.name;
+                console.log('\n-----------');
+                console.log('Processing file ' + adunit.id);
+                request.post(req.app.locals.domain + '/api/sync/xul/listings', { form: { 'adunitID': adunit.id } }, function(err, response, body) {
                     if (err) return callback(err);
-                    console.log('\n-----------');
                     console.log(body);
+                    obj.status = JSON.parse(body);
+                    _result.push(obj);
                     callback();
                 });
             }, function(err) {
                 if (err) {
                     console.log(err);
                 } else {
-                    console.log('All files have been processed successfully');
+                    // console.log('All files have been processed successfully');
                     cb();
                 }
             });
         },
     ], function(err, result) {
         if (err) return res.status(500).send(err);
-        res.status(200).send('success');
+        // res.status(200).send('XUL Auto-SYNC Complete');
+        res.json(_result);
     });
 
 
