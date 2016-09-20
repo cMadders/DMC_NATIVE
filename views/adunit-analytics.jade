@@ -1,119 +1,123 @@
 extends layout
 
 block content
-  .row.wrapper.border-bottom.white-bg.page-heading
-    .col-lg-9
-      h2 Ad Unit: #{title} - Analytics
-      ol.breadcrumb
-        li
-          a(href="/dashboard") Home
-        li
-          a(href="/dashboard/adunits") Ad Units
-        li
-          a(href="/dashboard/adunit/#{title}") #{title}
-        li.active
-          a(href="/dashboard/adunit/analytics/#{title}") Analytics
-
-  style(type='text/css').
-    .chart {
-      width: 100%;
-      height: 400px;
-    }
-
-  .wrapper.wrapper-content
-    h3 Activity over the last 120 days
-        span(style="float: right;font-style: italic;") *DMC Ad Number
-
-    #video_plays_by_listing.chart
-    #applications_by_listing.chart
-    #shares_by_listing.chart
-    #shares_by_medium.chart
-
-  script(type='text/javascript', src='//d26b395fwzu5fz.cloudfront.net/3.4.0-rc/keen.min.js')
-  script.
-      var client = new Keen({
-      projectId: "56c1264e46f9a71a338f446c",
-      readKey: "999947218e19b89394486d06ee6991ae424daba1710a6759e97556a5bc6704e3510a93dfb7989a77c7ebff5bb38460a486b030adff6f60956466ba4558b5d50b328872daa20ec24c9bd3fcf7e8bd6649fad4a0ed30829e7682967723711054ac"
-      });
-      Keen.ready(function() {
-
-        var video_plays_by_listing = new Keen.Query("count", {
-        eventCollection: "video_plays",
-        groupBy: [
-        "dmcAdNumber"
-        ],
-        filters: [{
-        "property_name": "short_id",
-        "operator": "eq",
-        "property_value": "#{title}"
-        }],
-        timeframe: "this_120_days",
-        timezone: "UTC"
-        });
-        client.draw(video_plays_by_listing, document.getElementById("video_plays_by_listing"), {
-        chartType: "columnchart",
-        title: "Video Plays",
-        });
-
-        var applications_by_listing = new Keen.Query("count", {
-        eventCollection: "apply_actions",
-        groupBy: [
-        "medium",
-        "creative.extra.dmcAdNumber"
-        ],
-        filters:[
-        {
-        "property_name": "short_id",
-        "operator": "eq",
-        "property_value": "#{title}",
-        }
-        ],
-        timeframe: "this_120_days",
-        timezone: "UTC"
-        });
-        client.draw(applications_by_listing, document.getElementById("applications_by_listing"), {
-        title: "Website Clicks (apply now)",
-        chartType: "columnchart",
-        colors: ["#FE6672"]
-        });
+	.row.wrapper.border-bottom.white-bg.page-heading
+		.col-xs-12
+			h2 Ad Unit: #{title} - Analytics
+			ol.breadcrumb
+				li
+					a(href="/dashboard") Home
+				li
+					a(href="/dashboard/adunits") Ad Units
+				li
+					a(href="/dashboard/adunit/#{title}") #{title}
+				li.active
+					a(href="/dashboard/adunit/analytics/#{title}") Analytics
 
 
-        var shares_by_listing = new Keen.Query("count", {
-        eventCollection: "share_actions",
-        groupBy: [
-        "creative.extra.dmcAdNumber"
-        ],
-        filters: [{
-        "property_name": "short_id",
-        "operator": "eq",
-        "property_value": "#{title}"
-        }],
-        timeframe: "this_120_days",
-        timezone: "UTC"
-        });
-        client.draw(shares_by_listing, document.getElementById("shares_by_listing"), {
-        title: "Shares",
-        chartType: "columnchart",
-        colors: ["#2F4050"]
-        });
+	.wrapper.wrapper-content.animated.fadeInRight
+		.ibox
+			.ibox-title
+				h2 Activity over the last 30 days
+				a.btn.btn-primary.pull-right
+					| Remove Orphans
 
-        var shares_by_medium = new Keen.Query("count", {
-        eventCollection: "share_actions",
-        groupBy: [
-        "medium"
-        ],
-        filters:[
-        {
-        "property_name": "short_id",
-        "operator": "eq",
-        "property_value": "#{title}",
-        }
-        ],
-        timeframe: "this_120_days",
-        timezone: "UTC"
-        });
-        client.draw(shares_by_medium, document.getElementById("shares_by_medium"), {
-        title: "Shares By Medium",
-        });
+			.ibox-content(style="height:400px;")
+					.col-xs-8
+						#output
+						hr
+						#output-2
+					.col-xs-4
+						#date-selector
 
-      });
+	link(rel='stylesheet', type='text/css', href='https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css')
+	script(src='//cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js')
+	//- script(src='/js/mixpanel-native.js')
+	script.
+		//- create date selector
+		var dateSelector = $('<div></div>').appendTo('#date-selector').MPDatepicker();
+		dateSelector.on('change', function(e, dates) {
+			alert('From: ' + dates.from + '\nTo: ' + dates.to);
+			var start = moment(dates.from).format('YYYY-MM-DD');
+			var end = moment(dates.to).format('YYYY-MM-DD');
+			loadSecond(start,end);
+		});
+		MP.api.setCredentials('c97cbd5d6f444d7ecc12828b7ccd898b');
+		MP.api.jql(
+		function main() {
+		return Events({
+		from_date: "2016-08-21",
+		to_date: "2016-09-20"
+		})
+		// .filter(function(event) { return event.name == "Video Play" })
+		.filter(function(event) { return event.properties.short_id == "#{shortID}" })
+		.groupBy(
+		["name", "properties.medium"],
+		mixpanel.reducer.count()
+		)
+		.map(function(item) {
+		return {
+		"action": item.key[0],
+		// "dmcAdNumber": item.key[1],
+		"medium": item.key[1],
+		"value": item.value
+		};
+		});
+		}
+		).done(function(results) {
+		console.log(results);
+		results = _.sortBy(results, 'value').reverse();
+		_.each(results, function(result) {
+		console.log(result);
+		var str = result.action + " | " + result.value + "<br>";
+		if (result.action == "Share") {
+		str = result.action + ": " + result.medium + " | " + result.value + "<br>";
+		}
+		$('#output').append(str);
+		});
+		});
+
+		function loadSecond(start,end){
+		console.log('loadSecond: ', start);
+		MP.api.jql(
+		function main() {
+		return Events({
+		from_date: start,
+		to_date: "2016-09-20"
+		})
+		// .filter(function(event) { return event.name == "Video Play" })
+		.filter(function(event) { return event.properties.short_id == "#{shortID}" })
+		.groupBy(
+		["name", "properties.medium"],
+		mixpanel.reducer.count()
+		)
+		.map(function(item) {
+		return {
+		"action": item.key[0],
+		// "dmcAdNumber": item.key[1],
+		"medium": item.key[1],
+		"value": item.value
+		};
+		});
+		}
+		).done(function(results) {
+		console.log(results);
+		results = _.sortBy(results, 'value').reverse();
+		_.each(results, function(result) {
+		console.log('2nd Query')
+		console.log(result);
+		var jr = result.action + " | " + result.value + "<br>";
+		if (result.action == "Share") {
+		jr = result.action + ": " + result.medium + " | " + result.value + "<br>";
+		}
+		$('#output-2').append(jr);
+		});
+		});
+		};
+
+
+
+
+
+
+

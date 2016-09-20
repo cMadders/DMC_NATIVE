@@ -1,7 +1,102 @@
 extends layout
 
 block content
-  .wrapper.wrapper-content.animated.fadeInLeft
+  link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js')
+
+  .wrapper.wrapper-content
+    .row
+      .col-lg-12
+        .ibox.float-e-margins
+          .ibox-content
+            div
+              span.pull-right.text-right
+                small
+                  | Average value of sales in the past month in:
+                  strong &nbsp;United states
+                br
+                |                                             All sales: 162,862
+              h1.m-b-xs $ 50,992
+              h3.font-bold.no-margins
+                | Half-year revenue margin
+              small Sales marketing.
+            div
+              #snapshot-chart(style="height: 250px;")
+            .m-t-md
+              small.pull-right
+                i.fa.fa-clock-o
+                |                                         Update on 16.07.2015
+              small
+                strong Analysis of sales:
+                |  The value has been changed over time, and last month reached a level over $50,000.
+
+    script.
+      new Morris.Line({
+      element: 'snapshot-chart',
+      data: [
+      { y: '2006', a: 100, b: 90, c:20 },
+      { y: '2007', a: 75,  b: 65, c:50 },
+      { y: '2008', a: 50,  b: 40, c:70 },
+      { y: '2009', a: 75,  b: 65, c:50 },
+      { y: '2010', a: 50,  b: 40, c:70 },
+      { y: '2011', a: 75,  b: 65, c:50 },
+      { y: '2012', a: 100, b: 90, c:50 }
+      ],
+      xkey: 'y',
+      ykeys: ['a', 'b','c'],
+      labels: ['Series A', 'Series B', 'Series C']
+      });
+
+
+
+    .row
+      .col-lg-3
+        .ibox.float-e-margins
+          .ibox-title
+            span.label.label-success.pull-right Monthly
+            h5 Income
+          .ibox-content
+            h1.no-margins 40 886,200
+            .stat-percent.font-bold.text-success
+              | 98%
+              i.fa.fa-bolt
+            small Total income
+      .col-lg-3
+        .ibox.float-e-margins
+          .ibox-title
+            span.label.label-info.pull-right Annual
+            h5 Orders
+          .ibox-content
+            h1.no-margins 275,800
+            .stat-percent.font-bold.text-info
+              | 20%
+              i.fa.fa-level-up
+            small New orders
+      .col-lg-3
+        .ibox.float-e-margins
+          .ibox-title
+            span.label.label-primary.pull-right Today
+            h5 visits
+          .ibox-content
+            h1.no-margins 106,120
+            .stat-percent.font-bold.text-navy
+              | 44%
+              i.fa.fa-level-up
+            small New visits
+      .col-lg-3
+        .ibox.float-e-margins
+          .ibox-title
+            span.label.label-danger.pull-right Low value
+            h5 User activity
+          .ibox-content
+            h1.no-margins 80,600
+            .stat-percent.font-bold.text-danger
+              | 38%
+              i.fa.fa-level-down
+            small In first month
+
+  //- .wrapper.wrapper-content.animated.fadeInLeft
     .row
       .col-lg-12
         .text-center.m-t-lg

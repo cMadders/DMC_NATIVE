@@ -418,6 +418,22 @@ $(document).ready(function() {
         $('#entryOutput').html(compiledTemplate);
     }
 
+    function getMobileOperatingSystem() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        // Windows Phone must come first because its UA also contains "Android"
+        if (/windows phone/i.test(userAgent)) {
+            return "windows";
+        }
+        if (/android/i.test(userAgent)) {
+            return "android";
+        }
+        // iOS detection from: http://stackoverflow.com/a/9039885/177710
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            return "iOS";
+        }
+        return "unknown";
+    }
+
     function setSocial(social_url, social_url_short, website, creative) {
         // console.log('social_url: ', social_url);
         // console.log('social_url_short: ', social_url_short);
@@ -470,8 +486,10 @@ $(document).ready(function() {
             $('#card-footer .twitter').attr('href', twitter);
 
             //set sms
-            var sms = 'sms://&body=';
-            sms = sms + message;
+            var sms = 'sms:&body=' + message;
+            if(getMobileOperatingSystem() != "iOS"){
+                sms = 'sms:?body=' + message;
+            }
             $('#card-footer .sms').attr('href', sms);
         } else {
             $('#card-footer .share').hide();

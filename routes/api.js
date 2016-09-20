@@ -175,8 +175,8 @@ router.get('/mixpanel/export/:format?', function(req, res, next) {
     format = format.toLowerCase();
 
     panel.events({
-        from_date: "2016-08-15",
-        to_date: "2016-09-17",
+        from_date: "2016-08-21",
+        to_date: "2016-09-20",
         event: ["IVB Engaged", "Video Play", "Share", "Apply"],
         type: "general",
         unit: "day",

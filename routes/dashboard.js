@@ -126,6 +126,7 @@ router.get('/adunit/analytics/:shortID', function(req, res, next) {
     // KEEN.IO
     res.render('adunit-analytics', {
         title: req.params.shortID,
+        shortID: req.params.shortID,
         pageID: 'adunits',
         domain: req.app.locals.domain,
         config: req.app.locals.config
