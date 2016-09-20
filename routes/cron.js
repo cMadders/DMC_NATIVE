@@ -8,15 +8,27 @@ var Creative = require('../models/creative.js');
 var CronJob = require('cron').CronJob;
 
 // https://www.npmjs.com/package/cron
+router.get('/trigger', function(req, res, next) {
+    var job = new CronJob('0,15,30,45 * * * *', function() {
+        console.log('You will see this message every 15min');
+        syncListings(req);
+    }, null, true, 'America/New_York');
+    res.send('cron: sync listings activated');
+});
 
 router.get('/sync/listings', function(req, res, next) {
+    syncListings(req);
+    res.redirect('/dashboard/adunits');
+});
+
+function syncListings(req) {
     var _adunits;
     var _result = [];
 
     async.waterfall([
         function(cb) {
             // get adunits
-            AdUnit.find({ 'extra.dmc_xul_auto_sync': true }, { 'id': 1,'publisher':1,'name':1 }, function(err, adunits) {
+            AdUnit.find({ 'extra.dmc_xul_auto_sync': true }, { 'id': 1, 'publisher': 1, 'name': 1 }, function(err, adunits) {
                 if (err) return cb(err);
                 cb(null, adunits);
             });
@@ -48,27 +60,12 @@ router.get('/sync/listings', function(req, res, next) {
         },
     ], function(err, result) {
         if (err) return res.status(500).send(err);
+         // on success, clear cached responses.
+
+        console.log('XUL Auto-SYNC Complete');
         // res.status(200).send('XUL Auto-SYNC Complete');
-        res.json(_result);
+        // res.json(_result);
     });
-
-
-    // try {
-    //     new CronJob('0,15,30,45 * * * *', function() {
-    //         console.log('this should not be printed');
-    //     });
-    // } catch (ex) {
-    //     console.log("cron pattern not valid");
-    // }
-
-    // var job = new CronJob('0,15,30,45 * * * *', function() {
-    //     console.log('You will see this message every 15min');
-    // }, null, true, 'America/New_York');
-    // res.send('cron: sync listings activated');
-
-
-    // on success, clear cached responses.
-
-});
+}
 
 module.exports = router;

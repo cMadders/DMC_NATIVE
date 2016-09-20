@@ -154,6 +154,15 @@ router.get('/ga/event/:eventName?', function(req, res, next) {
     });
 });
 
+router.get('/mixpanel/test',function(req,res,next){
+     res.render('adunit-analytics-mixpanel-detail', {
+        title: 'mixpanel',
+        pageID: 'adunits',
+        domain: req.app.locals.domain,
+        config: req.app.locals.config
+    });
+
+});
 
 router.get('/mixpanel/export/:format?', function(req, res, next) {
     var MixpanelExport = require('mixpanel-data-export');
