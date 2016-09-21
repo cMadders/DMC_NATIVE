@@ -59,7 +59,7 @@ html
         div#card-detail
           script(id="entry-template" type="text/x-handlebars-template").
             {{#if isClixie}}
-              <iframe id="clixie-video-player" width="100%" height="100%" allowfullscreen frameborder="0" src="http://responsestg.clixiesite.com/embed?video_uuid={{extra.clixie_vid_uuid}}&page=1&transitions"></iframe>
+              <iframe id="clixie-video-player" width="100%" height="180" allowfullscreen frameborder="0" src="#{domain}/clixie/embed"></iframe>
             {{else}}
               <video id="native-video-player" controls preload="none" src="{{media.mp4}}" style="background-image:url({{media.logo}});"></video>
             {{/if}}

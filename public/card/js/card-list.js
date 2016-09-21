@@ -4,13 +4,16 @@ $(document).ready(function() {
     var track_to_mixpanel;
     var cardViewportTop = 0;
     var page_url = 'http://www.digitalmediacommunications.com';
-    var token = 'not set';
+    var token;
 
     function initCard() {
         // console.log(window.DMC.Native.data);
 
         // get token from Widgets.DMC for POST authentication
         setXUL_Token();
+
+        // activate clixie iFrame addEventListener
+        clixie_post_message_listener();
 
         //if listing count is greater than 21, show filter menu
         if (window.DMC.Native.data.creative_count > 21) {
@@ -56,6 +59,56 @@ $(document).ready(function() {
             ease: Power1.easeOut
         });
         // alert('card ready');
+    }
+
+    // listen for Clixie events via postMessage (iFrame)
+    function clixie_post_message_listener() {
+        var beacon;
+        // Create IE + others compatible event handler
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+        // Listen to message from child window
+        eventer(messageEvent, function(e) {
+            if (e.data.id === 'dmc-clixie-player-ready') {
+                // console.log('dmc-clixie-player-ready');
+                // post creative details to clixie player
+                var message = ac;
+                message.id = "dmc-init-clixie-player";
+                var iframe = document.getElementById('clixie-video-player').contentWindow;
+                iframe.postMessage(message, "*");
+            }
+            if (e.data.id === 'dmc-clixie-apply-now-clicked') {
+                // console.log('dmc-clixie-apply-now-clicked');
+                try {
+                    var medium = "Apply";
+                    beacon = constructCreativeBeacon();
+                    if (ac) {
+                        fireXUL_Beacon(medium.toLowerCase(), ac.extra.listingID);
+                    }
+                    if (track_to_mixpanel) {
+                        var action = "Apply";
+                        beacon.medium = medium;
+                        mixpanel.track(action, beacon);
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+                if (ac && ac.link.website) {
+                    window.open(ac.link.website);
+                }
+            }
+            if (e.data.id === 'dmc-clixie-video-play') {
+                // console.log('dmc-clixie-video-play');
+                try {
+                    beacon = constructCreativeBeacon();
+                    fireVideoPlayBeacon(beacon);
+                    fireXUL_Beacon("video_play", beacon.listingID);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }, false);
     }
 
     // window.resize callback function
@@ -141,13 +194,14 @@ $(document).ready(function() {
     }
 
     // fires beacon to XUL for additional tracking purposes
-    function fireXUL_Beacon(type, listingID) {
+    function fireXUL_Beacon(type, listingID, isClixie) {
         var url = "http://widgets.digitalmediacommunications.com/analytics/clicks";
 
+        var classification = (isClixie) ? 'native-clixie' : 'native';
         if (type == "apply") {
             type = "apply_here";
         }
-        var arr = [listingID.toString(), type, "M1", "native", window.DMC.Native.data.extra.dmc_publication_id, page_url];
+        var arr = [listingID.toString(), type, "M1", classification, window.DMC.Native.data.extra.dmc_publication_id, page_url];
 
         // console.log('fireXUL_Beacon', arr);
         // console.log('token', token);
@@ -244,6 +298,9 @@ $(document).ready(function() {
         window.scrollTo(0, 0);
         getDimensions();
         $('html, body').addClass('disable-scroll');
+        // set clixie embed height
+        var clixieHeight = window.innerWidth / 1.77778;
+        $('#clixie-video-player').attr('height', Math.round(clixieHeight));
     }
 
     function detailClosed() {
@@ -323,12 +380,6 @@ $(document).ready(function() {
             } else {
                 action = "Apply";
             }
-            beacon.url = page_url;
-            beacon.id = window.DMC.Native.data._id;
-            beacon.short_id = window.DMC.Native.data.short_id;
-            beacon.publisher = window.DMC.Native.data.publisher;
-            beacon.site = window.DMC.Native.data.site;
-            beacon.name = window.DMC.Native.data.name;
             beacon.medium = medium;
             mixpanel.track(action, beacon);
         }
@@ -371,13 +422,21 @@ $(document).ready(function() {
 
         var beacon = constructCreativeBeacon();
         fireVideoPlayBeacon(beacon);
-        fireXUL_Beacon("video_play", beacon.listingID);
+        var isClixie = (beacon.videoType == "Clixie") ? true : false;
+        fireXUL_Beacon("video_play", beacon.listingID, isClixie);
     });
 
     function constructCreativeBeacon() {
         var beacon = {};
+        beacon.url = page_url;
+        beacon.id = window.DMC.Native.data._id;
+        beacon.short_id = window.DMC.Native.data.short_id;
+        beacon.publisher = window.DMC.Native.data.publisher;
+        beacon.site = window.DMC.Native.data.site;
+        beacon.name = window.DMC.Native.data.name;
+
         if (ac) {
-            var videoType = (ac.extra.clixie_vid_uuid) ? 'Clixie' : 'DMC';
+            var videoType = (ac.extra.clixie_vid_uuid && ac.extra.clixie_vid_uuid !== "0") ? 'Clixie' : 'DMC';
             beacon = {
                 id: ac._id,
                 listingID: ac.extra.listingID,
@@ -386,6 +445,7 @@ $(document).ready(function() {
                 tagline: ac.tagline,
                 category: ac.category,
                 vertical: ac.vertical,
+                website: ac.link.website,
                 referrer: document.referrer,
                 type: 'listing',
                 videoType: videoType,
@@ -487,7 +547,7 @@ $(document).ready(function() {
 
             //set sms
             var sms = 'sms:&body=' + message;
-            if(getMobileOperatingSystem() != "iOS"){
+            if (getMobileOperatingSystem() != "iOS") {
                 sms = 'sms:?body=' + message;
             }
             $('#card-footer .sms').attr('href', sms);
