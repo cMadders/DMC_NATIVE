@@ -24,9 +24,10 @@ function initPlayer() {
             videoId: ac.extra.clixie_vid_uuid,
             // poster: "http://dmc2k.digitalmediacommunications.com/html5_logos/employment/default_index_video_slate.jpg",
             poster: ac.media.logo,
-            responsive: true,
+            responsive: false,
             autoplay: false
         },
+        clixieCount = 0,
         videoWrapperId = "videoPlayer";
 
     player = new Clixie.Player(videoWrapperId, settings);
@@ -35,9 +36,11 @@ function initPlayer() {
         // console.log('player.ready');
         $('#dmc-loading').text('click to play video').addClass('ready');
         $('#dmc-loading.ready').click(function(event) {
-          player.play();
+            player.play();
         });
-        $('.clixie-dock').remove();
+
+        // $('.clixie-dock').remove();
+
         $('.clixie-canvas').on('click', '.clixie-toast', function(event) {
             event.preventDefault();
             // console.log('toast clicked');
@@ -64,12 +67,23 @@ function initPlayer() {
     });
 
     player.on("added", function(event) {
-        // console.log('player.added');
+        console.log(event);
+        if (event.type == "clixie:added") {
+            clixieCount++;
+            if (clixieCount == 2) {
+              $('head').append($('<style>.clixie-toast-animated{ animation-duration: 20s; }</style>'));
+                // setTimeout(function() {
+                //     console.log('extend toasty duration');
+                //     $('head').append($('<style>.clixie-toast-animated{ animation-duration: 20s; }</style>'));
+                // }, 2000);
+            }
+        }
     });
 
     player.on("end", function(event) {
         // console.log('player.end');
     });
+
 }
 
 // apply loading overlay

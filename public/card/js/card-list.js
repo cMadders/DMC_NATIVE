@@ -187,8 +187,7 @@ $(document).ready(function() {
     function setXUL_Token() {
         $.get("//widgets.digitalmediacommunications.com/analytics/get_token", function(data) {
             var p = JSON.parse(data);
-            // console.log(p);
-            console.log('token', p.hash);
+            // console.log('token', p.hash);
             token = p.hash;
         });
     }
@@ -215,7 +214,7 @@ $(document).ready(function() {
                 "data": JSON.stringify(arr)
             },
             success: function(result) {
-                window.console.log('XUL Analytics Logged Successfully');
+                // window.console.log('XUL Analytics Logged Successfully');
             }
         });
     }
