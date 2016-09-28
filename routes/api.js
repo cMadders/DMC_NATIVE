@@ -143,7 +143,8 @@ router.get('/ga/event/:eventName?', function(req, res, next) {
     var reqUrl = req.protocol + '://' + req.hostname + req.originalUrl;
     var eventName = req.params.eventName || 'general';
     var ua = require('universal-analytics');
-    var visitor = ua('UA-77904027-3');
+    // var visitor = ua('UA-77904027-3'); //JCOTTAM
+    var visitor = ua('UA-76562851-1'); //DMC
     visitor.pageview("/", eventName, reqUrl, function(err) {
         if (err) {
             console.log('ga error: ', ga);
