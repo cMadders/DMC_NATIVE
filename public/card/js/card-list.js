@@ -78,10 +78,11 @@ $(document).ready(function() {
                 var iframe = document.getElementById('clixie-video-player').contentWindow;
                 iframe.postMessage(message, "*");
             }
-            if (e.data.id === 'dmc-clixie-apply-now-clicked') {
-                // console.log('dmc-clixie-apply-now-clicked');
+            if (e.data.id === 'dmc-clixie-toast-clicked') {
+                // console.log('dmc-clixie-toast-clicked');
                 try {
-                    var medium = "Apply";
+                    // var medium = "Apply";
+                    var medium = "clixie";
                     beacon = constructCreativeBeacon();
                     if (ac) {
                         fireXUL_Beacon(medium.toLowerCase(), ac.extra.listingID);
@@ -196,13 +197,15 @@ $(document).ready(function() {
     function fireXUL_Beacon(type, listingID, isClixie) {
         var url = "http://widgets.digitalmediacommunications.com/analytics/clicks";
 
-        var classification = (isClixie) ? 'native-clixie' : 'native';
+        // var classification = (isClixie) ? 'native-clixie' : 'native';
+
+        var classification = 'native';
         if (type == "apply") {
             type = "apply_here";
         }
         var arr = [listingID.toString(), type, "M1", classification, window.DMC.Native.data.extra.dmc_publication_id, page_url];
 
-        // console.log('fireXUL_Beacon', arr);
+        console.log('fireXUL_Beacon', arr);
         // console.log('token', token);
         if (!token) return;
 

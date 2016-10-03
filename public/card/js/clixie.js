@@ -7,13 +7,13 @@
 var ac; //active creative
 var player; //clixie player
 
-function applyNowClicked() {
-    // console.log('applyNowClicked');
+function clixieToastClicked() {
+    // console.log('clixieToastClicked');
     // pause video
     player.pause();
     //post message
     var message = {};
-    message.id = "dmc-clixie-apply-now-clicked";
+    message.id = "dmc-clixie-toast-clicked";
     parent.postMessage(message, "*");
 }
 
@@ -22,15 +22,13 @@ function initPlayer() {
             url: ac.media.mp4,
             layout: 5,
             videoId: ac.extra.clixie_vid_uuid,
-            // poster: "http://dmc2k.digitalmediacommunications.com/html5_logos/employment/default_index_video_slate.jpg",
             poster: ac.media.logo,
             responsive: false,
             autoplay: false
         },
         clixieCount = 0,
-        videoWrapperId = "videoPlayer";
 
-    player = new Clixie.Player(videoWrapperId, settings);
+    player = new Clixie.Player("videoPlayer", settings);
 
     player.on("ready", function() {
         // console.log('player.ready');
@@ -44,7 +42,7 @@ function initPlayer() {
         $('.clixie-canvas').on('click', '.clixie-toast', function(event) {
             event.preventDefault();
             // console.log('toast clicked');
-            applyNowClicked();
+            clixieToastClicked();
         });
     });
 
@@ -57,7 +55,7 @@ function initPlayer() {
         $('#dmc-apply').click(function(event) {
             event.preventDefault();
             // console.log('clicked');
-            applyNowClicked();
+            clixieToastClicked();
         });
 
         // track play (disabling b/c Native tracks video play on detail view)
@@ -72,10 +70,6 @@ function initPlayer() {
             clixieCount++;
             if (clixieCount == 2) {
               $('head').append($('<style>.clixie-toast-animated{ animation-duration: 20s; }</style>'));
-                // setTimeout(function() {
-                //     console.log('extend toasty duration');
-                //     $('head').append($('<style>.clixie-toast-animated{ animation-duration: 20s; }</style>'));
-                // }, 2000);
             }
         }
     });
@@ -83,7 +77,6 @@ function initPlayer() {
     player.on("end", function(event) {
         // console.log('player.end');
     });
-
 }
 
 // apply loading overlay
