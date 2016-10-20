@@ -9,11 +9,12 @@ var CronJob = require('cron').CronJob;
 
 // https://www.npmjs.com/package/cron
 router.get('/trigger', function(req, res, next) {
-    var job = new CronJob('0,15,30,45 * * * *', function() {
-        console.log('You will see this message every 15min');
+    var job = new CronJob('*/20 * * * *', function() {
+        console.log('You will see this message every 20min');
         syncListings(req);
     }, null, true, 'America/New_York');
-    res.send('cron: sync listings activated');
+    console.log('cron: sync listings activated');
+    res.redirect('/');
 });
 
 router.get('/sync/listings', function(req, res, next) {
@@ -30,6 +31,7 @@ function syncListings(req) {
             // get adunits
             AdUnit.find({ 'extra.dmc_xul_auto_sync': true }, { 'id': 1, 'publisher': 1, 'name': 1 }, function(err, adunits) {
                 if (err) return cb(err);
+                // console.log(adunits);
                 cb(null, adunits);
             });
         },
@@ -40,8 +42,8 @@ function syncListings(req) {
                 obj.adunit = adunit.id;
                 obj.publisher = adunit.publisher;
                 obj.name = adunit.name;
-                console.log('\n-----------');
-                console.log('Processing file ' + adunit.id);
+                // console.log('\n-----------');
+                // console.log('Processing file ' + adunit.id);
                 request.post(req.app.locals.domain + '/api/sync/xul/listings', { form: { 'adunitID': adunit.id } }, function(err, response, body) {
                     if (err) return callback(err);
                     console.log(body);
@@ -61,8 +63,7 @@ function syncListings(req) {
     ], function(err, result) {
         if (err) return res.status(500).send(err);
          // on success, clear cached responses.
-
-        console.log('XUL Auto-SYNC Complete');
+        // console.log('XUL Auto-SYNC Complete');
         // res.status(200).send('XUL Auto-SYNC Complete');
         // res.json(_result);
     });

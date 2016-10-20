@@ -330,8 +330,8 @@ router.post('/creative/update', function(req, res, next) {
     ], function(err, result) {
         if (err) return res.status(500).send(err);
         // res.status(200).send('processed successfully using async lib');
-        console.log('waterfall complete');
-        console.log('persistCreative: ' + persistCreative);
+        // console.log('waterfall complete');
+        // console.log('persistCreative: ' + persistCreative);
         res.redirect(req.body.returnURL);
     });
 });
