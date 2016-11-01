@@ -1,7 +1,7 @@
 /**
  * Controller module
  */
-window.dmc.Controller = (function() {
+window.DMC.Controller = (function() {
     'use strict';
 
     var initialize = function() {
@@ -14,7 +14,7 @@ window.dmc.Controller = (function() {
         $('body').append('<div id="dmc-card"></div>');
 
         bind();
-        window.dmc.initialized = true;
+        window.DMC.initialized = true;
     };
 
     var bind = function() {
@@ -119,7 +119,7 @@ window.dmc.Controller = (function() {
         $('#dmc-card').removeClass('expanded');
         $('html, body').removeClass('disable-scroll');
         //scroll to original position
-        window.scrollTo(0, window.dmc.viewportTop);
+        window.scrollTo(0, window.DMC.viewportTop);
         //fire event... other modules should have listeners setup for this event
         var e = new Event('unitMinimized');
         // Dispatch the event.
@@ -130,7 +130,7 @@ window.dmc.Controller = (function() {
         // console.log('activateAdUnit');
         // issue call to original script delivered from ad server
         // notify mothership that AdUnit is ready for activation
-        window.dmc.activate(adunitCallback);
+        window.DMC.activate(adunitCallback);
     };
 
     // callback from original script
@@ -138,7 +138,7 @@ window.dmc.Controller = (function() {
         data = JSON.parse(data);
         // console.log('adunitCallback: ', index + ' - ' + placeholder);
         // console.log('adunitCallback', data);
-        window.dmc.AdUnitController.createAdUnit(index, data, placeholder);
+        window.DMC.AdUnitController.createAdUnit(index, data, placeholder);
     };
 
     return {
@@ -152,7 +152,7 @@ window.dmc.Controller = (function() {
  * DependencyService module
  */
 /*
-window.dmc.DependencyService = (function() {
+window.DMC.DependencyService = (function() {
     var dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js'];
     return {
         loadDependencies: function() {
@@ -173,7 +173,7 @@ window.dmc.DependencyService = (function() {
  * BeaconService module
  */
 /*
-window.dmc.BeaconService = (function() {
+window.DMC.BeaconService = (function() {
     var referring_url;
     return {
         adunitClick: function(data) {
@@ -188,7 +188,7 @@ window.dmc.BeaconService = (function() {
  * ADUNIT CONTROLLER module
  */
 // wrap AdUnit instantiation in anon wrapper to protect scope
-window.dmc.AdUnitController = (function() {
+window.DMC.AdUnitController = (function() {
     var AdUnit = function(data, placeholder) {
         return (function(data, placeholder) {
             //private properties
@@ -251,13 +251,13 @@ window.dmc.AdUnitController = (function() {
                 // console.log(pos);
 
                 //note viewport top
-                window.dmc.viewportTop = document.body.scrollTop;
+                window.DMC.viewportTop = document.body.scrollTop;
 
                 // postion shadow atop adunit
                 $('#dmc-card').css('top', pos.top + 'px').css('left', pos.left).css('width', pos.width).css('height', pos.height);
 
                 // animate in dmc overlay
-                $('#dmc-overlay').css('top', window.dmc.viewportTop);
+                $('#dmc-overlay').css('top', window.DMC.viewportTop);
                 $('#dmc-overlay').addClass('active');
 
 
@@ -269,7 +269,7 @@ window.dmc.AdUnitController = (function() {
 
                 // TweenLite
                 var tween = TweenLite.to($('#dmc-card'), 0.4, {
-                    top: window.dmc.viewportTop,
+                    top: window.DMC.viewportTop,
                     left: 0,
                     // delay: 0.3,
                     height: window.innerHeight,
@@ -293,10 +293,10 @@ window.dmc.AdUnitController = (function() {
                 // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://sfo-jcottam.local:5757/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
 
                 //LOCAL
-                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
 
                 // PRODUCTION
-                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
 
                 // Aspen animated html5 ad
                 // $('#dmc-card').html('<iframe frameborder="0" scrolling="no" id="creativeIframe632549838" src="https://s1.2mdn.net/4257417/1445981964340/asc_2015_PerfectStorm_300x250/index.html" width="300" height="250" style="display: block; margin-left: auto; margin-right: auto;"></iframe>');
@@ -331,23 +331,23 @@ window.dmc.AdUnitController = (function() {
         createAdUnit: function(index, data, placeholder) {
             var n = new AdUnit(data, placeholder);
             n.initialize();
-            window.dmc.adunits[index] = n;
+            window.DMC.adunits[index] = n;
         }
     };
 })();
 
 
 // INITIALIZE NATIVE
-if (!window.dmc.initialized) {
+if (!window.DMC.initialized) {
     // code delivered inside iFrame?
     if (self == top) {
         // console.log('NO IFRAME');
     } else if (window.parent == top) {
         console.error('DMC INSIDE IFRAME');
     }
-    window.dmc.Controller.initialize();
+    window.DMC.Controller.initialize();
 }
-window.dmc.Controller.activateAdUnit();
+window.DMC.Controller.activateAdUnit();
 
 
 

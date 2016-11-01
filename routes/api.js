@@ -155,8 +155,8 @@ router.get('/ga/event/:eventName?', function(req, res, next) {
     });
 });
 
-router.get('/mixpanel/test',function(req,res,next){
-     res.render('adunit-analytics-mixpanel-detail', {
+router.get('/mixpanel/test', function(req, res, next) {
+    res.render('adunit-analytics-mixpanel-detail', {
         title: 'mixpanel',
         pageID: 'adunits',
         domain: req.app.locals.domain,
@@ -262,7 +262,7 @@ function fetchDMCPublication(req, cb) {
                         cb(null);
                     });
             }, function(err) {
-                if(err){
+                if (err) {
                     return cb(err);
                 }
                 cb(null, {
@@ -549,7 +549,7 @@ function fetchDMCListing(req, type, cb) {
             return cb(null, {
                 response: 'error',
                 message: err
-            });
+            }, req);
         } else {
             if (body.length == 2) {
                 console.log('XUL listing not found: ' + req.listingID + ' | type: ' + type);

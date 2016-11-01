@@ -29,9 +29,12 @@ router.get('/list/:adunitID', function(req, res, next) {
         if (error) handleError(error);
         if (!error && response.statusCode == 200) {
             // res.json(JSON.parse(body));
+            var b = JSON.parse(body);
+            delete b.template;
+            // remove template from JSON (template may contain script tags that interfere with JSON.Stringify on card list view)
             res.render('card/list', {
                 title: 'Card List: ' + req.params.adunitID,
-                adunit: JSON.parse(body),
+                adunit: b,
                 domain: req.app.locals.domain,
                 config: req.app.locals.config
             });
