@@ -48,6 +48,11 @@ router.get('/:adunitID/:index?', function(req, res, next) {
             // type: null, // type of adunit experience (IVB or SLP)
             template: escape("<div id='" + uuid + "' class='dmc-native' data-adunit='" + adunit[0]._id + "' data-adunit-shortid='" + req.params.adunitID + "'>" + compiledTemplate + "</div>"),
         };
+
+        // if index url exists?
+        if(adunit[0].extra.dmc_index_url){
+            data.index_url = adunit[0].extra.dmc_index_url;
+        }
         // console.log(data);
 
         //declare response header

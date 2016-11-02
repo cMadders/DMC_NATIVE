@@ -18,9 +18,9 @@ window.DMC.Controller = (function() {
     };
 
     var bind = function() {
-        // $('#dmc-card').click(function(event) {
-        //     minimizeUnit();
-        // });
+        $('#dmc-overlay').click(function(event) {
+            minimizeUnit();
+        });
 
         //bind iframe listener
         var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
@@ -86,10 +86,10 @@ window.DMC.Controller = (function() {
         //dmc-native
         sheet.insertRule(".dmc-native { cursor:pointer;overflow:hidden;}", 0);
         // dmc-overlay
-        sheet.insertRule("#dmc-overlay { display:none; background: black; position: absolute; height: 100vh;width: 100vh; z-index: 999998; opacity:0.8;}", 0);
+        sheet.insertRule("#dmc-overlay { display:none; background: black; position: absolute; height: 100vh;width: 100%; z-index: 999998; opacity:0.8;}", 0);
         sheet.insertRule("#dmc-overlay.active  {display:block;}", 0);
         //dmc-card
-        sheet.insertRule("#dmc-card { background:white; width:100%; height: 5px;position: absolute;box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8);z-index:999999;visibility:hidden;}", 0);
+        sheet.insertRule("#dmc-card { background:white; width:100%; height: 5px;position: absolute;box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8);z-index:999999;visibility:hidden;max-width:1000px;}", 0);
         sheet.insertRule("#dmc-card.active { visibility:visible;}", 0);
         sheet.insertRule("#dmc-card.expanded { box-shadow:none; }", 0);
         sheet.insertRule("#dmc-card-iframe {width:100%;height:100%;outline:none;border:none;}", 0);
@@ -143,7 +143,8 @@ window.DMC.Controller = (function() {
 
     return {
         initialize: initialize,
-        activateAdUnit: activateAdUnit
+        activateAdUnit: activateAdUnit,
+        minimizeUnit: minimizeUnit
     };
 })();
 
@@ -231,10 +232,10 @@ window.DMC.AdUnitController = (function() {
                     expandUnit();
                 });
 
-                window.addEventListener("unitMinimized", function() {
-                    // alert("unitMinimized");
-                    console.log('minimizeUnit');
-                });
+                // window.addEventListener("unitMinimized", function() {
+                //     // alert("unitMinimized");
+                //     console.log('minimizeUnit');
+                // });
 
                 window.addEventListener("dmc-get-card-dimensions", function() {
                     getCARD_dimensions();
@@ -252,6 +253,7 @@ window.DMC.AdUnitController = (function() {
 
                 //note viewport top
                 window.DMC.viewportTop = document.body.scrollTop;
+                var top = window.DMC.viewportTop;
 
                 // postion shadow atop adunit
                 $('#dmc-card').css('top', pos.top + 'px').css('left', pos.left).css('width', pos.width).css('height', pos.height);
@@ -267,10 +269,18 @@ window.DMC.AdUnitController = (function() {
                 $('#dmc-card').css('top', shadowTop);
                 $('#dmc-card').addClass('active');
 
+                var left = 0;
+
+                // console.log('screen width: ' + window.innerWidth);
+                // is Desktop?
+                if (window.innerWidth >= 1000) {
+                    left = (window.innerWidth - 1000) / 2;
+                }
+
                 // TweenLite
                 var tween = TweenLite.to($('#dmc-card'), 0.4, {
-                    top: window.DMC.viewportTop,
-                    left: 0,
+                    top: top,
+                    left: left,
                     // delay: 0.3,
                     height: window.innerHeight,
                     width: window.innerWidth,
@@ -281,22 +291,38 @@ window.DMC.AdUnitController = (function() {
 
             var expanded = function() {
                 // console.log('expanded', adunit_id);
-
                 // prohibit scroll on webpage below
                 $('html, body').addClass('disable-scroll');
                 // bring card to top = 0 b/c disabling scroll on html and body automatically jumps user to yPos 0
                 $('#dmc-card, #dmc-overlay').css('top', '0');
+
+
                 $('#dmc-card').addClass('expanded');
 
                 //add iframe to card
                 // CODEKIT LOCAL
                 // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://sfo-jcottam.local:5757/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
 
-                //LOCAL
-                $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                // is Desktop?
+                if (window.innerWidth >= 1000) {
+                    if (data.index_url) {
+                        // INDEX IVB
+                        $('#dmc-card').html('<iframe id="dmc-card-iframe" src="' + data.index_url + '" frameborder="0" seamless style="width:100%;height:' + window.innerHeight + 'px;overflow-y:scroll;"></iframe>');
+                        $('#dmc-card').prepend('<div id="dmc-close-modal" style="float: right; color: #000; font-size: 30px; font-family: sans-serif; padding: 0 5px; margin: 0; cursor: pointer; -webkit-transition: color .15s linear; transition: color .15s linear; background: #eee; position: absolute; right: 0; border: 1px solid #AAA; box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.35);width:50px; text-align:center;">X</div>');
+                        $('#dmc-close-modal').click(function(event) {
+                            DMC.Controller.minimizeUnit();
+                        });
 
-                // PRODUCTION
-                // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                    } else {
+                        $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                    }
+                } else {
+                    //LOCAL
+                    // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                    // PRODUCTION
+                    $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                }
+
 
                 // Aspen animated html5 ad
                 // $('#dmc-card').html('<iframe frameborder="0" scrolling="no" id="creativeIframe632549838" src="https://s1.2mdn.net/4257417/1445981964340/asc_2015_PerfectStorm_300x250/index.html" width="300" height="250" style="display: block; margin-left: auto; margin-right: auto;"></iframe>');
@@ -316,6 +342,7 @@ window.DMC.AdUnitController = (function() {
             return {
                 uuid: uuid,
                 activated: activated,
+                adunit_id: adunit_id,
                 initialize: function() {
                     return initialize();
                 },

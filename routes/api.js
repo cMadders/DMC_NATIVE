@@ -25,7 +25,6 @@ router.use(function(req, res, next) {
     if (req.session.dmc_native) {
         user = req.session.dmc_native;
     }
-
     // only allow API requests for authenticated users
     // if (user_id) next();
     next();
@@ -290,7 +289,11 @@ router.get('/creative/:id', function(req, res, next) {
 
 // UPDATE creative
 router.post('/creative/update', function(req, res, next) {
-    req.body.last_modified_by = user.username || 'unknown';
+    if (user && user.username) {
+        req.body.last_modified_by = user.username;
+    } else {
+        req.body.last_modified_by = 'unknown';
+    }
     var persistCreative = (req.body.persistCreative === undefined) ? false : true;
     req.body['extra.protect_overwrite'] = (req.body['extra.protect_overwrite'] === undefined) ? false : true;
     async.waterfall([
@@ -396,7 +399,7 @@ router.get('/adunit/compiled/:id', function(req, res, next) {
 
     // return cached version if exists
     if (cache.get(adunitID)) {
-        // console.log('return cached version: ', adunitID);
+        console.log('return cached version: ', adunitID);
         return res.status(200).json(cache.get(adunitID));
     }
 
