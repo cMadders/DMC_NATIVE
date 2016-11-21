@@ -3,7 +3,7 @@ var router = express.Router();
 
 
 router.get('/embed', function(req, res, next) {
-    res.render('preview/clixie-embed', {
+    res.render('card/clixie-embed', {
         title: 'Clixie'
     });
 });

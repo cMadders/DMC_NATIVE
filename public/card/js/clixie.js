@@ -6,11 +6,16 @@
 
 var ac; //active creative
 var player; //clixie player
+var clixieCount = 0;
 
 function clixieToastClicked() {
     // console.log('clixieToastClicked');
     // pause video
-    player.pause();
+    try {
+        player.pause();
+    } catch (err) {
+        console.error(err);
+    }
     //post message
     var message = {};
     message.id = "dmc-clixie-toast-clicked";
@@ -19,14 +24,14 @@ function clixieToastClicked() {
 
 function initPlayer() {
     var settings = {
-            url: ac.media.mp4,
-            layout: 5,
-            videoId: ac.extra.clixie_vid_uuid,
-            poster: ac.media.logo,
-            responsive: false,
-            autoplay: false
-        },
-        clixieCount = 0,
+        url: ac.media.mp4,
+        layout: 5,
+        videoId: ac.extra.clixie_vid_uuid,
+        poster: ac.media.logo,
+        responsive: false,
+        autoplay: false,
+        icon: ac.media.clixie_icon || '//s3.amazonaws.com/dmc2k.digitalmediacommunications.com/img/dmcmedia/applyNow.png'
+    };
 
     player = new Clixie.Player("videoPlayer", settings);
 
@@ -50,8 +55,8 @@ function initPlayer() {
         // console.log('player.start');
         $('#dmc-loading').remove();
 
-        // add apply now icon
-        $('.clixie-video').before('<div id="dmc-apply"></div>');
+        // add action icon
+        $('.clixie-video').before('<div id="dmc-apply" class="dmc-clixie-action-btn" style="background: url(' + settings.icon + ')"></div>');
         $('#dmc-apply').click(function(event) {
             event.preventDefault();
             // console.log('clicked');
@@ -65,11 +70,11 @@ function initPlayer() {
     });
 
     player.on("added", function(event) {
-        console.log(event);
+        // console.log(event);
         if (event.type == "clixie:added") {
             clixieCount++;
             if (clixieCount == 2) {
-              $('head').append($('<style>.clixie-toast-animated{ animation-duration: 20s; }</style>'));
+                $('head').append($('<style>.clixie-toast-animated{ animation-duration: 20s; }</style>'));
             }
         }
     });

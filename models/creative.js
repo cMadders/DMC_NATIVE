@@ -11,7 +11,8 @@ var CreativeSchema = new mongoose.Schema({
     vertical: String,
     media: {
         logo: String,
-        mp4: String
+        mp4: String,
+        clixie_icon: String,
     },
     link: {
         website: String,

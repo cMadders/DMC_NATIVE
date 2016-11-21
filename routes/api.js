@@ -656,7 +656,12 @@ function writeCreative(creative, req, cb) {
                 // CREATE NEW (ADD)
                 // console.log('create new creative: ', listingID);
                 var c = new Creative(creative);
-                c.created_by = user.username || 'unknown';
+                if (user && user.username) {
+                    c.created_by = user.username;
+                } else {
+                    c.created_by = 'unknown';
+                }
+
                 c.save(function(err, creative) {
                     if (err) return cb(err);
                     // console.log('creative added');
@@ -705,14 +710,15 @@ function createCreativeObject(obj) {
         description: obj.description,
         category: obj.category,
         media: {
-            logo: obj.media.logoGif,
-            mp4: obj.media.mp4
+            logo: obj.media.logoGifSecure,
+            mp4: obj.media.mp4Secure,
+            clixie_icon: obj.media.clixie_iconSecure
         },
         link: {
             website: obj.website,
             email: obj.email,
             phone: obj.phone,
-            slp: obj.links.slpLink,
+            slp: obj.links.slpLinkSecure,
             slp_short: obj.links.shortLink,
             qr: obj.links.qrLink
         },

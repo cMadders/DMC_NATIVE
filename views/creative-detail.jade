@@ -182,19 +182,23 @@ block content
 
                 h4 Media
                 .form-group
-                  label.col-sm-2.control-label Video
+                  label.col-sm-2.control-label MP4
                   .col-sm-10
                     textarea.form-control(type='text' name="media.mp4" rows="2") #{(creative.media.mp4)?creative.media.mp4:''}
-                if creative.extra.clixie_vid_uuid != "s0"
-                  .form-group
-                    label.col-sm-2.control-label Clixie iFrame
-                    .col-sm-10
-                      textarea.form-control(type='text' rows="2")
-                        iframe(width="100%" height="100%" allowfullscreen frameborder="0" src="http://responsestg.clixiesite.com/embed?video_uuid=#{creative.extra.clixie_vid_uuid}&page=1&transitions")
                 .form-group
                   label.col-sm-2.control-label Logo
                   .col-sm-10
                     textarea.form-control(type='text' readonly id="logoURL" rows="2") #{(creative.media.logo)?creative.media.logo:''}
+                if creative.extra.clixie_vid_uuid != "0"
+                  .form-group
+                    label.col-sm-2.control-label Clixie UUID
+                    .col-sm-10
+                      textarea.form-control(type='text' readonly id="clixie_vid_uuid" rows="2") #{creative.extra.clixie_vid_uuid}
+                if creative.media.clixie_icon
+                  .form-group
+                    label.col-sm-2.control-label Clixie Icon
+                    .col-sm-10
+                      textarea.form-control(type='text' readonly id="clixie_icon" rows="2") #{creative.media.clixie_icon}
                 .hr-line-dashed
 
                 button.btn.btn-primary.btn-block(type="submit") Update
