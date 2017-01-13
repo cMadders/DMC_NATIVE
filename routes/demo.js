@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+
 router.get('/:name?', function(req, res, next) {
     res.render('demo/shell', {
         title: 'Publihser Demo',
@@ -13,5 +14,6 @@ router.get('/card/:name', function(req, res, next) {
         title: 'Publihser Demo'
     });
 });
+
 
 module.exports = router;

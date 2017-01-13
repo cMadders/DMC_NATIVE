@@ -5,7 +5,7 @@ window.DMC.Controller = (function() {
     'use strict';
 
     var initialize = function() {
-        // console.log('Controller.initialize');
+        console.log('Controller.initialize');
         embedCSS();
 
         // add card overlay
@@ -127,7 +127,7 @@ window.DMC.Controller = (function() {
     };
 
     var activateAdUnit = function() {
-        // console.log('activateAdUnit');
+        console.log('activateAdUnit');
         // issue call to original script delivered from ad server
         // notify mothership that AdUnit is ready for activation
         window.DMC.activate(adunitCallback);
@@ -136,7 +136,7 @@ window.DMC.Controller = (function() {
     // callback from original script
     var adunitCallback = function(index, data, placeholder) {
         data = JSON.parse(data);
-        // console.log('adunitCallback: ', index + ' - ' + placeholder);
+        console.log('adunitCallback: ', index + ' - ' + placeholder);
         // console.log('adunitCallback', data);
         window.DMC.AdUnitController.createAdUnit(index, data, placeholder);
     };
