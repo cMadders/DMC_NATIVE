@@ -5,7 +5,7 @@ window.DMC.Controller = (function() {
     'use strict';
 
     var initialize = function() {
-        console.log('Controller.initialize');
+        // console.log('Controller.initialize');
         embedCSS();
 
         // add card overlay
@@ -127,7 +127,7 @@ window.DMC.Controller = (function() {
     };
 
     var activateAdUnit = function() {
-        console.log('activateAdUnit');
+        // console.log('activateAdUnit');
         // issue call to original script delivered from ad server
         // notify mothership that AdUnit is ready for activation
         window.DMC.activate(adunitCallback);
@@ -136,7 +136,7 @@ window.DMC.Controller = (function() {
     // callback from original script
     var adunitCallback = function(index, data, placeholder) {
         data = JSON.parse(data);
-        console.log('adunitCallback: ', index + ' - ' + placeholder);
+        // console.log('adunitCallback: ', index + ' - ' + placeholder);
         // console.log('adunitCallback', data);
         window.DMC.AdUnitController.createAdUnit(index, data, placeholder);
     };
@@ -148,42 +148,6 @@ window.DMC.Controller = (function() {
     };
 })();
 
-
-/**
- * DependencyService module
- */
-/*
-window.DMC.DependencyService = (function() {
-    var dependencies = ['https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js'];
-    return {
-        loadDependencies: function() {
-            var head = document.head || document.getElementsByTagName('head')[0];
-            for (var i = 0; i < dependencies.length; i++) {
-                var s = document.createElement('script');
-                s.async = false;
-                s.type = 'text/javascript';
-                s.src = dependencies[i];
-                head.appendChild(s);
-            }
-        }
-    };
-})();
-*/
-
-/**
- * BeaconService module
- */
-/*
-window.DMC.BeaconService = (function() {
-    var referring_url;
-    return {
-        adunitClick: function(data) {
-            console.log('adunitClick', data);
-            return true; //if successfully pinged
-        }
-    };
-})();
-*/
 
 /**
  * ADUNIT CONTROLLER module
@@ -215,6 +179,7 @@ window.DMC.AdUnitController = (function() {
 
             var render = function() {
                 var scriptID = $(placeholder).attr('id');
+                // $('script#' + scriptID).after(unescapeHtml(data.template)).remove();
                 // console.log('scriptID: ', scriptID);
                 $('script#' + scriptID).after(unescapeHtml(data.template));
                 var t = $('script#' + scriptID).next();
@@ -323,10 +288,8 @@ window.DMC.AdUnitController = (function() {
                     $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
                 }
 
-
                 // Aspen animated html5 ad
                 // $('#dmc-card').html('<iframe frameborder="0" scrolling="no" id="creativeIframe632549838" src="https://s1.2mdn.net/4257417/1445981964340/asc_2015_PerfectStorm_300x250/index.html" width="300" height="250" style="display: block; margin-left: auto; margin-right: auto;"></iframe>');
-
                 // youtube
                 // $('#dmc-card').html('<iframe style="background-color:black;" width="100%" height="210" src="https://www.youtube.com/embed/vVTnT4843dY?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" style="position: absolute; top:200px; box-shadow: 1px 11px 31px -5px rgba(0, 0, 0, 0.8);" allowfullscreen></iframe>');
 
