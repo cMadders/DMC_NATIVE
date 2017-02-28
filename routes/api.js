@@ -44,7 +44,7 @@ function getNativeListings(adunitID, cb) {
 
 router.post('/sync/xul/listings', function(req, res, next) {
     var adunitID = req.body.adunitID;
-    // console.log('adunitID: ' + adunitID);
+    console.log('adunitID: ' + adunitID);
     var _creativesToPersist = [];
     async.waterfall([
         function(cb) {
@@ -228,6 +228,7 @@ function fetchDMCPublication(req, cb) {
     var url = 'http://api.digitalmediacommunications.com:8080/getNativeAdsByPub/' + req.publicationID;
     request(url, function(err, response, body) {
         if (err) {
+            console.log(err);
             return cb({
                 response: 'error',
                 message: err
@@ -235,7 +236,7 @@ function fetchDMCPublication(req, cb) {
         } else {
             // console.log(body.listings);
             var b = JSON.parse(body);
-            // console.log(b);
+            console.log(b);
             if (!b.listings || b.listings.length === 0) {
                 // console.log('XUL Publication Is Not Native Enabled');
                 return cb({
