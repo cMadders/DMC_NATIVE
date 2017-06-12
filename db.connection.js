@@ -19,7 +19,8 @@ var db = {
 
 var connectMongoose = function(connectionCallback) {
     if (mongooseConnected) return true;
-    // mongoose.connect('mongodb://dmcadmin:native2016@olympia.modulusmongo.net:27017/by2Qesig');
+    // PW used on production
+    // mongoose.connect('mongodb://jcottam-native:dmcnative2017@localhost:27017/dmcnative');
     mongoose.connect('mongodb://localhost:27017/dmcnative');
     var connection = mongoose.connection;
     db.connections.mongoose = connection;
