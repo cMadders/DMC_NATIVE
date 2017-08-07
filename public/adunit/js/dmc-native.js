@@ -279,13 +279,13 @@ window.DMC.AdUnitController = (function() {
                         });
 
                     } else {
-                        $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                        $('#dmc-card').html('<iframe id="dmc-card-iframe" src="https://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
                     }
                 } else {
                     //LOCAL
                     // $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://localhost:3000/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
                     // PRODUCTION
-                    $('#dmc-card').html('<iframe id="dmc-card-iframe" src="http://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
+                    $('#dmc-card').html('<iframe id="dmc-card-iframe" src="https://native.digitalmediacommunications.com/card/list/' + adunit_id + '" frameborder="0" seamless style="width:100%;height:100%;"></iframe>');
                 }
 
                 // Aspen animated html5 ad
