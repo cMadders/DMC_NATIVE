@@ -3,7 +3,7 @@ var config = {
         domain: 'http://localhost:3000'
     },
     production: {
-        domain: 'http://native.digitalmediacommunications.com'
+        domain: 'https://native.digitalmediacommunications.com'
     },
     api: {
         adunit: '/api/adunit',
