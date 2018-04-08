@@ -1,15 +1,8 @@
 'use strict'
 
-/**
- * Controller module
- */
 window.DMC.Controller = (function() {
   var initialize = function() {
-    // console.log('Controller.initialize');
     embedCSS()
-
-    // add card overlay
-    $('body').append('<div id="dmc-overlay"></div>')
     // add adunit silhouette to page for animation effect
     $('body').append('<div id="dmc-card"></div>')
 
@@ -18,10 +11,6 @@ window.DMC.Controller = (function() {
   }
 
   var bind = function() {
-    $('#dmc-overlay').click(function(event) {
-      minimizeUnit()
-    })
-
     //bind iframe listener
     var eventMethod = window.addEventListener
       ? 'addEventListener'
@@ -35,11 +24,11 @@ window.DMC.Controller = (function() {
       function(e) {
         // console.log('parent received message: ', e.data);
         if (e.data == 'dmc-card-loaded') {
-          // console.log('card loaded');
+          console.log('card loaded')
         }
 
         if (e.data == 'dmc-card-initialized') {
-          // console.log('card initialized');
+          console.log('card initialized')
           var url =
             window.location.protocol +
             '//' +
@@ -60,7 +49,6 @@ window.DMC.Controller = (function() {
         if (e.data == 'dmc-get-card-dimensions') {
           //fire event... other modules should have listeners setup for this event
           var evt = new Event('dmc-get-card-dimensions')
-          // Dispatch the event.
           window.dispatchEvent(evt)
         }
 
@@ -74,52 +62,30 @@ window.DMC.Controller = (function() {
   }
 
   var embedCSS = function() {
-    // CSS STYLING
     var sheet = (function() {
       // Create the <style> tag
       var style = document.createElement('style')
-
-      // Add a media (and/or media query) here if you'd like!
-      // style.setAttribute('media', 'screen')
-      // style.setAttribute('media', 'only screen and (max-width : 1024px)')
-
       // WebKit hack :(
       style.appendChild(document.createTextNode(''))
-
       // Add the <style> element to the page
       document.head.appendChild(style)
-
       return style.sheet
     })()
 
     //dmc-native
     sheet.insertRule('.dmc-native { cursor:pointer;overflow:hidden;}', 0)
-    // dmc-overlay
-    sheet.insertRule(
-      '#dmc-overlay { display:none; background: black; position: absolute; height: 100vh;width: 100%; z-index: 999998; opacity:0.8;}',
-      0
-    )
-    sheet.insertRule('#dmc-overlay.active  {display:block;}', 0)
     //dmc-card
     sheet.insertRule(
-      '#dmc-card { background:white; width:100%; height: 5px;position: absolute;box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8);z-index:999999;visibility:hidden;max-width:1000px;}',
+      '#dmc-card {width:100%; height: 100vh;position: absolute;z-index:999999;visibility:hidden;bottom: 0;top: 0;background-color: #FFF;opacity:0;}',
       0
     )
     sheet.insertRule('#dmc-card.active { visibility:visible;}', 0)
-    sheet.insertRule('#dmc-card.expanded { box-shadow:none; }', 0)
     sheet.insertRule(
       '#dmc-card-iframe {width:100%;height:100%;outline:none;border:none;}',
       0
     )
-
-    // youtube embed... looks great with box-shadow
-    // sheet.insertRule("#dmc-card iframe {position: absolute; top:200px; box-shadow: 1px 11px 31px -5px rgba(0, 0, 0, 0.8); }", 0);
-
     // html, body
-    // block scroll for mobile;
-    // causes underlying page to jump to top;
-    // prevents scrolling on all screens
-    // MOBILE-------------------
+    // block scroll for mobile; causes underlying page to jump to top; prevents scrolling on all screens
     sheet.insertRule(
       '.disable-scroll { overflow: hidden; position: fixed; height: 100%;width:100%; margin:0;}',
       0
@@ -133,12 +99,11 @@ window.DMC.Controller = (function() {
   }
 
   var minimizeUnit = function() {
-    // $('#dmc-card').removeClass('active').empty();
-    // $('#dmc-card').removeClass('active').empty();
-    $('#dmc-overlay, #dmc-card')
+    $('#dmc-card')
       .removeClass('active')
+      .css('width', '100%')
+      .css('height', '100vh')
       .empty()
-    $('#dmc-card').removeClass('expanded')
     $('html, body').removeClass('disable-scroll')
     //scroll to original position
     window.scrollTo(0, window.DMC.viewportTop)
@@ -149,7 +114,7 @@ window.DMC.Controller = (function() {
   }
 
   var activateAdUnit = function() {
-    // console.log('activateAdUnit');
+    // console.log('activateAdUnit')
     // issue call to original script delivered from ad server
     // notify mothership that AdUnit is ready for activation
     window.DMC.activate(adunitCallback)
@@ -158,7 +123,7 @@ window.DMC.Controller = (function() {
   // callback from original script
   var adunitCallback = function(index, data, placeholder) {
     data = JSON.parse(data)
-    // console.log('adunitCallback: ', index + ' - ' + placeholder);
+    // console.log('adunitCallback: ', index + ' - ' + placeholder)
     // console.log('adunitCallback', data);
     window.DMC.AdUnitController.createAdUnit(index, data, placeholder)
   }
@@ -208,8 +173,6 @@ window.DMC.AdUnitController = (function() {
 
       var render = function() {
         var scriptID = $(placeholder).attr('id')
-        // $('script#' + scriptID).after(unescapeHtml(data.template)).remove();
-        // console.log('scriptID: ', scriptID);
         $('script#' + scriptID).after(unescapeHtml(data.template))
         var t = $('script#' + scriptID).next()
         var id = $(t).attr('data-adunit')
@@ -219,17 +182,15 @@ window.DMC.AdUnitController = (function() {
 
       var bind = function() {
         $el = $('#' + uuid)
-
         //bind events
         $el.click(function(event) {
           event.preventDefault()
           expandUnit()
         })
 
-        // window.addEventListener("unitMinimized", function() {
-        //     // alert("unitMinimized");
-        //     console.log('minimizeUnit');
-        // });
+        window.addEventListener('unitMinimized', function() {
+          console.log('unitMinimized')
+        })
 
         window.addEventListener('dmc-get-card-dimensions', function() {
           getCardDimensions()
@@ -237,52 +198,18 @@ window.DMC.AdUnitController = (function() {
       }
 
       var expandUnit = function() {
-        pos.top = $el.offset().top
-        console.log('pos.top', pos.top)
-        pos.right = $el.offset().right
-        pos.bottom = document.getElementById(uuid).style.bottom
-        pos.left = $el.offset().left
-        pos.width = document.getElementById(uuid).offsetWidth
-        pos.height = document.getElementById(uuid).offsetHeight
-        // console.log(pos);
+        //note scrollY at time of click
+        window.DMC.viewportTop = window.scrollY
 
-        //note viewport top
-        window.DMC.viewportTop = document.body.scrollTop
-        var top = window.DMC.viewportTop
-
-        // postion shadow atop adunit
+        // animate expansion
         $('#dmc-card')
-          .css('top', pos.top + 'px')
-          .css('left', pos.left)
-          .css('width', pos.width)
-          .css('height', pos.height)
-
-        // animate in dmc overlay
-        $('#dmc-overlay').css('top', window.DMC.viewportTop)
-        $('#dmc-overlay').addClass('active')
-
-        // cut in 1/2 and move to middle of AdUnit
-        $('#dmc-card').height($('#dmc-card').height() / 2)
-        var shadowTop = pos.top + pos.height / 2 - $('#dmc-card').height() / 2
-        $('#dmc-card').css('top', shadowTop)
-        $('#dmc-card').addClass('active')
-
-        var left = 0
-
-        // console.log('screen width: ' + window.innerWidth);
-        // is Desktop?
-        if (window.innerWidth >= 1000) {
-          left = (window.innerWidth - 1000) / 2
-        }
-
-        // TweenLite
-        var tween = TweenLite.to($('#dmc-card'), 0.4, {
-          top: 0,
+          .addClass('active')
+          .css('top', window.scrollY)
+          .css('left', window.innerWidth)
+        var tween = TweenLite.to($('#dmc-card'), 0.3, {
           left: 0,
-          // delay: 0.3,
-          height: window.innerHeight,
-          width: window.innerWidth,
-          ease: Power1.easeInOut,
+          opacity: 1,
+          // ease: Power1.easeInOut,
           onComplete: expanded
         })
       }
@@ -290,10 +217,9 @@ window.DMC.AdUnitController = (function() {
       var expanded = function() {
         // prohibit scroll on webpage below
         $('html, body').addClass('disable-scroll')
-        // bring card to top = 0 b/c disabling scroll on html and body automatically jumps user to yPos 0
-        $('#dmc-card, #dmc-overlay').css('top', '0')
-        $('#dmc-card').addClass('expanded')
-
+        $('#dmc-card')
+          .css('top', 0)
+          .css('left', 0)
         // DESKTOP
         if (window.innerWidth >= 1000) {
           if (data.index_url) {
