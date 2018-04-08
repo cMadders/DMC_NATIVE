@@ -7,8 +7,10 @@ var Handlebars = require('handlebars')
 
 function handleError(err) {
   console.error(err)
+  res.status(500).send(err)
 }
 
+// writes adunit code to the page (requested via web page embed code)
 router.get('/:adunitID/:index?', function(req, res, next) {
   var index = req.params.index || '0'
   //set random 6 character hash to distinguish ad-unit
@@ -60,7 +62,6 @@ router.get('/:adunitID/:index?', function(req, res, next) {
       if (adunit[0].extra.dmc_index_url) {
         data.index_url = adunit[0].extra.dmc_index_url
       }
-      // console.log(data);
 
       //declare response header
       res.writeHead(200, {
@@ -70,7 +71,7 @@ router.get('/:adunitID/:index?', function(req, res, next) {
 
       var card_js = `'${req.app.locals.domain}/adunit/js/dmc-native.js'`
       var adunit_data = JSON.stringify(data)
-      var embed = `(function(data) { var placeholder = document.currentScript; if (!window.DMC) { window.DMC = { dependenciesLoaded: false, adunits: [], activate: function(cb) { for (var i = 0; i < window.DMC.adunits.length; i++) { var unit = window.DMC.adunits[i]; if (!unit.activated) { return unit.activate(i, cb) || null; } } } }; } window.DMC.adunits.push({ data: data, activated: false, activate: function(index, cb) { this.activated = true; cb(index, this.data, placeholder); } }); var loadDependencies = function() { var dependencies = ['//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js', '//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js', '//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js', '//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js',${card_js}]; var head = document.head || document.getElementsByTagName('head')[0]; for (var i = 0; i < dependencies.length; i++) { var s = document.createElement('script'); s.async = false; s.type = 'text/javascript'; s.src = dependencies[i]; head.appendChild(s); } }; if (!window.DMC.dependenciesLoaded) { loadDependencies(); } })('${adunit_data}');`
+      var embed = `(function(data) { var placeholder = document.currentScript; if (!window.DMC) { window.DMC = { dependenciesLoaded: false, adunits: [], activate: function(cb) { for (var i = 0; i < window.DMC.adunits.length; i++) { var unit = window.DMC.adunits[i]; if (!unit.activated) { return unit.activate(i, cb) || null; } } } }; } window.DMC.adunits.push({ data: data, activated: false, activate: function(index, cb) { this.activated = true; cb(index, this.data, placeholder); } }); var loadDependencies = function() { var dependencies = ['//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js', '//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js', '//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js',${card_js}]; var head = document.head || document.getElementsByTagName('head')[0]; for (var i = 0; i < dependencies.length; i++) { var s = document.createElement('script'); s.async = false; s.type = 'text/javascript'; s.src = dependencies[i]; head.appendChild(s); } }; if (!window.DMC.dependenciesLoaded) { loadDependencies(); } })('${adunit_data}');`
 
       var reqUrl = req.protocol + '://' + req.hostname + req.originalUrl
       countImpression(
@@ -96,18 +97,6 @@ function countImpression(adunitID, reqPath, referer, site) {
   visitor.event(adunitID, referer).send()
 }
 
-router.get('/template/:adunitID', function(req, res, next) {
-  AdUnit.find(
-    {
-      short_id: req.params.adunitID
-    },
-    function(err, adunit) {
-      if (err) return handleError(err)
-      res.send(adunit[0].template)
-    }
-  )
-})
-
 // Gets user's UUID. If it exists in memory (cookie), then the value is returned
 function getUsersUUID(cookies) {
   // console.log("Cookies: ", req.cookies);
@@ -119,19 +108,5 @@ function getUsersUUID(cookies) {
     return UUID.v1()
   }
 }
-
-/*
-function safe_tags(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function appendScript(url) {
-    return "<script src=\"" + url + "\"></scr' + 'ipt>";
-}
-
-function appendStyle(url) {
-    return "<link rel=\"stylesheet\" href=\"" + url + "\">";
-}
-*/
 
 module.exports = router

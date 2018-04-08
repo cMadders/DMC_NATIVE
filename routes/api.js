@@ -8,17 +8,10 @@ var UUID = require('uuid')
 var AdUnit = require('../models/adunit')
 var Creative = require('../models/creative.js')
 
-function handleError(err) {
-  console.error(err)
-  res.status(500).send(err)
-}
-
 var user
 
 router.use(function(req, res, next) {
-  // domain you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', '*')
-  // Request headers you wish to allow
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
 
   //if logged in
@@ -32,6 +25,7 @@ router.use(function(req, res, next) {
 
 function handleError(err) {
   console.error(err)
+  res.status(500).send(err)
 }
 
 function getNativeListings(adunitID, cb) {
@@ -536,13 +530,11 @@ router.get('/adunits/', function(req, res, next) {
     .sort({
       last_modified: -1
     })
-    .exec(function(err, units) {
-      if (err) {
-        return res.send(err)
-      }
-      res.json({
-        adunits: units
-      })
+    .then(adunits => {
+      res.json(adunits)
+    })
+    .catch(err => {
+      handleError(err)
     })
 })
 
