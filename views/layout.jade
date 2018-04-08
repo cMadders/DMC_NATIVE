@@ -53,12 +53,12 @@ html
                 i.fa.fa-area-chart
                 span.nav-label Analytics
 
-            li(data-item="cron")
+            if env === "development"
+              li(data-item="cron")
                 a(href="/cron/sync/listings" target="_blank")
                   i.fa.fa-diamond
                   span.nav-label XUL Auto-Sync
 
-            if env === "development"
               li(data-item="demos")
                 a(href="/demo/omaha" target="_blank")
                   i.fa.fa-diamond
