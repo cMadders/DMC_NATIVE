@@ -20,6 +20,7 @@
 * http://api.digitalmediacommunications.com:8080/getNativeAdsByPub/
 * http://api.digitalmediacommunications.com:8080/getListingInfoByAdnumber/
 * http://api.digitalmediacommunications.com:8080/getListingInfo/
+* http://widgets.digitalmediacommunications.com/analytics/get_token
 
 ## DEPLOYMENT
 
