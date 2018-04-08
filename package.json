@@ -40,7 +40,7 @@
     "request": "^2.85.0",
     "serve-favicon": "^2.3.2",
     "underscore": "^1.8.3",
-    "universal-analytics": "^0.4.2",
+    "universal-analytics": "^0.4.16",
     "uuid": "^2.0.3"
   },
   "devDependencies": {
