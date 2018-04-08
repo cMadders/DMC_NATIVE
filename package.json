@@ -5,8 +5,13 @@
   "author": "John Cottam",
   "license": "ISC",
   "private": true,
+  "engines": {
+    "node": "6.9.2",
+    "npm": "3.10.9"
+  },
   "scripts": {
     "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
     "debug": "node-debug ./bin/www"
   },
   "dependencies": {
@@ -18,6 +23,7 @@
     "cookie-session": "^1.2.0",
     "cron": "^1.1.0",
     "debug": "~2.2.0",
+    "dotenv": "^5.0.1",
     "escape-html": "^1.0.3",
     "express": "~4.13.1",
     "fast-csv": "^2.1.0",
@@ -25,7 +31,6 @@
     "handlebars": "^4.0.5",
     "jade": "~1.11.0",
     "jquery": "^2.2.2",
-    "keen-js": "^3.3.0",
     "kerberos": "^*",
     "memory-cache": "^0.1.6",
     "mixpanel-data-export": "^2.0.2",

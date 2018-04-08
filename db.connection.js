@@ -1,38 +1,37 @@
 var mongoose = require('mongoose'),
-    mongooseConnected = false;
+  mongooseConnected = false
 
 var db = {
-    connections: {
-        mongoose: null,
-    },
-    connect: function(db, connectionCallback) {
-        switch (db) {
-            case "mongoose":
-                connectMongoose(connectionCallback);
-                break;
-            default:
-                connectMongoose(connectionCallback);
-                break;
-        }
+  connections: {
+    mongoose: null
+  },
+  connect: function(db, connectionCallback) {
+    switch (db) {
+      case 'mongoose':
+        connectMongoose(connectionCallback)
+        break
+      default:
+        connectMongoose(connectionCallback)
+        break
     }
-};
+  }
+}
 
 var connectMongoose = function(connectionCallback) {
-    if (mongooseConnected) return true;
-    // PW used on production
-    // mongoose.connect('mongodb://jcottam-native:dmcnative2017@localhost:27017/dmcnative');
-    mongoose.connect('mongodb://localhost:27017/dmcnative');
-    var connection = mongoose.connection;
-    db.connections.mongoose = connection;
-    connection.on('error', console.error.bind(console, 'connection error:'));
-    connection.once('open', function callback() {
-        console.log('connection to mongoose successful');
-        mongooseConnected = true;
-        if (connectionCallback) {
-            connectionCallback();
-        }
-        return true;
-    });
-};
+  if (mongooseConnected) return true
+  mongoose.connect(process.env.MONGO_URI)
 
-module.exports = db;
+  var connection = mongoose.connection
+  db.connections.mongoose = connection
+  connection.on('error', console.error.bind(console, 'connection error:'))
+  connection.once('open', function callback() {
+    console.log('connection to mongoose successful')
+    mongooseConnected = true
+    if (connectionCallback) {
+      connectionCallback()
+    }
+    return true
+  })
+}
+
+module.exports = db

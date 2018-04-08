@@ -12,3 +12,4 @@ private.md
 .modulus-base-ignore
 dmc.sublime-project
 dmc.sublime-workspace
+.DS_Store

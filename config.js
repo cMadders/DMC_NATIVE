@@ -1,17 +1,11 @@
 var config = {
-    local: {
-        domain: 'http://localhost:3000'
-    },
-    production: {
-        domain: 'https://native.digitalmediacommunications.com'
-    },
-    api: {
-        adunit: '/api/adunit',
-        creative: '/api/creative',
-        publication: '/api/publication',
-        sync: '/api/sync/xul/listings',
-        removeCreativeFromAdunit: '/api/adunit/remove-creative/',
-    }
-};
+  api: {
+    adunit: '/api/adunit',
+    creative: '/api/creative',
+    publication: '/api/publication',
+    sync: '/api/sync/xul/listings',
+    removeCreativeFromAdunit: '/api/adunit/remove-creative/'
+  }
+}
 
-module.exports = config;
+module.exports = config
